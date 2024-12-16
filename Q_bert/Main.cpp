@@ -14,9 +14,28 @@ class Player {
 public:
     int x, y; // Position on the pyramid
     Player() : x(0), y(0) {}
-    void move(int dx, int dy) {
-        x += dx;
-        y += dy;
+    void move(char key) {
+        switch (key)
+        {
+        case 'l':
+            x -= 5;
+            y -= 5;
+            break;
+        case 'r':
+            x += 5;
+            y += 5;
+            break;
+        case 'd':
+            x -= 5;
+            y += 5;
+            break;
+        case 'u':
+            x += 5;
+            y -= 5;
+            break;
+        default:
+            break;
+        }
     }
 };
 Player player; // Global player
@@ -71,9 +90,21 @@ void DrawMap() {
     }
 }
 
-
+ICBYTES Coordinates{
+    { 3, 6, 45, 45},     // 1
+    { 51, 1, 45, 48 },
+    { 97, 6, 45, 42 },
+    { 192, 6, 45, 42 },
+    { 240, 1, 45, 48 },
+    { 291, 6, 45, 42 },
+    { 339, 1, 45, 48 }
+};
 void DrawPlayer() {
-    FillRect(screenMatrix, player.x, player.y, 10, 10, 0xFF0000);
+    int i = 6;
+    Copy(Sprites3X, Coordinates.I(1, i), Coordinates.I(2, i),
+        Coordinates.I(3, i), Coordinates.I(4, i),
+        PlayerMatrix);
+    PasteNon0(PlayerMatrix, player.x, player.y, screenMatrix);
 }
 
 void DrawEnemies() {
@@ -108,10 +139,10 @@ VOID* renderThread() {
 VOID* gameLogicThread() {
     while (gameRunning) {
 
-        if (keypressed == 37) player.move(-5, 0);
-        else if (keypressed == 39) player.move(5, 0);
-        else if (keypressed == 38) player.move(0, -5);
-        else if (keypressed == 40) player.move(0, 5);
+        if (keypressed == 37) player.move('l');
+        else if (keypressed == 39) player.move('r');
+        else if (keypressed == 38) player.move('u');
+        else if (keypressed == 40) player.move('d');
         else if (keypressed == 'p') gameRunning = false; // Pause game
 
         //for (int i = 0; i < MAX_ENEMIES; ++i) {
@@ -128,8 +159,8 @@ void StartGame() {
 
     // Reset the screen
     screenMatrix = 0;
-    player.x = 340;
-    player.y = 110;
+    player.x = 325;
+    player.y = 90;
 
     // Threads
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)gameLogicThread, NULL, 0, NULL);
