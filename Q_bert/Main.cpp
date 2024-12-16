@@ -45,55 +45,32 @@ void ICGUI_Create() {
 }
 
 void DrawMap() {
-    //Blue Tile
+    // Blue Tile
     Copy(Sprites3X, 2, 224 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix);
 
+    // Center Coordinates
+    int startX = 300;
+    int startY = 100;
+    int offsetX = 47;
+    int offsetY = 70;
+    int x;
+    // Draw pyramid
+    for (int Innerlayer = 0; Innerlayer < 4; Innerlayer++) {
+        int baseY = startY + Innerlayer * 2 * offsetY;
+        for (int Outerlayer = 0; Innerlayer * 2 + Outerlayer < GRID_SIZE; Outerlayer++) { // 7 Outerlayer
+            int y = baseY + Outerlayer * offsetY;
+           
+            // Left side
+            x = startX - Outerlayer * offsetX;
+            PasteNon0(CurrentTileMatrix, x, y, screenMatrix);
 
-    PasteNon0(CurrentTileMatrix, 300, 100, screenMatrix);
-    // -45 +70
-    PasteNon0(CurrentTileMatrix, 255, 170, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 210, 240, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 165, 310, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 120, 380, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 75, 450, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 30, 520, screenMatrix);
-
-    // +45 +70
-    PasteNon0(CurrentTileMatrix, 345, 170, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 390, 240, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 435, 310, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 480, 380, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 525, 450, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 570, 520, screenMatrix);
-
-    // y +140
-    PasteNon0(CurrentTileMatrix, 300, 240, screenMatrix);
-    // -45 +70
-    PasteNon0(CurrentTileMatrix, 255, 310, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 210, 380, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 165, 450, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 120, 520, screenMatrix);
-
-    // +45 +70
-    PasteNon0(CurrentTileMatrix, 345, 310, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 390, 380, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 435, 450, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 480, 520, screenMatrix);
-
-    // y +140
-    PasteNon0(CurrentTileMatrix, 300, 380, screenMatrix);
-
-    // -45 +70
-    PasteNon0(CurrentTileMatrix, 255, 450, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 210, 520, screenMatrix);
-
-    // -45 +70
-    PasteNon0(CurrentTileMatrix, 345, 450, screenMatrix);
-    PasteNon0(CurrentTileMatrix, 390, 520, screenMatrix);
-
-    // y +140
-    PasteNon0(CurrentTileMatrix, 300, 520, screenMatrix);
+            //// Right side
+            x = startX + Outerlayer * offsetX;
+            PasteNon0(CurrentTileMatrix, x, y, screenMatrix);
+        }
+    }
 }
+
 
 void DrawPlayer() {
     FillRect(screenMatrix, player.x, player.y, 10, 10, 0xFF0000);
