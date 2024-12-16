@@ -10,35 +10,70 @@ int FRM1;
 int keypressed;
 
 // Class Definitions
+class SquareBlock {
+public:
+    int x;
+    int y;
+    int blk_clr_state;
+    int up;
+    int down;
+    int rigth;
+    int left;
+};
+
+SquareBlock SquareBlocks[28];
+
+
 class Player {
 public:
-    int x, y; // Position on the pyramid
+    int x, y, location; // Position on the pyramid
+    bool spacejump=false;
     Player() : x(0), y(0) {}
     void move(char key) {
         switch (key)
         {
         case 'l':
-            x -= 5;
-            y -= 5;
+            SquareBlocks[location].left >=0 ? location = SquareBlocks[location].left : spacejump=true ;
             break;
         case 'r':
-            x += 5;
-            y += 5;
+            SquareBlocks[location].rigth >= 0 ? location = SquareBlocks[location].rigth : spacejump = true;
             break;
         case 'd':
-            x -= 5;
-            y += 5;
+            SquareBlocks[location].down >= 0 ? location = SquareBlocks[location].down : spacejump = true;
             break;
         case 'u':
-            x += 5;
-            y -= 5;
+            SquareBlocks[location].up >= 0 ? location = SquareBlocks[location].up : spacejump = true;
             break;
         default:
             break;
         }
+
+        
+        x = SquareBlocks[location].x+20;
+        y = SquareBlocks[location].y-10;
+        
+
+        keypressed = 0;
     }
 };
 Player player; // Global player
+
+
+
+//struct SquareBlock {
+//    int x;
+//    int y;
+//    int blk_clr_state;
+//    int up;
+//    int down;
+//    int rigth;
+//    int left;
+//    
+//
+//};
+
+
+
 
 // Max number of enemies
 //const int MAX_ENEMIES = 5;
@@ -68,26 +103,68 @@ void DrawMap() {
     Copy(Sprites3X, 2, 224 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix);
 
     // Center Coordinates
-    int startX = 300;
+   /* int startX = 300;
     int startY = 100;
     int offsetX = 47;
     int offsetY = 70;
-    int x;
-    // Draw pyramid
-    for (int Innerlayer = 0; Innerlayer < 4; Innerlayer++) {
-        int baseY = startY + Innerlayer * 2 * offsetY;
-        for (int Outerlayer = 0; Innerlayer * 2 + Outerlayer < GRID_SIZE; Outerlayer++) { // 7 Outerlayer
-            int y = baseY + Outerlayer * offsetY;
-           
-            // Left side
-            x = startX - Outerlayer * offsetX;
-            PasteNon0(CurrentTileMatrix, x, y, screenMatrix);
+    int x;*/
 
-            //// Right side
-            x = startX + Outerlayer * offsetX;
-            PasteNon0(CurrentTileMatrix, x, y, screenMatrix);
-        }
+    //line 1
+    SquareBlocks[0] = { 300,100,0,-1,1,2,-1 }; // x, y, colorstate, up, down, right left 
+    //line 2
+    SquareBlocks[1] = { 255,170,0,0,3,4,-1 };
+    SquareBlocks[2] = { 345,170,0,-1,4,5,0 };
+    //line 3
+    SquareBlocks[3] = { 210,240,0,1,6,7,-1 };
+    SquareBlocks[4] = { 300,240,0,2,7,8,1 };
+    SquareBlocks[5] = { 390,240,0,-1,8,9,2 };
+    //line 4
+    SquareBlocks[6] = { 165,310,0,3,10,11,-1 };
+    SquareBlocks[7] = { 255,310,0,4,11,12,3 };
+    SquareBlocks[8] = { 345,310,0,5,12,13,4 };
+    SquareBlocks[9] = { 435,310,0,-1,13,14,5 };
+    //Line 5
+    SquareBlocks[10] = { 120,380,0,6,15,16,-1 };
+    SquareBlocks[11] = { 210,380,0,7,16,17,6 };
+    SquareBlocks[12] = { 300,380,0,8,17,18,7 };
+    SquareBlocks[13] = { 390,380,0,9,18,19,8 };
+    SquareBlocks[14] = { 480,380,0,-1,19,20,9 };
+    //Line 6
+    SquareBlocks[15] = { 75,450,0,10,21,22,-1 };
+    SquareBlocks[16] = { 165,450,0,11,22,23,10 };
+    SquareBlocks[17] = { 255,450,0,12,23,24,11 };
+    SquareBlocks[18] = { 345,450,0,13,24,25,12 };
+    SquareBlocks[19] = { 435,450,0,14,25,26,13 };
+    SquareBlocks[20] = { 525,450,0,-1,26,27,14 };
+    //Line 7
+    SquareBlocks[21] = { 30,520,0,15,-1,-1,-1};
+    SquareBlocks[22] = { 120,520,0,16,-1,-1,15 };
+    SquareBlocks[23] = { 210,520,0,17,-1,-1,16 };
+    SquareBlocks[24] = { 300,520,0,18,-1-1,17 };
+    SquareBlocks[25] = { 390,520,0,19,-1,-1,18 };
+    SquareBlocks[26] = { 480,520,0,20,-1,-1,19 };
+    SquareBlocks[27] = { 570,520,0,-1,-1,-1,20 };
+    
+    for (int i = 0; i < 28; i++) {
+        PasteNon0(CurrentTileMatrix, SquareBlocks[i].x, SquareBlocks[i].y, screenMatrix);
     }
+
+    // Draw pyramid
+    //for (int Innerlayer = 0; Innerlayer < 4; Innerlayer++) {
+    //    int baseY = startY + Innerlayer * 2 * offsetY;
+    //    for (int Outerlayer = 0; Innerlayer * 2 + Outerlayer < GRID_SIZE; Outerlayer++) { // 7 Outerlayer
+    //        int y = baseY + Outerlayer * offsetY;
+    //       
+    //        // Left side
+    //        x = startX - Outerlayer * offsetX;
+    //        PasteNon0(CurrentTileMatrix, x, y, screenMatrix);
+
+    //        //// Right side
+    //        x = startX + Outerlayer * offsetX;
+    //        PasteNon0(CurrentTileMatrix, x, y, screenMatrix);
+    //    }
+    //}
+
 }
 
 ICBYTES Coordinates{
@@ -99,11 +176,13 @@ ICBYTES Coordinates{
     { 291, 6, 45, 42 },
     { 339, 1, 45, 48 }
 };
+
 void DrawPlayer() {
     int i = 6;
     Copy(Sprites3X, Coordinates.I(1, i), Coordinates.I(2, i),
         Coordinates.I(3, i), Coordinates.I(4, i),
         PlayerMatrix);
+
     PasteNon0(PlayerMatrix, player.x, player.y, screenMatrix);
 }
 
@@ -139,7 +218,7 @@ VOID* renderThread() {
 VOID* gameLogicThread() {
     while (gameRunning) {
 
-        if (keypressed == 37) player.move('l');
+        if (keypressed == 37 ) player.move('l');
         else if (keypressed == 39) player.move('r');
         else if (keypressed == 38) player.move('u');
         else if (keypressed == 40) player.move('d');
@@ -150,6 +229,8 @@ VOID* gameLogicThread() {
         //}
 
         Sleep(100);
+
+       
     }
     return NULL;
 }
@@ -159,9 +240,9 @@ void StartGame() {
 
     // Reset the screen
     screenMatrix = 0;
-    player.x = 325;
+    player.x = 320;
     player.y = 90;
-
+    player.location = 0;
     // Threads
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)gameLogicThread, NULL, 0, NULL);
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)renderThread, NULL, 0, NULL);
