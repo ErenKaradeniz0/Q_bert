@@ -73,7 +73,7 @@ public:
     bool spacejump=false;
     Player() : x(0), y(0) {}
 
-    void moveAnination(char key, int goal_x, int goal_y) {
+    void BlockMoveAnination(char key, int goal_x, int goal_y) { //Block Move Animation
         int br_x=0, br_y=0;
         
          Sleep(100);
@@ -100,8 +100,15 @@ public:
        /* x = x = SquareBlocks[location].x + 40;
         y = SquareBlocks[location].y +10;*/
         Sleep(100);
-        
+
+        if (SquareBlocks[location].blk_clr_state == 0 && spacejump) {
+            SquareBlocks[location].blk_clr_state = 1;
+            spacejump = !spacejump;
+        }
+
     }
+
+    
 
     void move(char key) {
         spacejump = true;
@@ -147,15 +154,8 @@ public:
             break;
         }
 
-        moveAnination(key, SquareBlocks[location].x + 20, SquareBlocks[location].y - 10);
+        BlockMoveAnination(key, SquareBlocks[location].x + 20, SquareBlocks[location].y - 10);
 
-        if (SquareBlocks[location].blk_clr_state == 0 && spacejump) {
-
-            SquareBlocks[location].blk_clr_state = 1;
-            spacejump = !spacejump;
-        }
-        
-        
         keypressed = 0;
     }
     
