@@ -69,19 +69,21 @@ void PyramidMatrix() {
 class Player {
 public:
     int x, y, location; // Position on the pyramid
-    int direction = 6;
+    int direction = 4;
     bool spacejump=false;
     Player() : x(0), y(0) {}
 
     void moveAnination(char key, int goal_x, int goal_y) {
         int br_x=0, br_y=0;
-        direction = 7;
-        y -= 30;
         
+         Sleep(100);
+
+        direction++;
+        y -= 40;
         x < goal_x ? br_x=5 :br_x=-5;
         y < goal_y ? br_y=10 : br_y=-10;
 
-        Sleep(100);
+        Sleep(50);
         while (x != goal_x && y != goal_y) {
             if (x != goal_x) {
                 x += br_x;
@@ -89,10 +91,10 @@ public:
             if (y != goal_y) {
                 y += br_y;
             }
-            Sleep(40);
+            Sleep(50);
         }
 
-        direction = 6;
+        direction--;
         x = goal_x;
         y = goal_y;
        /* x = x = SquareBlocks[location].x + 40;
@@ -106,27 +108,46 @@ public:
         switch (key)
         {
         case 'l':
-            SquareBlocks[location].left >=0 ? location = SquareBlocks[location].left : spacejump=false ;
+            if (SquareBlocks[location].left >= 0) {
+                location = SquareBlocks[location].left;
+                direction = 3;
+            }
+            else {
+                spacejump = false;
+            }
             break;
         case 'r':
-            SquareBlocks[location].rigth >= 0 ? location = SquareBlocks[location].rigth : spacejump = false;
+            if (SquareBlocks[location].rigth >= 0) {
+                location = SquareBlocks[location].rigth;
+                direction = 5;
+            }
+            else {
+                spacejump = false;
+            }
             break;
         case 'd':
-            SquareBlocks[location].down >= 0 ? location = SquareBlocks[location].down : spacejump = false;
+            if (SquareBlocks[location].down >= 0) {
+                location = SquareBlocks[location].down;
+                direction = 7;
+            }
+            else {
+                spacejump = false;
+            }
             break;
         case 'u':
-            SquareBlocks[location].up >= 0 ? location = SquareBlocks[location].up : spacejump = false;
+            if (SquareBlocks[location].up >= 0) {
+                location = SquareBlocks[location].up;
+                direction = 1;
+            }
+            else {
+                spacejump = false;
+            }
             break;
         default:
             break;
         }
-        
-        direction = 6;
 
         moveAnination(key, SquareBlocks[location].x + 20, SquareBlocks[location].y - 10);
-
-        
-
 
         if (SquareBlocks[location].blk_clr_state == 0 && spacejump) {
 
@@ -222,13 +243,14 @@ void DrawMap() {
 }
 
 ICBYTES Coordinates{
-    { 3, 6, 45, 45},     // 1
-    { 51, 1, 45, 48 },
-    { 97, 6, 45, 42 },
-    { 192, 6, 45, 42 },
-    { 240, 1, 45, 48 },
-    { 291, 6, 45, 42 },
-    { 339, 1, 45, 48 }
+    { 3, 6, 45, 45},     // 1 (UP-1) 
+    { 51, 1, 45, 48 },   // 2 (UP-2)
+    { 97, 6, 45, 42 },   // 3 (LEFT-1)
+    { 145, 1, 45, 48 },  // 4 (LEFT-1)
+    { 192, 6, 45, 42 },  // 5 (DOWN-1)
+    { 240, 1, 45, 48 },  // 6 (DOWN-2)
+    { 291, 6, 45, 42 },  // 7 (RIGHT-1)
+    { 339, 1, 45, 48 }   // 8 (RIGHT-2)
 };
 
 void DrawPlayer() {
