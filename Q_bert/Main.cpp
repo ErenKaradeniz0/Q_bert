@@ -69,14 +69,14 @@ void PyramidMatrix() {
 class Player {
 public:
     int x, y, location; // Position on the pyramid
-    int direction = 4;
+    int direction = 7;
     bool spacejump=false;
     Player() : x(0), y(0) {}
 
     void BlockMoveAnination(char key, int goal_x, int goal_y) { //Block Move Animation
         int br_x=0, br_y=0;
         
-         Sleep(100);
+         Sleep(50);
 
         direction++;
         y -= 40;
@@ -99,7 +99,7 @@ public:
         y = goal_y;
        /* x = x = SquareBlocks[location].x + 40;
         y = SquareBlocks[location].y +10;*/
-        Sleep(100);
+        Sleep(50);
 
         if (SquareBlocks[location].blk_clr_state == 0 && spacejump) {
             SquareBlocks[location].blk_clr_state = 1;
@@ -221,7 +221,9 @@ void DrawMap() {
             default:
                 break;
         }
+
         PasteNon0(CurrentTileMatrix, SquareBlocks[i].x, SquareBlocks[i].y, screenMatrix);
+
     }
 
     // Draw pyramid
@@ -304,7 +306,7 @@ VOID* gameLogicThread() {
         //    enemies[i].moveTowards(player);
         //}
 
-        Sleep(100);
+        //Sleep(100);
 
        
     }
