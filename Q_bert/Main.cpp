@@ -15,12 +15,22 @@ public:
     int x;
     int y;
     int blk_clr_state;
-    int up;
-    int down;
+    int up; 
+    int down; 
     int rigth;
     int left;
 };
 
+class Disc {
+public:
+    int x;
+    int y;
+    int block_id;
+    bool show_state;
+    bool move_state;
+};
+
+Disc Discs[2];
 SquareBlock SquareBlocks[28];
 
 void PyramidMatrix() {
@@ -63,7 +73,12 @@ void PyramidMatrix() {
     Copy(Sprites3X, 2, 224 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix);
 }
 
-
+void CreateDisc() {
+    SquareBlocks[10].left = 40; //left
+    Discs[0] = { SquareBlocks[10].x-15,SquareBlocks[10].y-40,10,true,false }; //x,y,block_id,state
+    SquareBlocks[14].up = 45; //rigth
+    Discs[1] = { SquareBlocks[14].x+111,SquareBlocks[14].y-40,14,true,false }; //x,y,block_id,show_state,move_state
+}
 
 
 class Player {
@@ -73,7 +88,7 @@ public:
     bool spacejump=false;
     Player() : x(0), y(0) {}
 
-    void BlockMoveAnination(char key, int goal_x, int goal_y) { //Block Move Animation
+    void BlockMoveAnination(char key, int goal_x, int goal_y) { 
         int br_x=0, br_y=0;
         
          Sleep(50);
@@ -106,17 +121,20 @@ public:
             spacejump = !spacejump;
         }
 
+
+
     }
 
-    
+    // OutSide Map Animation (Drop Map) (Death) --> Will Write Function
 
     void move(char key) {
+        int block_id = 0;
         spacejump = true;
         switch (key)
         {
         case 'l':
             if (SquareBlocks[location].left >= 0) {
-                location = SquareBlocks[location].left;
+                SquareBlocks[location].left == 40 ? block_id=location : location = SquareBlocks[location].left;
                 direction = 3;
             }
             else {
@@ -125,8 +143,8 @@ public:
             break;
         case 'r':
             if (SquareBlocks[location].rigth >= 0) {
-                location = SquareBlocks[location].rigth;
-                direction = 5;
+               location = SquareBlocks[location].rigth;
+               direction = 5;
             }
             else {
                 spacejump = false;
@@ -143,7 +161,7 @@ public:
             break;
         case 'u':
             if (SquareBlocks[location].up >= 0) {
-                location = SquareBlocks[location].up;
+                SquareBlocks[location].up == 45 ? block_id = location : location = location = SquareBlocks[location].up;
                 direction = 1;
             }
             else {
@@ -153,9 +171,20 @@ public:
         default:
             break;
         }
-
-        BlockMoveAnination(key, SquareBlocks[location].x + 20, SquareBlocks[location].y - 10);
-
+        if (spacejump) {
+            if (block_id!=0) {
+                for (int i = 0; i < 2; i++) {
+                    if (Discs[i].block_id == block_id) {
+                        BlockMoveAnination(key, Discs[i].x-20, Discs[i].y-20);
+                    }
+                }
+                
+            }
+            else {
+                BlockMoveAnination(key, SquareBlocks[location].x + 20, SquareBlocks[location].y - 10);
+            }
+        }
+        
         keypressed = 0;
     }
     
@@ -244,6 +273,14 @@ void DrawMap() {
 
 }
 
+void DrawDisc() {
+    for (int i = 0; i < 2; i++) {
+        if (Discs[i].show_state) {
+            FillCircle(screenMatrix, Discs[i].x, Discs[i].y, 25, 0x0FFFFFF);
+        }
+    }
+}
+
 ICBYTES Coordinates{
     { 3, 6, 45, 45},     // 1 (UP-1) 
     { 51, 1, 45, 48 },   // 2 (UP-2)
@@ -264,6 +301,8 @@ void DrawPlayer() {
     PasteNon0(PlayerMatrix, player.x, player.y, screenMatrix);
 }
 
+
+
 void DrawEnemies() {
     //for (int i = 0; i < max_enemies; ++i) {
     //    fillrect(screenmatrix, enemies[i].x, enemies[i].y, 10, 10, 0x00ff00);
@@ -275,6 +314,10 @@ void renderGrid() {
 
     // Draw map
     DrawMap();
+
+    // Draw Disc()
+    DrawDisc();
+
 
     // Draw player
     DrawPlayer();
@@ -321,10 +364,15 @@ void StartGame() {
     player.x = 320;
     player.y = 90;
     player.location = 0;
-    // Threads
-
+    
+    //Create SquareBlock Pyramid
     PyramidMatrix();
 
+    //Create Disc
+    CreateDisc();
+    
+    
+    // Threads
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)gameLogicThread, NULL, 0, NULL);
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)renderThread, NULL, 0, NULL);
 
