@@ -171,13 +171,13 @@ public:
             if (block_id!=0) {
                 for (int i = 0; i < 2; i++) {
                     if (Discs[i].block_id == block_id) {
-                        BlockMoveAnination(key, Discs[i].x-20, Discs[i].y-20);
+                        BlockMoveAnimation(key, Discs[i].x-20, Discs[i].y-20);
                     }
                 }
                 
             }
             else {
-                BlockMoveAnination(key, SquareBlocks[location].x + 20, SquareBlocks[location].y - 10);
+                BlockMoveAnimation(key, SquareBlocks[location].x + 20, SquareBlocks[location].y - 10);
             }
         }
         
