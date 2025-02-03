@@ -1,7 +1,10 @@
 ﻿#include "icb_gui.h"
+#include <map>
+#include <string>
+
 // Globals
 const int GRID_SIZE = 7; // Size of the Q*bert pyramid
-bool gameRunning = true;
+bool gameRunning = false;
 HANDLE renderMutex;
 ICBYTES screenMatrix, Sprites, Sprites3X;
 ICBYTES CurrentTileMatrix, PlayerMatrix, EnemyMatrix;
@@ -32,6 +35,148 @@ public:
 
 Disc Discs[2];
 SquareBlock SquareBlocks[28];
+
+ICBYTES IntroCoordinates{
+    { 387, 99, 282, 45},     // QBERT
+    { 816, 121, 27, 24},    //  Pink c
+    { 435, 6, 21, 21},      // 2
+    { 387, 6, 21, 21},      //  0
+    { 507, 6, 21, 21},    // 5
+    { 483, 27, 21, 21},     // E
+    { 819, 27, 21, 21},    //  S
+    { 459, 27, 21, 21},      // D
+    { 843, 27, 21, 21},      //  T
+    { 867, 27, 21, 21},    // U
+    { 579, 27, 15, 21},      // I
+    { 627, 3, 21, 21},      //  O
+    { 387, 27, 21, 21},    //  A
+    { 651, 27, 21, 21},      // L
+    { 795, 27, 21, 21},      //  R
+    { 531, 27, 21, 21},    // G
+    { 555, 27, 21, 21},      // H
+    { 891, 27, 21, 21},      //  V
+    { 414, 6, 21, 21},    //  1
+    { 435, 27, 21, 21},      // C
+    { 699, 27, 21, 21},      //  N
+    { 747, 27, 21, 21},    // P
+    { 963, 27, 21, 21},      // Y
+    { 846, 129, 15, 15},      //  =
+    { 1149, 240, 84, 96},      //  Flying Qbert
+
+};
+
+struct CharData {
+    int spriteIndex;
+    const char* text;
+};
+
+const std::map<char, int> CHAR_INDICES = {
+    {'E', 6}, {'S', 7}, {'D', 8}, {'T', 9},
+    {'U', 10}, {'I', 11}, {'O', 12}, {'A', 13},
+    {'L', 14}, {'R', 15}, {'G', 16}, {'H', 17},
+    {'V', 18}, {'C', 20}, {'N', 21}, {'P', 22},
+    {'Y', 23}, {'=', 24}, {'2', 3}, {'0', 4},
+    {'5', 5}, {'1', 19}
+};
+
+void RenderChar(ICBYTES& screen, char c, int x, int y) {
+    auto it = CHAR_INDICES.find(c);
+    if (it == CHAR_INDICES.end()) return;
+
+    ICBYTES letterSprite;
+    Copy(Sprites3X,
+        IntroCoordinates.I(1, it->second),
+        IntroCoordinates.I(2, it->second),
+        IntroCoordinates.I(3, it->second),
+        IntroCoordinates.I(4, it->second),
+        letterSprite);
+    PasteNon0(letterSprite, x, y, screen);
+}
+
+void RenderString(ICBYTES& screen, const char* text, int x, int y, int spacing = 25) {
+    int currentX = x;
+    while (*text) {
+        if (*text != ' ') {
+            RenderChar(screen, *text, currentX, y);
+        }
+        currentX += spacing;
+        text++;
+    }
+}
+
+void DrawStartupAnimation(bool* gameRunningPtr) {
+    ICBYTES startScreen;
+    CreateImage(startScreen, 700, 700, ICB_UINT);
+    MSG msg;
+
+    for (int frame = 0; frame < 180 && *gameRunningPtr; frame++) {
+        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+            if (msg.message == WM_QUIT) {
+                *gameRunningPtr = false;
+                return;
+            }
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+
+        startScreen = 0x1A0F5F;
+
+        ICG_SetFont(24, 0, "Terminal");
+        Impress12x20(startScreen, 500, 20, "CREDITS", 0x00FF00);
+
+        if (frame > 30) {
+            char creditNum[2] = { '0' + min(9, (frame - 30) / 15), '\0' };
+            Impress12x20(startScreen, 600, 20, creditNum, 0xFF6600);
+        }
+
+        if (frame > 60) {
+            ICBYTES QbertTitle;
+            Copy(Sprites3X,
+                IntroCoordinates.I(1, 1),
+                IntroCoordinates.I(2, 1),
+                IntroCoordinates.I(3, 1),
+                IntroCoordinates.I(4, 1),
+                QbertTitle);
+            int yOffset = (frame % 16 > 8) ? 2 : -2;
+            PasteNon0(QbertTitle, 220, 200 + yOffset, startScreen);
+
+            ICG_SetFont(20, 0, "Arial");
+            Impress12x20(startScreen, 520, 190 + yOffset, "TM", 0xFFD700);
+        }
+
+        if (frame > 90) {
+            ICBYTES PinkC;
+            Copy(Sprites3X,
+                IntroCoordinates.I(1, 2),
+                IntroCoordinates.I(2, 2),
+                IntroCoordinates.I(3, 2),
+                IntroCoordinates.I(4, 2),
+                PinkC);
+            PasteNon0(PinkC, 100, 280, startScreen);
+
+            RenderString(startScreen, "2025", 130, 283);
+            RenderString(startScreen, "ESD STUDIOS", 280, 280);
+            RenderString(startScreen, "ALL RIGHTS RESERVED", 130, 320);
+        }
+
+        if (frame > 120) {
+            RenderString(startScreen, "1 COIN = 1 PLAY", 150, 500);
+
+            ICBYTES QB;
+            Copy(Sprites3X,
+                IntroCoordinates.I(1, 25),
+                IntroCoordinates.I(2, 25),
+                IntroCoordinates.I(3, 25),
+                IntroCoordinates.I(4, 25),
+                QB);
+            PasteNon0(QB, 350, 600, startScreen);
+        }
+
+        DisplayImage(FRM1, startScreen);
+        Sleep(33);
+    }
+}
+
 
 void PyramidMatrix() {
     //line 1
@@ -371,6 +516,11 @@ VOID* gameLogicThread() {
 
 void StartGame() {
     SetFocus(ICG_GetMainWindow());
+
+    if (gameRunning) return;
+    gameRunning = true;
+
+    DrawStartupAnimation(&gameRunning);
 
     // Reset the screen
     screenMatrix = 0;
