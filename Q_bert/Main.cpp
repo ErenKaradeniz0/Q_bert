@@ -565,7 +565,7 @@ void StartGame() {
     if (gameRunning) return;
     gameRunning = true;
 
-    DrawStartupAnimation(&gameRunning);
+    //DrawStartupAnimation(&gameRunning);
 
     // Reset the screen
     screenMatrix = 0;
