@@ -1,4 +1,4 @@
-#include "icb_gui.h"
+﻿#include "icb_gui.h"
 
 // Globals
 const int GRID_SIZE = 7; // Size of the Q*bert pyramid
@@ -88,42 +88,38 @@ public:
     bool spacejump=false;
     Player() : x(0), y(0) {}
 
-    void BlockMoveAnination(char key, int goal_x, int goal_y) { 
-        int br_x=0, br_y=0;
-        
-         Sleep(50);
+    void BlockMoveAnimation(char key, int goal_x, int goal_y) {
+        int br_x = 0, br_y = 0;
+
+        Sleep(50);
 
         direction++;
         y -= 40;
-        x < goal_x ? br_x=5 :br_x=-5;
-        y < goal_y ? br_y=10 : br_y=-10;
+        x < goal_x ? br_x = 5 : br_x = -5;
+        y < goal_y ? br_y = 5 : br_y = -5;
 
         Sleep(50);
-        while (x != goal_x && y != goal_y) {
+        while (x != goal_x || y != goal_y) {
             if (x != goal_x) {
                 x += br_x;
             }
             if (y != goal_y) {
                 y += br_y;
             }
-            Sleep(50);
+            Sleep(15);
         }
 
         direction--;
         x = goal_x;
         y = goal_y;
-       /* x = x = SquareBlocks[location].x + 40;
-        y = SquareBlocks[location].y +10;*/
         Sleep(50);
 
         if (SquareBlocks[location].blk_clr_state == 0 && spacejump) {
             SquareBlocks[location].blk_clr_state = 1;
             spacejump = !spacejump;
         }
-
-
-
     }
+
 
     // OutSide Map Animation (Drop Map) (Death) --> Will Write Function
 
@@ -175,13 +171,13 @@ public:
             if (block_id!=0) {
                 for (int i = 0; i < 2; i++) {
                     if (Discs[i].block_id == block_id) {
-                        BlockMoveAnination(key, Discs[i].x-20, Discs[i].y-20);
+                        BlockMoveAnimation(key, Discs[i].x-20, Discs[i].y-20);
                     }
                 }
                 
             }
             else {
-                BlockMoveAnination(key, SquareBlocks[location].x + 20, SquareBlocks[location].y - 10);
+                BlockMoveAnimation(key, SquareBlocks[location].x + 20, SquareBlocks[location].y - 10);
             }
         }
         
