@@ -7,7 +7,7 @@ const int GRID_SIZE = 7; // Size of the Q*bert pyramid
 bool gameRunning = false;
 HANDLE renderMutex;
 ICBYTES screenMatrix, Sprites, Sprites3X;
-ICBYTES CurrentTileMatrix, PlayerMatrix, EnemyMatrix;
+ICBYTES CurrentTileMatrix, PlayerMatrix, EnemyMatrix, DiscMatrix;
 int FRM1;
 int keypressed;
 int score = 0; // Global score variable
@@ -222,7 +222,7 @@ void CreateDisc() {
     SquareBlocks[10].left = 40; //left
     Discs[0] = { SquareBlocks[10].x - 15,SquareBlocks[10].y - 40,10,true,false }; //x,y,block_id,state
     SquareBlocks[14].up = 45; //rigth
-    Discs[1] = { SquareBlocks[14].x + 111,SquareBlocks[14].y - 40,14,true,false }; //x,y,block_id,show_state,move_state
+    Discs[1] = { SquareBlocks[14].x+110,SquareBlocks[14].y-40,14,true,false }; //x,y,block_id,show_state,move_state
 }
 
 
