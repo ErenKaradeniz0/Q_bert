@@ -1,5 +1,4 @@
 ﻿#include "icb_gui.h"
-
 // Globals
 const int GRID_SIZE = 7; // Size of the Q*bert pyramid
 bool gameRunning = true;
@@ -8,6 +7,7 @@ ICBYTES screenMatrix, Sprites, Sprites3X;
 ICBYTES CurrentTileMatrix, PlayerMatrix, EnemyMatrix;
 int FRM1;
 int keypressed;
+int score = 0; // Global score variable
 
 // Class Definitions
 class SquareBlock {
@@ -15,8 +15,8 @@ public:
     int x;
     int y;
     int blk_clr_state;
-    int up; 
-    int down; 
+    int up;
+    int down;
     int rigth;
     int left;
 };
@@ -75,9 +75,9 @@ void PyramidMatrix() {
 
 void CreateDisc() {
     SquareBlocks[10].left = 40; //left
-    Discs[0] = { SquareBlocks[10].x-15,SquareBlocks[10].y-40,10,true,false }; //x,y,block_id,state
+    Discs[0] = { SquareBlocks[10].x - 15,SquareBlocks[10].y - 40,10,true,false }; //x,y,block_id,state
     SquareBlocks[14].up = 45; //rigth
-    Discs[1] = { SquareBlocks[14].x+111,SquareBlocks[14].y-40,14,true,false }; //x,y,block_id,show_state,move_state
+    Discs[1] = { SquareBlocks[14].x + 111,SquareBlocks[14].y - 40,14,true,false }; //x,y,block_id,show_state,move_state
 }
 
 
@@ -85,7 +85,7 @@ class Player {
 public:
     int x, y, location; // Position on the pyramid
     int direction = 7;
-    bool spacejump=false;
+    bool spacejump = false;
     Player() : x(0), y(0) {}
 
     void BlockMoveAnimation(char key, int goal_x, int goal_y) {
@@ -117,6 +117,7 @@ public:
         if (SquareBlocks[location].blk_clr_state == 0 && spacejump) {
             SquareBlocks[location].blk_clr_state = 1;
             spacejump = !spacejump;
+            score += 25; // Update score when tile color is changed
         }
     }
 
@@ -130,7 +131,7 @@ public:
         {
         case 'l':
             if (SquareBlocks[location].left >= 0) {
-                SquareBlocks[location].left == 40 ? block_id=location : location = SquareBlocks[location].left;
+                SquareBlocks[location].left == 40 ? block_id = location : location = SquareBlocks[location].left;
                 direction = 3;
             }
             else {
@@ -139,8 +140,8 @@ public:
             break;
         case 'r':
             if (SquareBlocks[location].rigth >= 0) {
-               location = SquareBlocks[location].rigth;
-               direction = 5;
+                location = SquareBlocks[location].rigth;
+                direction = 5;
             }
             else {
                 spacejump = false;
@@ -168,22 +169,22 @@ public:
             break;
         }
         if (spacejump) {
-            if (block_id!=0) {
+            if (block_id != 0) {
                 for (int i = 0; i < 2; i++) {
                     if (Discs[i].block_id == block_id) {
-                        BlockMoveAnimation(key, Discs[i].x-20, Discs[i].y-20);
+                        BlockMoveAnimation(key, Discs[i].x - 20, Discs[i].y - 20);
                     }
                 }
-                
+
             }
             else {
                 BlockMoveAnimation(key, SquareBlocks[location].x + 20, SquareBlocks[location].y - 10);
             }
         }
-        
+
         keypressed = 0;
     }
-    
+
 
 };
 Player player; // Global player
@@ -229,7 +230,7 @@ void ICGUI_Create() {
 
 void DrawMap() {
     // Blue Tile
-    int temp=0;
+    int temp = 0;
 
     // Center Coordinates
    /* int startX = 300;
@@ -237,14 +238,14 @@ void DrawMap() {
     int offsetX = 47;
     int offsetY = 70;
     int x;*/
-    
+
     for (int i = 0; i < 28; i++) {
         switch (SquareBlocks[i].blk_clr_state)
         {
-            case 0: Copy(Sprites3X, 2, 224 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
-            case 1: Copy(Sprites3X, 2, 192 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
-            default:
-                break;
+        case 0: Copy(Sprites3X, 2, 224 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
+        case 1: Copy(Sprites3X, 2, 192 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
+        default:
+            break;
         }
 
         PasteNon0(CurrentTileMatrix, SquareBlocks[i].x, SquareBlocks[i].y, screenMatrix);
@@ -296,8 +297,22 @@ void DrawPlayer() {
 
     PasteNon0(PlayerMatrix, player.x, player.y, screenMatrix);
 }
+void DrawScore() {
+    char scoreText[20] = "Score:  ";
+    int tempScore = score;
+    int index = 8; // Start placing digits after "Score: "
 
+    // Place digits in reverse order
+    do {
+        scoreText[index--] = '0' + (tempScore % 10);
+        tempScore /= 10;
+    } while (tempScore > 0);
 
+    // Ensure the string is null-terminated
+    scoreText[9] = '\0';
+
+    Impress12x20(screenMatrix, 10, 10, scoreText, 0xFFFFFF); // Draw score in top left corner
+}
 
 void DrawEnemies() {
     //for (int i = 0; i < max_enemies; ++i) {
@@ -314,9 +329,11 @@ void renderGrid() {
     // Draw Disc()
     DrawDisc();
 
-
     // Draw player
     DrawPlayer();
+
+    // Draw score
+    DrawScore();
 
     // Draw enemies
     DrawEnemies();
@@ -335,7 +352,7 @@ VOID* renderThread() {
 VOID* gameLogicThread() {
     while (gameRunning) {
 
-        if (keypressed == 37 ) player.move('l');
+        if (keypressed == 37) player.move('l');
         else if (keypressed == 39) player.move('r');
         else if (keypressed == 38) player.move('u');
         else if (keypressed == 40) player.move('d');
@@ -347,7 +364,7 @@ VOID* gameLogicThread() {
 
         //Sleep(100);
 
-       
+
     }
     return NULL;
 }
@@ -360,14 +377,15 @@ void StartGame() {
     player.x = 320;
     player.y = 90;
     player.location = 0;
-    
+    score = 0; // Reset score
+
     //Create SquareBlock Pyramid
     PyramidMatrix();
 
     //Create Disc
     CreateDisc();
-    
-    
+
+
     // Threads
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)gameLogicThread, NULL, 0, NULL);
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)renderThread, NULL, 0, NULL);
