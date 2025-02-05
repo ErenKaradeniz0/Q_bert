@@ -142,17 +142,11 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
     CreateImage(QbertTitle, IntroCoordinates.I(3, 38), IntroCoordinates.I(4, 38), ICB_UINT);
     CreateImage(PinkC, IntroCoordinates.I(3, 40), IntroCoordinates.I(4, 40), ICB_UINT);
     CreateImage(QB, IntroCoordinates.I(3, 43), IntroCoordinates.I(4, 43), ICB_UINT);
-
-
-
-
     for (int frame = 0; frame < 240; frame++) {
-
 
         startScreen = 0x1A0F5F;
 
 
-       
         if (frame > 30) {
             Copy(Sprites3X,
                 IntroCoordinates.I(1, 38),
@@ -368,6 +362,20 @@ void CreateDisc() {
     Discs[1] = { SquareBlocks[14].x+110,SquareBlocks[14].y-40,14,true,false }; //x,y,block_id,show_state,move_state
 }
 
+void ShowGameOverScreen() {
+    
+    gameRunning = false;
+    Sleep(30);
+
+    // Draw black frame
+    FillRect(screenMatrix, 225, 375, 220, 25, 0x000000);
+
+    // Render "GAME OVER" text
+    RenderString(screenMatrix, "GAME OVER", 225, 375, 25);
+    DisplayImage(FRM1, screenMatrix);
+
+	
+}
 
 class Player {
 public:
@@ -376,6 +384,8 @@ public:
     bool jumpStatus = false;
     bool willFall = false;
     bool mazeOrder = false; // Flag to indicate if the player is falling
+    int lifes = 3; // Player's lives
+
     Player() : x(0), y(0) {}
 
     void BlockMoveAnimation(char key, int goal_x, int goal_y) {
@@ -424,11 +434,17 @@ public:
                 x += x_change;
             }
             else {
-                if(key == 'l' || key == 'u')
+                if (key == 'l' || key == 'u')
                     mazeOrder = true; // Set the falling flag
                 y += 5;
             }
             Sleep(15);
+        }
+        lifes--; // Decrease life on fall
+        if (lifes <= 0) {
+            gameRunning = false; // End game if no lives left
+            ShowGameOverScreen();
+            return;
         }
         // Reset player position to the top of the pyramid
         x = 320;
@@ -436,6 +452,7 @@ public:
         location = 0;
         direction = 7;
         mazeOrder = false; // Reset the falling flag
+
     }
 
     void move(char key) {
@@ -515,6 +532,24 @@ public:
 };
 
 Player player; // Global player
+
+void DrawLives() {
+    char livesText[20] = "Lives:  ";
+    int tempLives = player.lifes;
+    int index = 7; // Start placing digits after "Lives: "
+
+    // Place digits in reverse order
+    do {
+        livesText[index--] = '0' + (tempLives % 10);
+        tempLives /= 10;
+    } while (tempLives > 0);
+
+    // Ensure the string is null-terminated
+    livesText[8] = '\0';
+
+    Impress12x20(screenMatrix, 10, 40, livesText, 0xFFFFFF); // Draw lives in top left corner
+}
+
 
 //struct SquareBlock {
 //    int x;
@@ -647,28 +682,37 @@ void DrawEnemies() {
 }
 // Function Definitions
 void renderGrid() {
-    screenMatrix = 0;
+   
+    if (gameRunning) {
+		screenMatrix = 0; // Clear the screen
+        if (player.mazeOrder) {
+            // Draw player first if falling
+            DrawPlayer();
+        }
 
-    if (player.mazeOrder) {
-        // Draw player first if falling
-        DrawPlayer();
+        // Draw map
+        DrawMap();
+
+        // Draw Disc()
+        DrawDisc();
+
+        // Draw score
+        DrawScore();
+
+        // Draw lives
+        DrawLives();
+
+        // Draw enemies
+        DrawEnemies();
+
+        if (!player.mazeOrder) {
+            // Draw player after map if not falling
+            DrawPlayer();
+        }
     }
+    else
+    {
 
-    // Draw map
-    DrawMap();
-
-    // Draw Disc()
-    DrawDisc();
-
-    // Draw score
-    DrawScore();
-
-    // Draw enemies
-    DrawEnemies();
-
-    if (!player.mazeOrder) {
-        // Draw player after map if not falling
-        DrawPlayer();
     }
 
     DisplayImage(FRM1, screenMatrix);
@@ -708,13 +752,14 @@ void StartGame() {
     if (gameRunning) return;
     gameRunning = true;
 
-    DrawStartupAnimation1(&gameRunning);
+    //DrawStartupAnimation1(&gameRunning);
 
     // Reset the screen
     screenMatrix = 0;
     player.x = 320;
     player.y = 90;
     player.location = 0;
+    player.lifes = 3; // Reset lives
     score = 0; // Reset score
 
     //Create SquareBlock Pyramid
@@ -723,11 +768,9 @@ void StartGame() {
     //Create Disc
     CreateDisc();
 
-
     // Threads
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)gameLogicThread, NULL, 0, NULL);
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)renderThread, NULL, 0, NULL);
-
 }
 
 void WhenKeyPressed(int k) {
