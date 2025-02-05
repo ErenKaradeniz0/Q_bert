@@ -139,10 +139,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Intro.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Maze.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PrintHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assests\sprites.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Intro.h" />
+    <ClInclude Include="Main.h" />
+    <ClInclude Include="Maze.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="PrintHelper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
