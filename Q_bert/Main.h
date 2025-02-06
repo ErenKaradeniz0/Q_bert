@@ -23,7 +23,7 @@ void DrawPlayer();
 void DrawEnemies();
 void renderGrid();
 VOID* renderThread();
-VOID* gameLogicThread();
+VOID* InputThread();
 void StartGame();
 void WhenKeyPressed(int k);
 void ICGUI_main();

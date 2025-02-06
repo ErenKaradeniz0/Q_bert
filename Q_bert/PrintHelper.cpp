@@ -1,10 +1,10 @@
-#include <map>
 #include "icb_gui.h"
+#include <map>
 #include "PrintHelper.h"
 #include <string>
 #include "Main.h"
 #include "Maze.h"
-
+#include "Enemy.h"
 
 extern ICBYTES screenMatrix;
 extern ICBYTES Sprites3X;
@@ -12,7 +12,9 @@ extern ICBYTES IntroCoordinates;
 extern int FRM1;
 extern int score;
 extern Player player;
-
+extern Enemy enemy1;
+extern Enemy enemy2;
+ICBYTES CurrentTileMatrix, PlayerMatrix, Enemy1Matrix, Enemy2Matrix, DiscMatrix;
 
 const std::map<char, int> CHAR_INDICES = {
     {'0', 1}, {'1', 2}, {'2', 3}, {'3', 4}, {'4', 5},
@@ -138,9 +140,40 @@ void DrawPlayer() {
     PasteNon0(PlayerMatrix, player.x, player.y, screenMatrix);
 }
 
+ICBYTES EnemyCoordinates{
+    { 54, 66, 39, 30},  // Red Ball
+    { 6, 72, 39, 24 },  // Red Ball Bounce
+    { 243, 57, 48, 39 }, // Snake Egg
+    { 192, 66, 48, 30 }, // Snake Egg Bounce
+    { 6, 144, 42, 48 },  // Snake up move
+    { 48, 96, 48, 96 }, // Snake up jump
+    { 96, 144, 42, 48 }, // Snake left move
+    { 144, 96, 48, 96 }, // Snake left jump
+    { 198, 144, 42, 48 },  // Snake right move
+    { 240, 96, 48, 96 }, // Snake right jump
+    { 288, 144, 42, 48},  // Snake down move
+    { 336, 96, 48, 96 }  // Snake down jump
+};
 
 void DrawEnemies() {
-    //for (int i = 0; i < max_enemies; ++i) {
-    //    fillrect(screenmatrix, enemies[i].x, enemies[i].y, 10, 10, 0x00ff00);
-    //}
+    if (enemy1.isAlive == true){
+        int i = enemy1.direction;
+        Copy(Sprites3X, EnemyCoordinates.I(1, i), EnemyCoordinates.I(2, i),
+            EnemyCoordinates.I(3, i), EnemyCoordinates.I(4, i),
+            Enemy1Matrix);
+
+        PasteNon0(Enemy1Matrix, enemy1.x, enemy1.y, screenMatrix);
+    }
+
+    if(enemy2.isAlive == true){
+        int i = enemy2.direction;
+
+        Copy(Sprites3X, EnemyCoordinates.I(1, i), EnemyCoordinates.I(2, i),
+            EnemyCoordinates.I(3, i), EnemyCoordinates.I(4, i),
+            Enemy2Matrix);
+
+        PasteNon0(Enemy2Matrix, enemy2.x, enemy2.y, screenMatrix);
+
+    }
+
 }

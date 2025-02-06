@@ -13,7 +13,7 @@ public:
     int blk_clr_state;
     int up;
     int down;
-    int rigth;
+    int right;
     int left;
 };
 
