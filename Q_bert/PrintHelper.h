@@ -9,6 +9,7 @@ void ShowGameOverScreen();
 void DrawScore();
 void DrawLives();
 void DrawMap();
+void SelectEffectDisc(int k);
 void DrawDisc();
 void DrawPlayer();
 void DrawEnemies();
