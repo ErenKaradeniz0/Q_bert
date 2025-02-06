@@ -20,7 +20,7 @@ void CreatePlayer() {
 	player.mazeOrder = false; // Reset the falling flag
 }
 
-void Player::BlockMoveAnimation(char key, int goal_x, int goal_y) {
+void Player::MoveAnimation(char key, int goal_x, int goal_y) {
     int br_x = 0, br_y = 0;
 
     Sleep(50);
@@ -153,17 +153,17 @@ void Player::move(char key) {
         if (block_id != 0) {
             for (int i = 0; i < 2; i++) {
                 if (Discs[i].block_id == block_id) {
-                    BlockMoveAnimation(key, Discs[i].x - 20, Discs[i].y - 20);
+                    MoveAnimation(key, Discs[i].x - 20, Discs[i].y - 20);
                 }
             }
 
         }
         else {
-            BlockMoveAnimation(key, SquareBlocks[currentTile].centerX, SquareBlocks[currentTile].centerY);
+            MoveAnimation(key, SquareBlocks[currentTile].centerX, SquareBlocks[currentTile].centerY);
         }
     }
     else {
-        BlockMoveAnimation(key, x + (key == 'l' ? -20 : key == 'r' ? 20 : key == 'w' ? -20 : key == 's' ? 20 : 0), y + (key == 'u' ? -10 : key == 'd' ? 10 : 0));
+        MoveAnimation(key, x + (key == 'l' ? -20 : key == 'r' ? 20 : key == 'w' ? -20 : key == 's' ? 20 : 0), y + (key == 'u' ? -10 : key == 'd' ? 10 : 0));
     }
 }
 

@@ -5,6 +5,7 @@
 #include "Enemy.h"
 #include "Maze.h"
 
+
 // Globals
 bool gameRunning = false;
 bool stopThreads = false; // Flag to signal threads to stop
@@ -82,20 +83,26 @@ DWORD WINAPI InputThread(LPVOID lpParam) {
 }
 
 DWORD WINAPI Enemy1Thread(LPVOID lpParam) {
-    enemy1.Spawn(false, 280, 0, 1, 1);
-    while (gameRunning && enemy1.isAlive && !stopThreads) {
+    while (gameRunning && !stopThreads) {
         Sleep(200);
-        enemy1.move();
+        if(enemy1.isAlive)
+            enemy1.move();
+        else {
+            enemy1.Spawn(false, 1);
+        }
     }
     return 0;
 }
 
 DWORD WINAPI Enemy2Thread(LPVOID lpParam) {
-    Sleep(3000);
-    //enemy2.Spawn(true, 375, 0, 2, 3);
-    while (gameRunning && enemy2.isAlive && !stopThreads) {
-        Sleep(1000);
-        //enemy2.move();
+    Sleep(5000);
+    while (gameRunning && !stopThreads) {
+        Sleep(200);
+        if (enemy2.isAlive)
+            enemy2.move();
+        else {
+            enemy2.Spawn(false, 1);
+        }
     }
     return 0;
 }
@@ -149,6 +156,7 @@ void WhenKeyPressed(int k) {
 }
 
 void ICGUI_main() {
+
     ICG_Button(5, 5, 120, 25, "START GAME", StartGame);
     FRM1 = ICG_FrameMedium(5, 40, 1, 1);
     ICG_SetOnKeyPressed(WhenKeyPressed);
