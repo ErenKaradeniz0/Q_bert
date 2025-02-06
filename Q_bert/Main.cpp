@@ -2,18 +2,20 @@
 #include "PrintHelper.h"
 #include "intro.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Maze.h"
 
 // Globals
 bool gameRunning = false;
 HANDLE renderMutex;
 ICBYTES screenMatrix, Sprites, Sprites3X;
-ICBYTES CurrentTileMatrix, PlayerMatrix, EnemyMatrix, DiscMatrix;
 int FRM1;
 int keypressed;
 int score = 0; // Global score variable
 
 Player player; // Global player
+Enemy enemy1; // Global enemy 1
+Enemy enemy2; // Global enemy 2
 
 // Create window
 void ICGUI_Create() {
@@ -29,7 +31,6 @@ void renderGrid() {
             // Draw player first if falling
             DrawPlayer();
         }
-
         // Draw map
         DrawMap();
 
@@ -65,13 +66,37 @@ VOID* renderThread() {
     return NULL;
 }
 
-VOID* gameLogicThread() {
+VOID* InputThread() {
     while (gameRunning) {
         if (keypressed == 37) player.move('l');
         else if (keypressed == 39) player.move('r');
         else if (keypressed == 38) player.move('u');
         else if (keypressed == 40) player.move('d');
         else if (keypressed == 'p') gameRunning = false; // Pause game
+    }
+    return NULL;
+}
+
+VOID* Enemy1Thread() {
+    enemy1.Spawn(280, 0, 1, 1);
+    while (gameRunning) {
+
+    }
+    return NULL;
+}
+
+VOID* Enemy2Thread() {
+	Sleep(3000);
+    enemy2.Spawn(375, 0, 2, 3);
+    while (gameRunning) {
+
+    }
+    return NULL;
+}
+
+VOID* SoundThread() {
+    while (gameRunning) {
+		//PlaySound
     }
     return NULL;
 }
@@ -86,20 +111,20 @@ void StartGame() {
 
     // Reset the screen
     screenMatrix = 0;
-    player.x = 320;
-    player.y = 90;
-    player.location = 0;
-    player.lifes = 3; // Reset lives
-    score = 0; // Reset score
 
-    //Create SquareBlock Pyramid
+    CreatePlayer();
+
+    //Create Pyramid
     PyramidMatrix();
 
     //Create Disc
     CreateDisc();
 
     // Threads
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)gameLogicThread, NULL, 0, NULL);
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)InputThread, NULL, 0, NULL);
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Enemy1Thread, NULL, 0, NULL);
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Enemy2Thread, NULL, 0, NULL);
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)SoundThread, NULL, 0, NULL);
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)renderThread, NULL, 0, NULL);
 }
 
