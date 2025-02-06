@@ -14,3 +14,6 @@ public:
     void FallOffEdge(char key);
     void move(char key);
 };
+
+// standalone function
+void CreatePlayer();
