@@ -11,6 +11,7 @@ HANDLE renderMutex;
 ICBYTES screenMatrix, Sprites, Sprites3X;
 int FRM1;
 int keypressed;
+bool keyPressedControl;
 int score = 0; // Global score variable
 
 Player player; // Global player
@@ -65,7 +66,6 @@ VOID* turnDiscThread() {
             k = 0;
         Sleep(50);
     }
-
     return NULL;
 }
 
@@ -78,11 +78,13 @@ VOID* renderThread() {
 
 VOID* InputThread() {
     while (gameRunning) {
-        if (keypressed == 37) player.move('l');
-        else if (keypressed == 39) player.move('r');
-        else if (keypressed == 38) player.move('u');
-        else if (keypressed == 40) player.move('d');
-        else if (keypressed == 'p') gameRunning = false; // Pause game
+        if (keyPressedControl) {
+            if (keypressed == 37) player.move('l');
+            else if (keypressed == 39) player.move('r');
+            else if (keypressed == 38) player.move('u');
+            else if (keypressed == 40) player.move('d');
+            else if (keypressed == 'p') gameRunning = false; // Pause game
+        }
     }
     return NULL;
 }
@@ -116,6 +118,7 @@ void StartGame() {
 
     if (gameRunning) return;
     gameRunning = true;
+    keyPressedControl=true;
 
     //DrawStartupAnimation1(&gameRunning);
 

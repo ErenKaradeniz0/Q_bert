@@ -24,6 +24,8 @@ public:
     int block_id;
     bool show_state;
     bool move_state;
+    int center_x;
+    int center_y;
 };
 
 // External declarations for global variables

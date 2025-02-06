@@ -2,12 +2,14 @@
 #include "Maze.h"
 #include "Printhelper.h"
 #include "icb_gui.h" 
+#include <cmath>
 
 extern int FRM1;
 extern int score;
 extern Player player;
 extern bool gameRunning;
 extern int keypressed;
+extern bool keyPressedControl;
 
 Player::Player() : x(0), y(0), location(0), direction(7), jumpStatus(false), willFall(false), mazeOrder(false), lifes(3) {}
 
@@ -85,6 +87,60 @@ void Player::FallOffEdge(char key) {
     mazeOrder = false; // Reset the falling flag
 }
 
+void Player::JumpDiscAnimation(int disc_id, int goal_x, int goal_y) {
+    int br_x = 0, br_y = 0;
+    Sleep(50);
+
+    direction++;
+    y -= 40;
+    x < goal_x ? br_x = 5 : br_x = -5;
+    y < goal_y ? br_y = 5 : br_y = -5;
+
+    Sleep(50);
+
+
+    while (br_x < 0 ? x >= goal_x : x < goal_x || br_y < 0 ? y >= goal_y : y < goal_y) {
+
+        if (br_x < 0 ? x >= goal_x : x < goal_x) {
+            x += br_x;
+        }
+        if (br_y < 0 ? y >= goal_y : y < goal_y) {
+            y += br_y;
+        }
+        Sleep(15);
+    }
+
+    direction--;
+    x = goal_x;
+    y = goal_y;
+
+    Discs[disc_id].move_state = true;
+    DiskAndPlayerMovingAnimation(disc_id);
+
+}
+
+void Player::DiskAndPlayerMovingAnimation(int disc_id) {
+    int br_x, br_y;
+    int goal_x = SquareBlocks[0].x + 20;
+    int goal_y = SquareBlocks[0].y - 60;
+    int precision = static_cast<int>(sqrt(pow(goal_x - Discs[disc_id].x, 2) + pow(goal_y - Discs[disc_id].y, 2)));
+    precision /= 10;
+    br_x = (goal_x - Discs[disc_id].x) / (precision+5);
+    br_y = (goal_y - Discs[disc_id].y) / (precision+3);
+    
+    while (br_x < 0 ? Discs[disc_id].x >= goal_x : Discs[disc_id].x < goal_x || Discs[disc_id].y > goal_y) {
+        if (br_x < 0 ? Discs[disc_id].x >= goal_x : Discs[disc_id].x < goal_x) {
+            Discs[disc_id].x += br_x;
+            x += br_x;
+        }
+        if (Discs[disc_id].y > goal_y){
+            Discs[disc_id].y += br_y;
+            y += br_y;
+        }
+        Sleep(40);
+    }
+}
+
 void Player::move(char key) {
     int block_id = 0;
     jumpStatus = true;
@@ -145,7 +201,9 @@ void Player::move(char key) {
         if (block_id != 0) {
             for (int i = 0; i < 2; i++) {
                 if (Discs[i].block_id == block_id) {
-                    BlockMoveAnimation(key, Discs[i].x - 20, Discs[i].y - 20);
+                    keyPressedControl = false;
+                    JumpDiscAnimation(i,Discs[i].center_x - 12, Discs[i].center_y - 30);
+                    //keyPressedControl=true;
                 }
             }
 

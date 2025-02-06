@@ -45,7 +45,16 @@ void PyramidMatrix() {
 
 void CreateDisc() {
     SquareBlocks[10].left = 40; //left
-    Discs[0] = { SquareBlocks[10].x - 15,SquareBlocks[10].y - 40,10,true,false }; //x,y,block_id,state
-    SquareBlocks[14].up = 45; //right
-    Discs[1] = { SquareBlocks[14].x + 110,SquareBlocks[14].y - 40,14,true,false }; //x,y,block_id,show_state,move_state
+    Discs[0] = { SquareBlocks[10].x - 50,SquareBlocks[10].y - 40,10,true,false }; //x,y,block_id,show_state,move_state
+    Discs[0].center_x = Discs[0].x + 8;
+    Discs[0].center_y = Discs[0].y + 5;
+
+    SquareBlocks[14].up = 45; //rigth
+    Discs[1] = { SquareBlocks[14].x + 100,SquareBlocks[14].y - 40,14,true,false }; //x,y,block_id,show_state,move_state
+    Discs[1].center_x = Discs[1].x + 8;
+    Discs[1].center_y = Discs[1].y + 5;
+}
+
+void DiskAndPlayerMovingAnimation(int id) {
+    
 }
