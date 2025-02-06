@@ -111,10 +111,23 @@ void DrawMap() {
     }
 }
 
+
+void SelectEffectDisc(int k) {
+    switch (k)
+    {
+    case 0: { Copy(Sprites3X, 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break; }
+    case 1: { Copy(Sprites3X, 16 * 3 + 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break; }
+    case 2: { Copy(Sprites3X, 32 * 3 + 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break; }
+    case 3: { Copy(Sprites3X, 48 * 3 + 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break; }
+    default:
+        break;
+    }
+};
+
 void DrawDisc() {
     for (int i = 0; i < 2; i++) {
         if (Discs[i].show_state) {
-            FillCircle(screenMatrix, Discs[i].x, Discs[i].y, 25, 0x0FFFFFF);
+            PasteNon0(DiscMatrix, Discs[i].x, Discs[i].y, screenMatrix);
         }
     }
 }

@@ -13,6 +13,7 @@ HANDLE renderMutex;
 ICBYTES screenMatrix, Sprites, Sprites3X;
 int FRM1;
 int keypressed;
+bool keyPressedControl;
 int score = 0; // Global score variable
 
 Player player; // Global player
@@ -64,6 +65,18 @@ void renderGrid() {
 
     DisplayImage(FRM1, screenMatrix);
     Sleep(30);
+}
+
+VOID* turnDiscThread() {
+    int k = 0;
+    while (gameRunning) {
+        SelectEffectDisc(k);
+        k++;
+        if (k == 4)
+            k = 0;
+        Sleep(50);
+    }
+    return NULL;
 }
 
 DWORD WINAPI renderThread(LPVOID lpParam) {
@@ -144,6 +157,7 @@ void StartGame() {
     }
 
     gameRunning = true;
+    keyPressedControl=true;
 
     //DrawStartupAnimation1(&gameRunning);
 
@@ -160,6 +174,7 @@ void StartGame() {
 
     // Threads
     inputThreadHandle = CreateThread(NULL, 0, InputThread, NULL, 0, NULL);
+      CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)turnDiscThread, NULL, 0, NULL);
     enemy1ThreadHandle = CreateThread(NULL, 0, EnemyBall1Thread, NULL, 0, NULL);
     enemy2ThreadHandle = CreateThread(NULL, 0, EnemyBall2Thread, NULL, 0, NULL);
 	enemySnakeThreadHandle = CreateThread(NULL, 0, EnemySnakeThread, NULL, 0, NULL);
