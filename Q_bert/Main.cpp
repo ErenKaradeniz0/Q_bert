@@ -56,6 +56,19 @@ void renderGrid() {
     Sleep(30);
 }
 
+VOID* turnDiscThread() {
+    int k = 0;
+    while (gameRunning) {
+        SelectEffectDisc(k);
+        k++;
+        if (k == 4)
+            k = 0;
+        Sleep(50);
+    }
+
+    return NULL;
+}
+
 VOID* renderThread() {
     while (gameRunning) {
         renderGrid();
@@ -121,6 +134,7 @@ void StartGame() {
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)InputThread, NULL, 0, NULL);
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Enemy1Thread, NULL, 0, NULL);
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Enemy2Thread, NULL, 0, NULL);
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)turnDiscThread, NULL, 0, NULL);
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)SoundThread, NULL, 0, NULL);
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)renderThread, NULL, 0, NULL);
 }
