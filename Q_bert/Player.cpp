@@ -1,6 +1,5 @@
 #include "Player.h"
 #include "Maze.h"
-
 #include "Printhelper.h"
 #include "icb_gui.h" 
 
@@ -11,6 +10,14 @@ extern bool gameRunning;
 extern int keypressed;
 
 Player::Player() : x(0), y(0), location(0), direction(7), jumpStatus(false), willFall(false), mazeOrder(false), lifes(3) {}
+
+void CreatePlayer() {
+    player.x = 320;
+    player.y = 90;
+    player.location = 0;
+    player.lifes = 3; // Reset lives
+    score = 0; // Reset score
+}
 
 void Player::BlockMoveAnimation(char key, int goal_x, int goal_y) {
     int br_x = 0, br_y = 0;
@@ -96,8 +103,8 @@ void Player::move(char key) {
         break;
     case 'r':
         direction = 5;
-        if (SquareBlocks[location].rigth >= 0) {
-            location = SquareBlocks[location].rigth;
+        if (SquareBlocks[location].right >= 0) {
+            location = SquareBlocks[location].right;
         }
         else {
             jumpStatus = false;
