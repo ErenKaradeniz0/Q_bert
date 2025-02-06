@@ -7,8 +7,9 @@
 #include <ctime>    // For time()
 
 extern Player player;
-extern Enemy enemy1;
-extern Enemy enemy2;
+extern Enemy enemyBall1;
+extern Enemy enemyBall2;
+extern Enemy enemySnake;
 
 Enemy::Enemy() : Type(false),currentTile(SquareBlock()), state(7), willFall(false), isAlive(false){}
 
@@ -20,16 +21,25 @@ void Enemy::Spawn(bool Type, int state, bool isAlive) {
     this->y = 0;
     this->state = state;
     this->isAlive = isAlive;
-    while (this->y < 160) {
+	int limit = 160;
+	if (state == 3)
+        limit = 150;
+    while (this->y < limit) {
         this->y += 5;
         Sleep(30);
     }
     if(!Type)
-		this->state = 2;
+        if (state == 1)
+            state = 2;
+        else if (state == 3)
+            state = 4;
 }
 void Enemy::FallOffEdge(int move) {
     if (!Type)
-        this->state = 1;
+        if (state == 2)
+            state = 1;
+        else if (state == 4)
+            state = 3;
     // Calculate the total change in x
 
     int x_change = (move == 0) ? 5 : (move == 1) ? -5 : 0;
@@ -52,13 +62,19 @@ void Enemy::FallOffEdge(int move) {
 void Enemy::move() {
     if (!Type) {
         Sleep(50);
-        this->state = 2;
+		if (state == 1)
+            state = 2;
+        else if(state == 3)
+			state = 4;
 
         // Randomly choose to move right or down
         int randomMove = rand() % 2; // 0 or 1
         if (randomMove == 0) {
             if (currentTile.right >= 0) {
                 MoveAnimation(SquareBlocks[currentTile.right]);
+            }
+            else if (state == 4) {
+
             }
             else {
                 willFall = true;
@@ -67,6 +83,9 @@ void Enemy::move() {
         else {
             if (currentTile.down >= 0) {
                 MoveAnimation(SquareBlocks[currentTile.down]);
+            }
+            else if (state == 4) {
+
             }
             else {
                 willFall = true;
@@ -123,7 +142,12 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
     int br_x = 0, br_y = 0;
     this->y -= 40;
     Sleep(50);
-    this->state = 1;
+
+    if (state == 2)
+        state = 1;
+    else if (state == 4)
+        state = 3;
+
     x < goal_x ? br_x = 5 : br_x = -5;
     y < goal_y ? br_y = 5 : br_y = -5;
     while (x != goal_x || y != goal_y) {
@@ -135,13 +159,18 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
         }
         Sleep(15);
     }
-    this->state = 2; // Slime Jump
+
+    if (state == 1)
+        state = 2;
+    else if (state == 3)
+        state = 4;
+
     x = goal_x;
     y = goal_y;
     Sleep(50);
 
     currentTile = GoalBlock;
-    if (player.currentTile == enemy1.currentTile.id || player.currentTile == enemy2.currentTile.id) {
+    if (player.currentTile == enemyBall1.currentTile.id || player.currentTile == enemyBall2.currentTile.id) {
         player.lostLife(false);
     }
 }  

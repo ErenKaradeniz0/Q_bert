@@ -16,12 +16,14 @@ int keypressed;
 int score = 0; // Global score variable
 
 Player player; // Global player
-Enemy enemy1; // Global enemy 1
-Enemy enemy2; // Global enemy 2
+Enemy enemyBall1; // Global enemy 1
+Enemy enemyBall2; // Global enemy 2
+Enemy enemySnake; // Global enemy 2
 
 HANDLE inputThreadHandle = NULL;
 HANDLE enemy1ThreadHandle = NULL;
 HANDLE enemy2ThreadHandle = NULL;
+HANDLE enemySnakeThreadHandle = NULL;
 HANDLE soundThreadHandle = NULL;
 HANDLE renderThreadHandle = NULL;
 
@@ -82,26 +84,38 @@ DWORD WINAPI InputThread(LPVOID lpParam) {
     return 0;
 }
 
-DWORD WINAPI Enemy1Thread(LPVOID lpParam) {
-    while (gameRunning && !stopThreads) {
+DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
+    while (!gameRunning && !stopThreads) {
         Sleep(200);
-        if(enemy1.isAlive)
-            enemy1.move();
+        if(enemyBall1.isAlive)
+            enemyBall1.move();
         else {
-            enemy1.Spawn(false, 1);
+            enemyBall1.Spawn(false, 1);
         }
     }
     return 0;
 }
 
-DWORD WINAPI Enemy2Thread(LPVOID lpParam) {
-    Sleep(5000);
+DWORD WINAPI EnemyBall2Thread(LPVOID lpParam) {
+    Sleep(3000);
+    while (!gameRunning && !stopThreads) {
+        Sleep(200);
+        if (enemyBall2.isAlive)
+            enemyBall2.move();
+        else {
+            enemyBall2.Spawn(false, 1);
+        }
+    }
+    return 0;
+}
+DWORD WINAPI EnemySnakeThread(LPVOID lpParam) {
+    Sleep(1000);
     while (gameRunning && !stopThreads) {
         Sleep(200);
-        if (enemy2.isAlive)
-            enemy2.move();
+        if (enemySnake.isAlive)
+            enemySnake.move();
         else {
-            enemy2.Spawn(false, 1);
+            enemySnake.Spawn(false, 3);
         }
     }
     return 0;
@@ -122,6 +136,7 @@ void StartGame() {
         WaitForSingleObject(inputThreadHandle, INFINITE);
         WaitForSingleObject(enemy1ThreadHandle, INFINITE);
         WaitForSingleObject(enemy2ThreadHandle, INFINITE);
+        WaitForSingleObject(enemySnakeThreadHandle, INFINITE);
         WaitForSingleObject(soundThreadHandle, INFINITE);
         WaitForSingleObject(renderThreadHandle, INFINITE);
         stopThreads = false; // Reset the stop flag
@@ -145,8 +160,9 @@ void StartGame() {
 
     // Threads
     inputThreadHandle = CreateThread(NULL, 0, InputThread, NULL, 0, NULL);
-    enemy1ThreadHandle = CreateThread(NULL, 0, Enemy1Thread, NULL, 0, NULL);
-    enemy2ThreadHandle = CreateThread(NULL, 0, Enemy2Thread, NULL, 0, NULL);
+    enemy1ThreadHandle = CreateThread(NULL, 0, EnemyBall1Thread, NULL, 0, NULL);
+    enemy2ThreadHandle = CreateThread(NULL, 0, EnemyBall2Thread, NULL, 0, NULL);
+	enemySnakeThreadHandle = CreateThread(NULL, 0, EnemySnakeThread, NULL, 0, NULL);
     soundThreadHandle = CreateThread(NULL, 0, SoundThread, NULL, 0, NULL);
     renderThreadHandle = CreateThread(NULL, 0, renderThread, NULL, 0, NULL);
 }
