@@ -157,23 +157,35 @@ ICBYTES EnemyCoordinates{
 
 void DrawEnemies() {
     if (enemy1.isAlive == true){
-        int i = enemy1.direction;
+        int i = enemy1.state;
+
         Copy(Sprites3X, EnemyCoordinates.I(1, i), EnemyCoordinates.I(2, i),
             EnemyCoordinates.I(3, i), EnemyCoordinates.I(4, i),
             Enemy1Matrix);
+		int printx = enemy1.x;
+		int printy = enemy1.y;
 
-        PasteNon0(Enemy1Matrix, enemy1.x, enemy1.y, screenMatrix);
+        switch (i)
+        {
+		case 1:
+
+		case 2:
+			printy += 7;
+        default:
+            break;
+        }
+        PasteNon0(Enemy1Matrix, printx, printy, screenMatrix);
     }
 
-    if(enemy2.isAlive == true){
-        int i = enemy2.direction;
+    //if(enemy2.isAlive == true){
+    //    int i = enemy2.state;
 
-        Copy(Sprites3X, EnemyCoordinates.I(1, i), EnemyCoordinates.I(2, i),
-            EnemyCoordinates.I(3, i), EnemyCoordinates.I(4, i),
-            Enemy2Matrix);
+    //    Copy(Sprites3X, EnemyCoordinates.I(1, i), EnemyCoordinates.I(2, i),
+    //        EnemyCoordinates.I(3, i), EnemyCoordinates.I(4, i),
+    //        Enemy2Matrix);
 
-        PasteNon0(Enemy2Matrix, enemy2.x, enemy2.y, screenMatrix);
+    //    PasteNon0(Enemy2Matrix, enemy2.x, enemy2.y, screenMatrix);
 
-    }
+    //}
 
 }

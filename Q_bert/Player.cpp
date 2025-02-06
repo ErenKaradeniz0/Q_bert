@@ -9,14 +9,15 @@ extern Player player;
 extern bool gameRunning;
 extern int keypressed;
 
-Player::Player() : x(0), y(0), location(0), direction(7), jumpStatus(false), willFall(false), mazeOrder(false), lifes(3) {}
+Player::Player() : x(0), y(0), currentTile(0), direction(7), jumpStatus(false), willFall(false), mazeOrder(false), lifes(3){}
 
 void CreatePlayer() {
-    player.x = 320;
-    player.y = 90;
-    player.location = 0;
+    player.x = SquareBlocks[0].centerX;
+    player.y = SquareBlocks[0].centerY;
+    player.currentTile = 0;
     player.lifes = 3; // Reset lives
     score = 0; // Reset score
+	player.mazeOrder = false; // Reset the falling flag
 }
 
 void Player::BlockMoveAnimation(char key, int goal_x, int goal_y) {
@@ -46,10 +47,27 @@ void Player::BlockMoveAnimation(char key, int goal_x, int goal_y) {
     y = goal_y;
     Sleep(50);
 
-    if (SquareBlocks[location].blk_clr_state == 0 && jumpStatus) {
-        SquareBlocks[location].blk_clr_state = 1;
+    if (SquareBlocks[currentTile].blk_clr_state == 0 && jumpStatus) {
+        SquareBlocks[currentTile].blk_clr_state = 1;
         jumpStatus = !jumpStatus;
         score += 25; // Update score when tile color is changed
+    }
+}
+
+void Player::lostLife(bool isFall) {
+    lifes--; // Decrease life
+    Sleep(100);
+    if (lifes <= 0) {
+        gameRunning = false; // End game if no lives left
+        ShowGameOverScreen();
+        return;
+    }
+    if (isFall) {
+        player.x = SquareBlocks[0].centerX;
+        player.y = SquareBlocks[0].centerY;
+        player.currentTile = 0;
+        direction = 7;
+        mazeOrder = false; // Reset the falling flag
     }
 }
 
@@ -71,18 +89,8 @@ void Player::FallOffEdge(char key) {
         }
         Sleep(15);
     }
-    lifes--; // Decrease life on fall
-    if (lifes <= 0) {
-        gameRunning = false; // End game if no lives left
-        ShowGameOverScreen();
-        return;
-    }
-    // Reset player position to the top of the pyramid
-    x = 320;
-    y = 90;
-    location = 0;
-    direction = 7;
-    mazeOrder = false; // Reset the falling flag
+    lostLife(true); // Decrease life on fall
+
 }
 
 void Player::move(char key) {
@@ -92,9 +100,9 @@ void Player::move(char key) {
     {
     case 'l':
         direction = 3;
-        if (SquareBlocks[location].left >= 0) {
+        if (SquareBlocks[currentTile].left >= 0) {
             //Also checks disk is available to jump
-            SquareBlocks[location].left == 40 ? block_id = location : location = SquareBlocks[location].left;
+            SquareBlocks[currentTile].left == 40 ? block_id = currentTile : currentTile = SquareBlocks[currentTile].left;
         }
         else {
             jumpStatus = false;
@@ -103,8 +111,8 @@ void Player::move(char key) {
         break;
     case 'r':
         direction = 5;
-        if (SquareBlocks[location].right >= 0) {
-            location = SquareBlocks[location].right;
+        if (SquareBlocks[currentTile].right >= 0) {
+            currentTile = SquareBlocks[currentTile].right;
         }
         else {
             jumpStatus = false;
@@ -113,8 +121,8 @@ void Player::move(char key) {
         break;
     case 'd':
         direction = 7;
-        if (SquareBlocks[location].down >= 0) {
-            location = SquareBlocks[location].down;
+        if (SquareBlocks[currentTile].down >= 0) {
+            currentTile = SquareBlocks[currentTile].down;
         }
         else {
             jumpStatus = false;
@@ -123,9 +131,9 @@ void Player::move(char key) {
         break;
     case 'u':
         direction = 1;
-        if (SquareBlocks[location].up >= 0) {
+        if (SquareBlocks[currentTile].up >= 0) {
             //Also checks disk is available to jump
-            SquareBlocks[location].up == 45 ? block_id = location : location = SquareBlocks[location].up;
+            SquareBlocks[currentTile].up == 45 ? block_id = currentTile : currentTile = SquareBlocks[currentTile].up;
         }
         else {
             jumpStatus = false;
@@ -151,10 +159,11 @@ void Player::move(char key) {
 
         }
         else {
-            BlockMoveAnimation(key, SquareBlocks[location].x + 20, SquareBlocks[location].y - 10);
+            BlockMoveAnimation(key, SquareBlocks[currentTile].centerX, SquareBlocks[currentTile].centerY);
         }
     }
     else {
         BlockMoveAnimation(key, x + (key == 'l' ? -20 : key == 'r' ? 20 : key == 'w' ? -20 : key == 's' ? 20 : 0), y + (key == 'u' ? -10 : key == 'd' ? 10 : 0));
     }
 }
+

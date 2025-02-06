@@ -15,6 +15,8 @@ public:
     int down;
     int right;
     int left;
+    int centerX;
+    int centerY;
 };
 
 class Disc {

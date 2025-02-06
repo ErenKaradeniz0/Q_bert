@@ -7,6 +7,7 @@
 
 // Globals
 bool gameRunning = false;
+bool stopThreads = false; // Flag to signal threads to stop
 HANDLE renderMutex;
 ICBYTES screenMatrix, Sprites, Sprites3X;
 int FRM1;
@@ -16,6 +17,12 @@ int score = 0; // Global score variable
 Player player; // Global player
 Enemy enemy1; // Global enemy 1
 Enemy enemy2; // Global enemy 2
+
+HANDLE inputThreadHandle = NULL;
+HANDLE enemy1ThreadHandle = NULL;
+HANDLE enemy2ThreadHandle = NULL;
+HANDLE soundThreadHandle = NULL;
+HANDLE renderThreadHandle = NULL;
 
 // Create window
 void ICGUI_Create() {
@@ -56,52 +63,64 @@ void renderGrid() {
     Sleep(30);
 }
 
-VOID* renderThread() {
-    while (gameRunning) {
+DWORD WINAPI renderThread(LPVOID lpParam) {
+    while (gameRunning && !stopThreads) {
         renderGrid();
     }
-    return NULL;
+    return 0;
 }
 
-VOID* InputThread() {
-    while (gameRunning) {
+DWORD WINAPI InputThread(LPVOID lpParam) {
+    while (gameRunning && !stopThreads) {
         if (keypressed == 37) player.move('l');
         else if (keypressed == 39) player.move('r');
         else if (keypressed == 38) player.move('u');
         else if (keypressed == 40) player.move('d');
         else if (keypressed == 'p') gameRunning = false; // Pause game
     }
-    return NULL;
+    return 0;
 }
 
-VOID* Enemy1Thread() {
-    enemy1.Spawn(280, 0, 1, 1);
-    while (gameRunning) {
-
+DWORD WINAPI Enemy1Thread(LPVOID lpParam) {
+    enemy1.Spawn(false, 280, 0, 1, 1);
+    while (gameRunning && enemy1.isAlive && !stopThreads) {
+        Sleep(200);
+        enemy1.move();
     }
-    return NULL;
+    return 0;
 }
 
-VOID* Enemy2Thread() {
-	Sleep(3000);
-    enemy2.Spawn(375, 0, 2, 3);
-    while (gameRunning) {
-
+DWORD WINAPI Enemy2Thread(LPVOID lpParam) {
+    Sleep(3000);
+    //enemy2.Spawn(true, 375, 0, 2, 3);
+    while (gameRunning && enemy2.isAlive && !stopThreads) {
+        Sleep(1000);
+        //enemy2.move();
     }
-    return NULL;
+    return 0;
 }
 
-VOID* SoundThread() {
-    while (gameRunning) {
-		//PlaySound
+DWORD WINAPI SoundThread(LPVOID lpParam) {
+    while (gameRunning && !stopThreads) {
+        //PlaySound
     }
-    return NULL;
+    return 0;
 }
 
 void StartGame() {
     SetFocus(ICG_GetMainWindow());
 
-    if (gameRunning) return;
+    if (gameRunning) {
+        stopThreads = true; // Signal threads to stop
+        WaitForSingleObject(inputThreadHandle, INFINITE);
+        WaitForSingleObject(enemy1ThreadHandle, INFINITE);
+        WaitForSingleObject(enemy2ThreadHandle, INFINITE);
+        WaitForSingleObject(soundThreadHandle, INFINITE);
+        WaitForSingleObject(renderThreadHandle, INFINITE);
+        stopThreads = false; // Reset the stop flag
+		keypressed = 0; // Reset keypressed
+    }
+
     gameRunning = true;
 
     //DrawStartupAnimation1(&gameRunning);
@@ -109,20 +128,20 @@ void StartGame() {
     // Reset the screen
     screenMatrix = 0;
 
-    CreatePlayer();
-
     //Create Pyramid
     PyramidMatrix();
 
     //Create Disc
     CreateDisc();
 
+    CreatePlayer();
+
     // Threads
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)InputThread, NULL, 0, NULL);
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Enemy1Thread, NULL, 0, NULL);
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Enemy2Thread, NULL, 0, NULL);
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)SoundThread, NULL, 0, NULL);
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)renderThread, NULL, 0, NULL);
+    inputThreadHandle = CreateThread(NULL, 0, InputThread, NULL, 0, NULL);
+    enemy1ThreadHandle = CreateThread(NULL, 0, Enemy1Thread, NULL, 0, NULL);
+    enemy2ThreadHandle = CreateThread(NULL, 0, Enemy2Thread, NULL, 0, NULL);
+    soundThreadHandle = CreateThread(NULL, 0, SoundThread, NULL, 0, NULL);
+    renderThreadHandle = CreateThread(NULL, 0, renderThread, NULL, 0, NULL);
 }
 
 void WhenKeyPressed(int k) {
