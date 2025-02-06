@@ -1,14 +1,18 @@
 #pragma once
-
+#include "Maze.h"
 class Enemy {
 public:
+	bool Type;
     int x;
     int y;
-    int location;
-    int direction;
+    int state;
+    bool willFall;
     bool isAlive;
+    SquareBlock currentTile;
 
     Enemy();
     void move();
-    void Spawn(int x, int y, int location, int direction, bool isAlive = true);
+    void Spawn(bool Type, int state, bool isAlive = true);
+	void MoveAnimation(SquareBlock GoalBlock);
+	void FallOffEdge(int move);
 };
