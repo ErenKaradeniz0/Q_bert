@@ -165,7 +165,7 @@ void StartGame() {
     gameRunning = true;
     keyPressedControl=true;
 
-    DrawStartupAnimation1(&gameRunning);
+    //DrawStartupAnimation1(&gameRunning);
 
     // Reset the screen
     screenMatrix = 0;

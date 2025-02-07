@@ -56,7 +56,7 @@ ICBYTES IntroCoordinates{
     { 6, 72, 45, 30},       //  Bounced Ball - idx 41
     { 54, 66, 45, 30},      //  Normal Ball - idx 42
     { 240, 3, 47, 45},      //  Qbert Character - idx 43
-    { 720, 438, 144, 48},    //  Change to Text - idx 44
+    { 720, 438, 144, 18},    //  Change to Text - idx 44
     { 795, 354, 21, 24},       //  -> Symbol - idx 45
     { 819, 354, 21, 24},      //  <- Symbol - idx 46
     { 195, 588, 45, 39},      //  Yellow Tile - idx 47
