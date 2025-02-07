@@ -12,8 +12,7 @@ extern ICBYTES IntroCoordinates;
 extern int FRM1;
 extern int score;
 extern Player player;
-extern Enemy enemy1;
-extern Enemy enemy2;
+extern Enemy enemyBall1, enemyBall2, enemySnake;
 ICBYTES CurrentTileMatrix, PlayerMatrix, Enemy1Matrix, Enemy2Matrix, DiscMatrix;
 
 const std::map<char, int> CHAR_INDICES = {
@@ -112,10 +111,23 @@ void DrawMap() {
     }
 }
 
+
+void SelectEffectDisc(int k) {
+    switch (k)
+    {
+    case 0: { Copy(Sprites3X, 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break; }
+    case 1: { Copy(Sprites3X, 16 * 3 + 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break; }
+    case 2: { Copy(Sprites3X, 32 * 3 + 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break; }
+    case 3: { Copy(Sprites3X, 48 * 3 + 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break; }
+    default:
+        break;
+    }
+};
+
 void DrawDisc() {
     for (int i = 0; i < 2; i++) {
         if (Discs[i].show_state) {
-            FillCircle(screenMatrix, Discs[i].x, Discs[i].y, 25, 0x0FFFFFF);
+            PasteNon0(DiscMatrix, Discs[i].x, Discs[i].y, screenMatrix);
         }
     }
 }
@@ -156,23 +168,71 @@ ICBYTES EnemyCoordinates{
 };
 
 void DrawEnemies() {
-    if (enemy1.isAlive == true){
-        int i = enemy1.direction;
+    if (enemyBall1.isAlive == true){
+        int i = enemyBall1.state;
+
         Copy(Sprites3X, EnemyCoordinates.I(1, i), EnemyCoordinates.I(2, i),
             EnemyCoordinates.I(3, i), EnemyCoordinates.I(4, i),
             Enemy1Matrix);
+		int printx = enemyBall1.x;
+		int printy = enemyBall1.y;
 
-        PasteNon0(Enemy1Matrix, enemy1.x, enemy1.y, screenMatrix);
+        switch (i)
+        {
+		case 1:
+
+		case 2:
+            printy += 20;
+        default:
+            break;
+        }
+        PasteNon0(Enemy1Matrix, printx, printy, screenMatrix);
     }
 
-    if(enemy2.isAlive == true){
-        int i = enemy2.direction;
+    if(enemyBall2.isAlive == true){
+        int i = enemyBall2.state;
 
         Copy(Sprites3X, EnemyCoordinates.I(1, i), EnemyCoordinates.I(2, i),
             EnemyCoordinates.I(3, i), EnemyCoordinates.I(4, i),
             Enemy2Matrix);
 
-        PasteNon0(Enemy2Matrix, enemy2.x, enemy2.y, screenMatrix);
+        int printx = enemyBall2.x;
+        int printy = enemyBall2.y;
+
+        switch (i)
+        {
+        case 1:
+
+        case 2:
+            printy += 20;
+        default:
+            break;
+
+        }
+        PasteNon0(Enemy2Matrix, printx, printy, screenMatrix);
+
+    }
+    if (enemySnake.isAlive == true) {
+        int i = enemySnake.state;
+
+        Copy(Sprites3X, EnemyCoordinates.I(1, i), EnemyCoordinates.I(2, i),
+            EnemyCoordinates.I(3, i), EnemyCoordinates.I(4, i),
+            Enemy2Matrix);
+
+        int printx = enemySnake.x;
+        int printy = enemySnake.y;
+
+        switch (i)
+        {
+        case 3:
+
+        case 4:
+            printy += 15;
+        default:
+            break;
+
+        }
+        PasteNon0(Enemy2Matrix, printx, printy, screenMatrix);
 
     }
 

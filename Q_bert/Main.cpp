@@ -5,17 +5,29 @@
 #include "Enemy.h"
 #include "Maze.h"
 
+
 // Globals
 bool gameRunning = false;
+bool stopThreads = false; // Flag to signal threads to stop
 HANDLE renderMutex;
 ICBYTES screenMatrix, Sprites, Sprites3X;
 int FRM1;
 int keypressed;
+bool keyPressedControl;
 int score = 0; // Global score variable
 
 Player player; // Global player
-Enemy enemy1; // Global enemy 1
-Enemy enemy2; // Global enemy 2
+Enemy enemyBall1; // Global enemy 1
+Enemy enemyBall2; // Global enemy 2
+Enemy enemySnake; // Global enemy 2
+
+HANDLE inputThreadHandle = NULL;
+HANDLE turnDiscThreadHandle = NULL;
+HANDLE enemy1ThreadHandle = NULL;
+HANDLE enemy2ThreadHandle = NULL;
+HANDLE enemySnakeThreadHandle = NULL;
+HANDLE soundThreadHandle = NULL;
+HANDLE renderThreadHandle = NULL;
 
 // Create window
 void ICGUI_Create() {
@@ -59,60 +71,104 @@ void renderGrid() {
     Sleep(30);
 }
 
-VOID* renderThread() {
+DWORD WINAPI turnDiscThread(LPVOID lpParam) {
+    int k = 0;
     while (gameRunning) {
+        SelectEffectDisc(k);
+        k++;
+        if (k == 4)
+            k = 0;
+        Sleep(50);
+    }
+    return 0;
+}
+
+DWORD WINAPI renderThread(LPVOID lpParam) {
+    while (gameRunning && !stopThreads) {
         renderGrid();
     }
-    return NULL;
+    return 0;
 }
 
-VOID* InputThread() {
-    while (gameRunning) {
-        if (keypressed == 37) player.move('l');
-        else if (keypressed == 39) player.move('r');
-        else if (keypressed == 38) player.move('u');
-        else if (keypressed == 40) player.move('d');
-        else if (keypressed == 'p') gameRunning = false; // Pause game
+DWORD WINAPI InputThread(LPVOID lpParam) {
+    while (gameRunning && !stopThreads) {
+        if (keyPressedControl) {
+            if (keypressed == 37) player.move('l');
+            else if (keypressed == 39) player.move('r');
+            else if (keypressed == 38) player.move('u');
+            else if (keypressed == 40) player.move('d');
+            else if (keypressed == 'p') gameRunning = false; // Pause game
+        }
     }
-    return NULL;
+    return 0;
 }
 
-VOID* Enemy1Thread() {
-    enemy1.Spawn(280, 0, 1, 1);
-    while (gameRunning) {
-
+DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
+    while (!gameRunning && !stopThreads) {
+        Sleep(200);
+        if(enemyBall1.isAlive)
+            enemyBall1.move();
+        else {
+            enemyBall1.Spawn(false, 1);
+        }
     }
-    return NULL;
+    return 0;
 }
 
-VOID* Enemy2Thread() {
-	Sleep(3000);
-    enemy2.Spawn(375, 0, 2, 3);
-    while (gameRunning) {
-
+DWORD WINAPI EnemyBall2Thread(LPVOID lpParam) {
+    Sleep(3000);
+    while (!gameRunning && !stopThreads) {
+        Sleep(200);
+        if (enemyBall2.isAlive)
+            enemyBall2.move();
+        else {
+            enemyBall2.Spawn(false, 1);
+        }
     }
-    return NULL;
+    return 0;
+}
+DWORD WINAPI EnemySnakeThread(LPVOID lpParam) {
+    Sleep(1000);
+    while (gameRunning && !stopThreads) {
+        Sleep(200);
+        if (enemySnake.isAlive)
+            enemySnake.move();
+        else {
+            enemySnake.Spawn(false, 3);
+        }
+    }
+    return 0;
 }
 
-VOID* SoundThread() {
-    while (gameRunning) {
-		//PlaySound
+DWORD WINAPI SoundThread(LPVOID lpParam) {
+    while (gameRunning && !stopThreads) {
+        //PlaySound
     }
-    return NULL;
+    return 0;
 }
 
 void StartGame() {
     SetFocus(ICG_GetMainWindow());
 
-    if (gameRunning) return;
+    if (gameRunning) {
+        stopThreads = true; // Signal threads to stop
+        WaitForSingleObject(inputThreadHandle, INFINITE);
+        WaitForSingleObject(enemy1ThreadHandle, INFINITE);
+        WaitForSingleObject(enemy2ThreadHandle, INFINITE);
+        WaitForSingleObject(enemySnakeThreadHandle, INFINITE);
+        WaitForSingleObject(soundThreadHandle, INFINITE);
+        WaitForSingleObject(renderThreadHandle, INFINITE);
+        stopThreads = false; // Reset the stop flag
+		keypressed = 0; // Reset keypressed
+    }
+
     gameRunning = true;
+    keyPressedControl=true;
 
     DrawStartupAnimation1(&gameRunning);
 
     // Reset the screen
     screenMatrix = 0;
-
-    CreatePlayer();
 
     //Create Pyramid
     PyramidMatrix();
@@ -120,12 +176,16 @@ void StartGame() {
     //Create Disc
     CreateDisc();
 
+    CreatePlayer();
+
     // Threads
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)InputThread, NULL, 0, NULL);
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Enemy1Thread, NULL, 0, NULL);
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Enemy2Thread, NULL, 0, NULL);
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)SoundThread, NULL, 0, NULL);
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)renderThread, NULL, 0, NULL);
+    inputThreadHandle = CreateThread(NULL, 0, InputThread, NULL, 0, NULL);
+    turnDiscThreadHandle = CreateThread(NULL, 0, turnDiscThread, NULL, 0, NULL);
+    enemy1ThreadHandle = CreateThread(NULL, 0, EnemyBall1Thread, NULL, 0, NULL);
+    enemy2ThreadHandle = CreateThread(NULL, 0, EnemyBall2Thread, NULL, 0, NULL);
+	enemySnakeThreadHandle = CreateThread(NULL, 0, EnemySnakeThread, NULL, 0, NULL);
+    soundThreadHandle = CreateThread(NULL, 0, SoundThread, NULL, 0, NULL);
+    renderThreadHandle = CreateThread(NULL, 0, renderThread, NULL, 0, NULL);
 }
 
 void WhenKeyPressed(int k) {
@@ -133,6 +193,7 @@ void WhenKeyPressed(int k) {
 }
 
 void ICGUI_main() {
+
     ICG_Button(5, 5, 120, 25, "START GAME", StartGame);
     FRM1 = ICG_FrameMedium(5, 40, 1, 1);
     ICG_SetOnKeyPressed(WhenKeyPressed);
