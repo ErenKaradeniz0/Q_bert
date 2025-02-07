@@ -284,7 +284,6 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                 DrawText("ESD STUDIOS", 280, 280);
                 DrawText("ALL RIGHTS RESERVED", 130, 320);
             }
-
             if (frame > 90 && frame <= 180) {
                 DrawText("1 COIN = 1 PLAY", 150, 500);
 
@@ -362,7 +361,6 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                     QB);
                 PasteNon0(QB, currentX, currentY, startScreen);
             }
-
             if (frame > 240) {
                 DrawText("JUMP ON SQUARES TO", 120, 120);
                 DrawText("CHANGE THEM TO", 120, 150);
@@ -445,7 +443,7 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                     IntroCoordinates.I(3, 39),
                     IntroCoordinates.I(4, 39),
                     QbertText);
-
+              
                 float alpha = (frame - 420) / 30.0f;
                 if (alpha > 1.0f) alpha = 1.0f;
 

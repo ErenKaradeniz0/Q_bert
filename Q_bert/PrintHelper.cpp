@@ -314,13 +314,13 @@ ICBYTES EnemyCoordinates{
     { 243, 57, 48, 39 }, // Snake Egg
     { 192, 66, 48, 30 }, // Snake Egg Bounce
     { 6, 144, 42, 48 },  // Snake up move
-    { 48, 96, 48, 96 }, // Snake up jump
+    { 51, 99, 45, 93 }, // Snake up jump
     { 96, 144, 42, 48 }, // Snake left move
-    { 144, 96, 48, 96 }, // Snake left jump
+    { 147, 99, 45, 93 }, // Snake left jump
     { 198, 144, 42, 48 },  // Snake right move
-    { 240, 96, 48, 96 }, // Snake right jump
+    { 243, 99, 45, 93 }, // Snake right jump
     { 288, 144, 42, 48},  // Snake down move
-    { 336, 96, 48, 96 }  // Snake down jump
+    { 339, 99, 45, 93 }  // Snake down jump
 };
 
 void DrawEnemies() {
@@ -378,16 +378,21 @@ void DrawEnemies() {
         int printx = enemySnake.x;
         int printy = enemySnake.y;
 
-        switch (i)
-        {
+        switch (i) {
         case 3:
-
         case 4:
             printy += 15;
+            break;
+        case 6:
+        case 8:
+        case 10:
+        case 12:
+            printy -= 45;
+            break;
         default:
             break;
-
         }
+
         PasteNon0(Enemy2Matrix, printx, printy, screenMatrix);
 
     }
