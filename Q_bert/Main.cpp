@@ -8,6 +8,7 @@
 
 // Globals
 bool gameRunning = false;
+bool gamePaused = false;
 bool stopThreads = false; // Flag to signal threads to stop
 HANDLE renderMutex;
 ICBYTES screenMatrix, Sprites, Sprites3X;
@@ -65,6 +66,10 @@ void renderGrid() {
             // Draw player after map if not falling
             DrawPlayer();
         }
+
+        if (gamePaused) {
+            DrawPaused();
+        }
     }
 
     DisplayImage(FRM1, screenMatrix);
@@ -91,17 +96,26 @@ DWORD WINAPI renderThread(LPVOID lpParam) {
 }
 
 DWORD WINAPI InputThread(LPVOID lpParam) {
-    while (gameRunning && !stopThreads) {
+    while (!stopThreads) {
         if (keyPressedControl) {
-            if (keypressed == 37) player.move('l');
-            else if (keypressed == 39) player.move('r');
-            else if (keypressed == 38) player.move('u');
-            else if (keypressed == 40) player.move('d');
-            else if (keypressed == 'p') gameRunning = false; // Pause game
+            if (keypressed == 'P' || keypressed == 'p') {
+                gamePaused = !gamePaused; // Pause durumunu tersine çevir
+                keypressed = 0; // Tuş basımını sıfırla
+                Sleep(200); // Hızlı tekrar basımı önle
+                continue;
+            }
+
+            if (!gamePaused) { // Sadece oyun pause değilse hareket et
+                if (keypressed == 37) player.move('l');
+                else if (keypressed == 39) player.move('r');
+                else if (keypressed == 38) player.move('u');
+                else if (keypressed == 40) player.move('d');
+            }
         }
     }
     return 0;
 }
+
 
 DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
     while (gameRunning && !stopThreads) {
@@ -165,7 +179,7 @@ void StartGame() {
     gameRunning = true;
     keyPressedControl=true;
 
-    //DrawStartupAnimation1(&gameRunning);
+    DrawStartupAnimation1(&gameRunning);
 
     // Reset the screen
     screenMatrix = 0;
