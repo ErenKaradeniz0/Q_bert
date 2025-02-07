@@ -66,6 +66,8 @@ void Enemy::Hatch(Enemy enemy) {
 void Enemy::move() {
     if (state == 4 && currentTile.id > 20) {
         isHatch = true;
+        state = 4;
+		Sleep(1000);
         Hatch(enemySnake);
     }
 
@@ -114,17 +116,34 @@ void Enemy::move() {
 
         // Determine the primary state to move
         if (deltaX > 0 && currentTile.right >= 0) {
+            state = 9;
+            Sleep(100);
             destinationTileId = currentTile.right;
+            Sleep(100);
+            state = 10;
         }
         else if (deltaX < 0 && currentTile.left >= 0) {
+            state = 7;
+            Sleep(100);
             destinationTileId = currentTile.left;
+            Sleep(100);
+            state = 8;
         }
 
         else if (deltaY > 0 && currentTile.down >= 0) {
+            state = 11;
+            Sleep(100);
             destinationTileId = currentTile.down;
+            Sleep(100);
+            state = 12;
         }
         else if (deltaY < 0 && currentTile.up >= 0) {
+            state = 5;
+			Sleep(100);
             destinationTileId = currentTile.up;
+            Sleep(100);
+            state = 6;
+
         }
 
         // Animate the 
@@ -172,5 +191,6 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
     currentTile = GoalBlock;
     if (player.currentTile == enemyBall1.currentTile.id || player.currentTile == enemyBall2.currentTile.id) {
         player.lostLife(false);
+		//Sleep(1000);
     }
 }  

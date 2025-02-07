@@ -89,7 +89,7 @@ void Player::FallOffEdge(char key) {
                 mazeOrder = true; // Set the falling flag
             y += 5;
         }
-        Sleep(15);
+          Sleep(15);
     }
     lostLife(true); // Decrease life on fall
 

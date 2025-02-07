@@ -104,7 +104,7 @@ DWORD WINAPI InputThread(LPVOID lpParam) {
 }
 
 DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
-    while (!gameRunning && !stopThreads) {
+    while (gameRunning && !stopThreads) {
         Sleep(200);
         if(enemyBall1.isAlive)
             enemyBall1.move();
@@ -117,7 +117,7 @@ DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
 
 DWORD WINAPI EnemyBall2Thread(LPVOID lpParam) {
     Sleep(3000);
-    while (!gameRunning && !stopThreads) {
+    while (gameRunning && !stopThreads) {
         Sleep(200);
         if (enemyBall2.isAlive)
             enemyBall2.move();
@@ -136,7 +136,7 @@ DWORD WINAPI EnemySnakeThread(LPVOID lpParam) {
         else {
             enemySnake.Spawn(false, 3);
         }
-    }
+      }
     return 0;
 }
 
