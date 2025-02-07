@@ -12,5 +12,6 @@ void DrawMap();
 void SelectEffectDisc(int k);
 void DrawDisc();
 void DrawPlayer();
+void DrawPaused();
 void DrawEnemies();
 #endif // PRINTHELPER_H

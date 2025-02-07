@@ -60,7 +60,11 @@ ICBYTES IntroCoordinates{
     { 795, 354, 21, 24},       //  -> Symbol - idx 45
     { 819, 354, 21, 24},      //  <- Symbol - idx 46
     { 195, 588, 45, 39},      //  Yellow Tile - idx 47
-
+    { 1, 1068, 48, 30},       //  Disk Frame 1 - idx 48
+    { 49, 1068, 48, 30},      //  Disk Frame 2 - idx 49
+    { 97, 1068, 48, 30},      //  Disk Frame 3 - idx 50
+    { 145, 1068, 48, 30},      //  Disk Frame 4 - idx 51
+    { 672, 96, 24, 30 }      //  Mini Qbert - idx 52
 };
 
 
@@ -147,16 +151,25 @@ void DrawLogo() {
 void DrawStartupAnimation1(bool* gameRunningPtr) {
     // Main image buffers
     ICBYTES startScreen, QbertTitle, PinkC, QB, letterSprite;
-    ICBYTES normalBall, bouncedBall, QbertText;  // Yeni bufferlar
+    ICBYTES normalBall, bouncedBall, QbertText, diskSprite;
     CreateImage(startScreen, 700, 700, ICB_UINT);
     CreateImage(QbertTitle, IntroCoordinates.I(3, 38), IntroCoordinates.I(4, 38), ICB_UINT);
     CreateImage(PinkC, IntroCoordinates.I(3, 40), IntroCoordinates.I(4, 40), ICB_UINT);
     CreateImage(QB, IntroCoordinates.I(3, 43), IntroCoordinates.I(4, 43), ICB_UINT);
     CreateImage(letterSprite, 21, 21, ICB_UINT);
-    CreateImage(normalBall, IntroCoordinates.I(3, 42), IntroCoordinates.I(4, 42), ICB_UINT);  // Normal top için
-    CreateImage(bouncedBall, IntroCoordinates.I(3, 41), IntroCoordinates.I(4, 41), ICB_UINT); // Zýplayan top için
-    CreateImage(QbertText, IntroCoordinates.I(3, 39), IntroCoordinates.I(4, 39), ICB_UINT);   // Qbert text için
+    CreateImage(normalBall, IntroCoordinates.I(3, 42), IntroCoordinates.I(4, 42), ICB_UINT);
+    CreateImage(bouncedBall, IntroCoordinates.I(3, 41), IntroCoordinates.I(4, 41), ICB_UINT);
+    CreateImage(QbertText, IntroCoordinates.I(3, 39), IntroCoordinates.I(4, 39), ICB_UINT);
+    CreateImage(diskSprite, 48, 30, ICB_UINT);
 
+    // Disk animation constants
+    const int DISK_FRAME1 = 1;
+    const int DISK_FRAME2 = 16 * 3 + 1;
+    const int DISK_FRAME3 = 32 * 3 + 1;
+    const int DISK_FRAME4 = 48 * 3 + 1;
+    const int DISK_Y = 356 * 3 + 1;
+    const int DISK_WIDTH = 16 * 3;
+    const int DISK_HEIGHT = 10 * 3;
 
     // Physics constants for second animation
     const float gravity = 1.6f;
@@ -171,12 +184,12 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
         float vx;
     };
 
-    // Initialize jump segments
+    // Initialize jump segments with updated frame timings
     JumpSegment jumps[] = {
-        {50, 80, 65, 180, 160},      // Offset startFrame by 120
-        {65, 180, 90, 330, 210},     // Offset startFrame by 120
-        {90, 330, 115, 450, 240},    // Offset startFrame by 120
-        {115, 480, 140, 570, 270}    // Offset startFrame by 120
+        {50, 80, 65, 180, 220},
+        {65, 180, 90, 330, 270},
+        {90, 330, 115, 450, 300},
+        {115, 480, 140, 570, 330}
     };
 
     // Calculate horizontal velocities
@@ -226,8 +239,8 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
     // Message handling
     MSG msg;
 
-    // Combined animation loop
-    for (int frame = 0; frame < 390 && *gameRunningPtr; frame++) {
+    // Combined animation loop - extended to 480 frames total
+    for (int frame = 0; frame < 480 && *gameRunningPtr; frame++) {
         // Process Windows messages
         while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
             if (msg.message == WM_QUIT) {
@@ -241,8 +254,8 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
         // Set background color
         startScreen = 0x1A0F5F;
 
-        // First Animation (0-120 frames)
-        if (frame < 120) {
+        // First Animation (0-180 frames)
+        if (frame < 180) {
             if (frame > 30) {
                 Copy(Sprites3X,
                     IntroCoordinates.I(1, 38),
@@ -272,21 +285,42 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                 DrawText("ALL RIGHTS RESERVED", 130, 320);
             }
 
-            if (frame > 90) {
+            if (frame > 90 && frame <= 180) {
                 DrawText("1 COIN = 1 PLAY", 150, 500);
 
+                // Calculate disk position and animation frame
+                float progress = (frame - 90) / 90.0f;  // 90 frames for movement
+                int diskX = static_cast<int>(progress * 700);
+
+                // Select the appropriate disk frame based on animation timing
+                int diskFrameOffset;
+                switch ((frame / 5) % 4) {
+                case 0: diskFrameOffset = DISK_FRAME1; break;
+                case 1: diskFrameOffset = DISK_FRAME2; break;
+                case 2: diskFrameOffset = DISK_FRAME3; break;
+                default: diskFrameOffset = DISK_FRAME4; break;
+                }
+
+                // Copy and paste the current disk frame
+                Copy(Sprites3X,
+                    diskFrameOffset, DISK_Y,
+                    DISK_WIDTH, DISK_HEIGHT,
+                    diskSprite);
+                PasteNon0(diskSprite, diskX, 600, startScreen);
+
+                // Draw Q*bert on top of the disk
                 Copy(Sprites3X,
                     IntroCoordinates.I(1, 43),
                     IntroCoordinates.I(2, 43),
                     IntroCoordinates.I(3, 43),
                     IntroCoordinates.I(4, 43),
                     QB);
-                PasteNon0(QB, 350, 600, startScreen);
+                PasteNon0(QB, diskX + 10, 570, startScreen);
             }
         }
-        // Second Animation (120+ frames)
+        // Second Animation (180+ frames)
         else {
-            if (frame > 150) {
+            if (frame > 210) {
                 Copy(Sprites3X,
                     IntroCoordinates.I(1, 38),
                     IntroCoordinates.I(2, 38),
@@ -297,14 +331,7 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                 ICG_SetFont(20, 0, "Arial");
                 Impress12x20(startScreen, 320, 15, "TM", 0xFFD700);
 
-                Copy(Sprites3X,
-                    IntroCoordinates.I(1, 43),
-                    IntroCoordinates.I(2, 43),
-                    IntroCoordinates.I(3, 43),
-                    IntroCoordinates.I(4, 43),
-                    QB);
-
-                // Calculate Q*bert position
+                // Q*bert jumping animation
                 int currentX = jumps[0].startX;
                 int currentY = jumps[0].startY;
 
@@ -327,37 +354,44 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                     }
                 }
 
+                Copy(Sprites3X,
+                    IntroCoordinates.I(1, 43),
+                    IntroCoordinates.I(2, 43),
+                    IntroCoordinates.I(3, 43),
+                    IntroCoordinates.I(4, 43),
+                    QB);
                 PasteNon0(QB, currentX, currentY, startScreen);
             }
 
-            if (frame > 180) {
+            if (frame > 240) {
                 DrawText("JUMP ON SQUARES TO", 120, 120);
                 DrawText("CHANGE THEM TO", 120, 150);
                 DrawText("THE TARGET COLOR", 120, 180);
             }
 
-            if (frame > 210) {
+            if (frame > 270) {
                 DrawText("STAY ON PLAYFIELD", 145, 240);
                 DrawText("JUMPING OFF RESULTS", 145, 270);
                 DrawText("IN A FATAL PLUMMET", 145, 300);
                 DrawText("UNLESS A DISK IS THERE", 145, 330);
             }
 
-            if (frame > 240) {
+            if (frame > 300) {
                 DrawText("AVOID ALL OBJECTS", 170, 390);
                 DrawText("AND CREATURES THAT", 170, 420);
                 DrawText("ARE NOT GREEN", 170, 450);
             }
 
-            if (frame > 270) {
+            if (frame > 330) {
                 DrawText("USE SPINNING DISKS", 195, 510);
                 DrawText("TO LURE SNAKE TO", 195, 540);
                 DrawText("HIS DEATH", 195, 570);
             }
 
+            // Ball animation (360-420 frames)
             bool ballHitHead = false;
 
-            if (frame > 300 && frame <= 330) {  // Ýlk düþüþ animasyonu
+            if (frame > 360 && frame <= 390) {
                 Copy(Sprites3X,
                     IntroCoordinates.I(1, 42),
                     IntroCoordinates.I(2, 42),
@@ -365,13 +399,13 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                     IntroCoordinates.I(4, 42),
                     normalBall);
 
-                float ballProgress = (frame - 300) / 30.0f;
+                float ballProgress = (frame - 360) / 30.0f;
                 if (ballProgress > 1.0f) ballProgress = 1.0f;
 
                 int ballY = 80 + (540 - 80) * ballProgress;
 
-                if (ballY >= 540) {  // Top Q*bert'in baþýna ulaþtýðýnda
-                    ballY = 540;  // Pozisyonu sabitle
+                if (ballY >= 540) {
+                    ballY = 540;
                     Copy(Sprites3X,
                         IntroCoordinates.I(1, 41),
                         IntroCoordinates.I(2, 41),
@@ -386,56 +420,25 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                 }
             }
 
-            if (frame > 330 && ballHitHead) {  // Zýplama animasyonu
-                float t = (frame - 330) / 20.0f;
+            if (frame > 390 && frame <= 420) {
+                float t = (frame - 390) / 30.0f;
                 if (t > 1.0f) t = 1.0f;
 
                 int bounceX = 140 + 50 * t;
-                int bounceY = 540 - 100 * t + 200 * t * t;
+                int bounceY = 540 - 100 * t + 300 * t * t;
 
                 if (bounceY < 700) {
-                    if (t < 0.5f) {
-                        Copy(Sprites3X,
-                            IntroCoordinates.I(1, 42),
-                            IntroCoordinates.I(2, 42),
-                            IntroCoordinates.I(3, 42),
-                            IntroCoordinates.I(4, 42),
-                            normalBall);
-                        PasteNon0(normalBall, bounceX, bounceY, startScreen);
-                    }
-                    else {
-                        Copy(Sprites3X,
-                            IntroCoordinates.I(1, 41),
-                            IntroCoordinates.I(2, 41),
-                            IntroCoordinates.I(3, 41),
-                            IntroCoordinates.I(4, 41),
-                            bouncedBall);
-                        PasteNon0(bouncedBall, bounceX, bounceY, startScreen);
-                    }
+                    Copy(Sprites3X,
+                        IntroCoordinates.I(1, t < 0.5f ? 42 : 41),
+                        IntroCoordinates.I(2, t < 0.5f ? 42 : 41),
+                        IntroCoordinates.I(3, t < 0.5f ? 42 : 41),
+                        IntroCoordinates.I(4, t < 0.5f ? 42 : 41),
+                        t < 0.5f ? normalBall : bouncedBall);
+                    PasteNon0(t < 0.5f ? normalBall : bouncedBall, bounceX, bounceY, startScreen);
                 }
             }
 
-            if (frame > 330) {
-                // Zýplama animasyonu
-                float t = (frame - 330) / 20.0f;  // 20 frame'de tamamlanacak
-                if (t > 1.0f) t = 1.0f;
-
-                // Parabolik hareket
-                int bounceX = 140 + 50 * t;  // Saða doðru hareket
-                int bounceY = 540 - 100 * t + 500 * t * t;  // Yukarý çýkýp aþaðý düþme
-
-                Copy(Sprites3X,
-                    IntroCoordinates.I(1, 42),
-                    IntroCoordinates.I(2, 42),
-                    IntroCoordinates.I(3, 42),
-                    IntroCoordinates.I(4, 42),
-                    normalBall);
-                PasteNon0(normalBall, bounceX, bounceY, startScreen);
-
-            }
-
-            if (frame > 360) {
-                // Qbert text animasyonu
+            if (frame > 420) {
                 Copy(Sprites3X,
                     IntroCoordinates.I(1, 39),
                     IntroCoordinates.I(2, 39),
@@ -443,13 +446,11 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                     IntroCoordinates.I(4, 39),
                     QbertText);
 
-                // Fade-in efekti için alpha deðeri
-                float alpha = (frame - 360) / 30.0f;  // 30 frame'de tam görünür olacak
+                float alpha = (frame - 420) / 30.0f;
                 if (alpha > 1.0f) alpha = 1.0f;
 
                 PasteNon0(QbertText, 120, 490, startScreen);
             }
-
         }
 
         // Display frame and wait

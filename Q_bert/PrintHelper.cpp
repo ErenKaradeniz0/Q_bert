@@ -51,47 +51,203 @@ void RenderString(ICBYTES& screen, const char* text, int x, int y, int spacing) 
     }
 }
 
+void DrawPaused() {
+    static ICBYTES letterSprite;
+    static bool initialized = false;
+    static bool showText = true;
+    static int blinkTimer = 0;
+    const int BLINK_SPEED = 500;
+
+    // One-time initialization
+    if (!initialized) {
+        CreateImage(letterSprite, 21, 21, ICB_UINT);
+        initialized = true;
+    }
+
+    // Helper function to draw a single character
+    auto DrawCharacter = [&](char c, int x, int y) {
+        int spriteIndex = 0;
+
+        if (c >= 'A' && c <= 'Z') {
+            spriteIndex = (c - 'A') + 11;  // Letters start at index 11
+        }
+        else {
+            return;
+        }
+
+        Copy(Sprites3X,
+            IntroCoordinates.I(1, spriteIndex),
+            IntroCoordinates.I(2, spriteIndex),
+            IntroCoordinates.I(3, spriteIndex),
+            IntroCoordinates.I(4, spriteIndex),
+            letterSprite);
+
+        PasteNon0(letterSprite, x, y, screenMatrix);
+        };
+
+    FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
+
+    if (GetTickCount() - blinkTimer > BLINK_SPEED) {
+        showText = !showText;
+        blinkTimer = GetTickCount();
+    }
+
+
+    if (showText) {
+        const char* pausedText = "PAUSED";
+        int currentX = 265;
+        for (int i = 0; pausedText[i] != '\0'; i++) {
+            DrawCharacter(pausedText[i], currentX, 375);
+            currentX += 25;
+        }
+    }
+
+    DisplayImage(FRM1, screenMatrix);
+}
+
 void ShowGameOverScreen() {
     gameRunning = false;
     Sleep(30);
 
-    FillRect(screenMatrix, 225, 375, 220, 25, 0x000000);
+    // Yanýp sönme efekti için deðiþkenler
+    const int BLINK_COUNT = 5;        // Kaç kez yanýp sönecek
+    const int BLINK_DELAY = 300;      // Her yanýp sönme arasý ms cinsinden süre
+
+    for (int i = 0; i < BLINK_COUNT; i++) {
+        // Yazýyý göster
+        FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
+        RenderString(screenMatrix, "GAME OVER", 225, 375, 25);
+        DisplayImage(FRM1, screenMatrix);
+        Sleep(BLINK_DELAY);
+
+        // Yazýyý gizle (sadece siyah kutu göster)
+        FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
+        DisplayImage(FRM1, screenMatrix);
+        Sleep(BLINK_DELAY);
+    }
+
+    // Son olarak yazýyý kalýcý olarak göster
+    FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
     RenderString(screenMatrix, "GAME OVER", 225, 375, 25);
     DisplayImage(FRM1, screenMatrix);
 }
 
 void DrawScore() {
-    char scoreText[20] = "Score:  ";
+    static ICBYTES letterSprite;
+    static bool initialized = false;
+
+    // One-time initialization
+    if (!initialized) {
+        CreateImage(letterSprite, 21, 21, ICB_UINT);
+        initialized = true;
+    }
+
+    // Helper function to draw a single character
+    auto DrawCharacter = [&](char c, int x, int y) {
+        int spriteIndex = 0;
+
+        if (c >= '0' && c <= '9') {
+            spriteIndex = (c - '0') + 1;  // Numbers start at index 1
+        }
+        else if (c >= 'A' && c <= 'Z') {
+            spriteIndex = (c - 'A') + 11;  // Letters start at index 11
+        }
+        else {
+            return;
+        }
+
+        Copy(Sprites3X,
+            IntroCoordinates.I(1, spriteIndex),
+            IntroCoordinates.I(2, spriteIndex),
+            IntroCoordinates.I(3, spriteIndex),
+            IntroCoordinates.I(4, spriteIndex),
+            letterSprite);
+
+        PasteNon0(letterSprite, x, y, screenMatrix);
+        };
+
+    // Draw "SCORE" text
+    const char* scoreText = "SCORE";
+    int currentX = 10;
+    for (int i = 0; scoreText[i] != '\0'; i++) {
+        DrawCharacter(scoreText[i], currentX, 10);
+        currentX += 25;  // Space between letters
+    }
+
+    // Convert score to string and draw each digit
+    currentX += 25;  // Extra space between "SCORE" and number
+
+    // Handle case when score is 0
+    if (score == 0) {
+        DrawCharacter('0', currentX, 10);
+        return;
+    }
+
+    // Convert score to digits
     int tempScore = score;
-    int index = 8; // Start placing digits after "Score: "
+    char digits[10];
+    int digitCount = 0;
 
-    // Place digits in reverse order
-    do {
-        scoreText[index--] = '0' + (tempScore % 10);
+    while (tempScore > 0) {
+        digits[digitCount++] = '0' + (tempScore % 10);
         tempScore /= 10;
-    } while (tempScore > 0);
+    }
 
-    // Ensure the string is null-terminated
-    scoreText[9] = '\0';
-
-    Impress12x20(screenMatrix, 10, 10, scoreText, 0xFFFFFF); // Draw score in top left corner
+    // Draw digits in reverse order (right way around)
+    for (int i = digitCount - 1; i >= 0; i--) {
+        DrawCharacter(digits[i], currentX, 10);
+        currentX += 25;
+    }
 }
 
 void DrawLives() {
-    char livesText[20] = "Lives:  ";
-    int tempLives = player.lifes;
-    int index = 7; // Start placing digits after "Lives: "
+    static ICBYTES miniQbert;
+    static bool initialized = false;
 
-    // Place digits in reverse order
-    do {
-        livesText[index--] = '0' + (tempLives % 10);
-        tempLives /= 10;
-    } while (tempLives > 0);
+    // One-time initialization of mini Q*bert sprite
+    if (!initialized) {
+        CreateImage(miniQbert, IntroCoordinates.I(3, 52), IntroCoordinates.I(4, 52), ICB_UINT);
+        initialized = true;
+    }
 
-    // Ensure the string is null-terminated
-    livesText[8] = '\0';
+    // First draw "LIVES" text using sprite letters
+    static ICBYTES letterSprite;
+    if (!initialized) {
+        CreateImage(letterSprite, 21, 21, ICB_UINT);
+    }
 
-    Impress12x20(screenMatrix, 10, 40, livesText, 0xFFFFFF); // Draw lives in top left corner
+    // Draw "LIVES" text
+    const char* livesText = "LIVES";
+    int currentX = 10;
+    for (int i = 0; livesText[i] != '\0'; i++) {
+        int spriteIndex = (livesText[i] - 'A') + 11;  // Convert letter to sprite index
+
+        Copy(Sprites3X,
+            IntroCoordinates.I(1, spriteIndex),
+            IntroCoordinates.I(2, spriteIndex),
+            IntroCoordinates.I(3, spriteIndex),
+            IntroCoordinates.I(4, spriteIndex),
+            letterSprite);
+
+        PasteNon0(letterSprite, currentX, 40, screenMatrix);
+        currentX += 25;
+    }
+
+    // Then draw mini Q*berts for each life
+    Copy(Sprites3X,
+        IntroCoordinates.I(1, 52),
+        IntroCoordinates.I(2, 52),
+        IntroCoordinates.I(3, 52),
+        IntroCoordinates.I(4, 52),
+        miniQbert);
+
+    // Draw mini Q*berts vertically, starting under the "LIVES" text
+    const int MINI_QBERT_SPACING = 35;  // Vertical spacing between Q*berts
+    const int START_Y = 70;  // Starting Y position (below "LIVES" text)
+
+    for (int i = 0; i < player.lifes; i++) {
+        PasteNon0(miniQbert, 20, START_Y + (i * MINI_QBERT_SPACING), screenMatrix);
+    }
 }
 
 void DrawMap() {
