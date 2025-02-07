@@ -2,7 +2,7 @@
 #include "Maze.h"
 class Enemy {
 public:
-	bool Type;
+	bool isHatch;
     int x;
     int y;
     int state;
@@ -12,7 +12,8 @@ public:
 
     Enemy();
     void move();
-    void Spawn(bool Type, int state, bool isAlive = true);
+    void Hatch(Enemy enemy);
+    void Spawn(bool isHatch, int state, bool isAlive = true);
 	void MoveAnimation(SquareBlock GoalBlock);
 	void FallOffEdge(int move);
 };
