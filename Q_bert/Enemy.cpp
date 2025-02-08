@@ -2,6 +2,7 @@
 #include "Maze.h"
 #include "Player.h"
 #include "PrintHelper.h"
+#include "Sound.h"
 #include "icb_gui.h"
 #include <cstdlib>  // For srand() and rand()
 #include <ctime>    // For time()
@@ -173,4 +174,12 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
     if (player.currentTile == enemyBall1.currentTile.id || player.currentTile == enemyBall2.currentTile.id) {
         player.lostLife(false);
     }
+
+    /*const char* soundPath = "Sounds/Jump2.wav";
+    CreateSoundThread(soundPath);*/
+
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Jump2Sound, NULL, 0, NULL);
+
+
+
 }  

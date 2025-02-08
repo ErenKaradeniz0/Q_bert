@@ -40,6 +40,12 @@ public:
     int center_y;
 };
 
+class Sound {
+public:
+    bool soundControl;
+    
+};
+
 // External declarations for global variables
 extern Disc Discs[2];
 extern SquareBlock SquareBlocks[28];

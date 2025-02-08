@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Maze.h"
+#include "Sound.h"
 
 
 // Globals
@@ -26,7 +27,7 @@ HANDLE turnDiscThreadHandle = NULL;
 HANDLE enemy1ThreadHandle = NULL;
 HANDLE enemy2ThreadHandle = NULL;
 HANDLE enemySnakeThreadHandle = NULL;
-HANDLE soundThreadHandle = NULL;
+//HANDLE soundThreadHandle = NULL;
 HANDLE renderThreadHandle = NULL;
 
 // Create window
@@ -137,12 +138,11 @@ DWORD WINAPI EnemySnakeThread(LPVOID lpParam) {
     return 0;
 }
 
-DWORD WINAPI SoundThread(LPVOID lpParam) {
-    while (gameRunning && !stopThreads) {
-        //PlaySound
-    }
-    return 0;
-}
+//DWORD WINAPI SoundThread(LPVOID lpParam) {
+//    
+//    return 0;
+//}
+
 
 void StartGame() {
     SetFocus(ICG_GetMainWindow());
@@ -153,7 +153,7 @@ void StartGame() {
         WaitForSingleObject(enemy1ThreadHandle, INFINITE);
         WaitForSingleObject(enemy2ThreadHandle, INFINITE);
         WaitForSingleObject(enemySnakeThreadHandle, INFINITE);
-        WaitForSingleObject(soundThreadHandle, INFINITE);
+       // WaitForSingleObject(soundThreadHandle, INFINITE);
         WaitForSingleObject(renderThreadHandle, INFINITE);
         stopThreads = false; // Reset the stop flag
 		keypressed = 0; // Reset keypressed
@@ -181,7 +181,7 @@ void StartGame() {
     enemy1ThreadHandle = CreateThread(NULL, 0, EnemyBall1Thread, NULL, 0, NULL);
     enemy2ThreadHandle = CreateThread(NULL, 0, EnemyBall2Thread, NULL, 0, NULL);
 	enemySnakeThreadHandle = CreateThread(NULL, 0, EnemySnakeThread, NULL, 0, NULL);
-    soundThreadHandle = CreateThread(NULL, 0, SoundThread, NULL, 0, NULL);
+    //soundThreadHandle = CreateThread(NULL, 0, SoundThread, NULL, 0, NULL);
     renderThreadHandle = CreateThread(NULL, 0, renderThread, NULL, 0, NULL);
 }
 

@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Maze.h"
 #include "Printhelper.h"
+#include "Sound.h"
 #include "icb_gui.h" 
 #include <cmath>
 
@@ -55,6 +56,9 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
         jumpStatus = !jumpStatus;
         score += 25; // Update score when tile color is changed
     }
+
+    //PlaySound("Sounds/Jump.wav", NULL, SND_ASYNC);
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)JumpSound, NULL, 0, NULL);
 }
 
 void Player::lostLife(bool isFall) {
@@ -136,7 +140,13 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
     precision /= 10;
     br_x = (goal_x - Discs[disc_id].x) / (precision+5);
     br_y = (goal_y - Discs[disc_id].y) / (precision+3);
-    
+
+    /*const char* soundPath = "Sounds/Lift.wav";
+    CreateSoundThread(soundPath);*/
+
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LiftSound, NULL, 0, NULL);
+
+
     while (br_x < 0 ? Discs[disc_id].x >= goal_x : Discs[disc_id].x < goal_x || Discs[disc_id].y > goal_y) {
         if (br_x < 0 ? Discs[disc_id].x >= goal_x : Discs[disc_id].x < goal_x) {
             Discs[disc_id].x += br_x;

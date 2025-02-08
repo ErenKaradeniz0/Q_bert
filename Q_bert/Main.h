@@ -6,6 +6,7 @@
 #include "intro.h"
 #include "Player.h"
 #include "Maze.h"
+#include "Sound.h"
 
 // Globals
 extern bool gameRunning;
