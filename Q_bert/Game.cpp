@@ -1,23 +1,13 @@
 #include "Game.h"
 #include "Main.h"
+#include "GameSession.h"
+
+extern bool isGameOver;
 
 HANDLE Game::gameRunningEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 HANDLE Game::gameStoppingEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 HANDLE Game::gameMainThread = nullptr;
 int Game::wait = NULL;
-
-int Game::Start()
-{
-	if (gameMainThread != nullptr)
-		return COMMAND_FAILED;
-
-	gameMainThread = CreateThread(NULL, 0, GameControllerMain, NULL, 0, NULL);
-
-	SetEvent(gameRunningEvent);
-	ResetEvent(gameStoppingEvent);
-	//isGameOver = false;
-	return COMMAND_SUCCESS;
-}
 
 int Game::Start(void* param)
 {
@@ -25,9 +15,11 @@ int Game::Start(void* param)
 		return COMMAND_FAILED;
 
 	gameMainThread = CreateThread(NULL, 0, GameControllerMain, param, 0, NULL);
+
 	SetEvent(gameRunningEvent);
 	ResetEvent(gameStoppingEvent);
-	//isGameOver = false;
+
+	isGameOver = false;
 	return COMMAND_SUCCESS;
 }
 
@@ -84,7 +76,7 @@ GameState Game::GetState()
 
 bool Game::Run()
 {
-	return WaitForSingleObject(gameRunningEvent, wait) == WAIT_OBJECT_0;
+  	return WaitForSingleObject(gameRunningEvent, wait) == WAIT_OBJECT_0;
 }
 
 bool Game::RunMain()

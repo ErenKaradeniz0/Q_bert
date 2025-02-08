@@ -10,16 +10,9 @@
 // Globals
 bool gamePaused = false;
 HANDLE renderMutex;
-ICBYTES screenMatrix, Sprites, Sprites3X;
-int FRM1;
 int keypressed;
 bool keyPressedControl;
 int score = 0; // Global score variable
-
-Player player; // Global player
-Enemy enemyBall1; // Global enemy 1
-Enemy enemyBall2; // Global enemy 2
-Enemy enemySnake; // Global enemy 2
 
 HANDLE inputThreadHandle = NULL;
 HANDLE turnDiscThreadHandle = NULL;

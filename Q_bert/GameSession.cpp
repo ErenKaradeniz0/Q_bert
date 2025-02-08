@@ -4,9 +4,16 @@
 #include "PrintHelper.h"
 #include "intro.h"
 #include "Game.h"
-#include "Main.h"
+#include "Enemy.h"
 
-//extern Player player;
+int FRM1;
+ICBYTES screenMatrix, Sprites, Sprites3X;
+Player player; // Global player
+Enemy enemyBall1; // Global enemy 1
+Enemy enemyBall2; // Global enemy 2
+Enemy enemySnake; // Global enemy 2
+
+bool isGameOver = false;
 
 GameSession::GameSession(int* screenHandle, int x, int y)
 {
@@ -18,16 +25,12 @@ GameSession::GameSession(int* screenHandle, int x, int y)
 
 void GameSession::Refresh(int sleepTime)
 {
-    if (isGameOver)
-    {
-		ShowGameOverScreen();
-
+    if (player.lifes <= 0) {
+        ShowGameOverScreen();
     }
 	else if (Game::GetState() == GameState::Paused)
-	{
 		DrawPaused();
-	}
-    else
+    else if(Game::GetState() == GameState::Running && !isGameOver)
     {
         screenMatrix = 0; // Clear the screen
 
@@ -64,10 +67,29 @@ void GameSession::Refresh(int sleepTime)
     Sleep(30);
 }
 
+
+void GameSession:: ShowGameOverScreen() {
+    isGameOver = true;
+    Game::SleepI(30); 
+
+    const int BLINK_COUNT = 10;
+    const int BLINK_DELAY = 300;
+
+    for (int i = 0; i < BLINK_COUNT; i++) {
+		if (i % 2 == 0)
+			FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
+		else
+			RenderString(screenMatrix, "GAME OVER", 225, 375, 25);
+        Game::SleepI(BLINK_DELAY);
+
+        DisplayImage(FRM1, screenMatrix);
+    }
+	Game::Stop();
+}
+
 GameSession::~GameSession()
 {
     _screenMatrix = 0;
     DisplayImage(*_screenHandle, _screenMatrix);
     delete playerptr;
 }
-

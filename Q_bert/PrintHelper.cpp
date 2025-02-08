@@ -106,31 +106,6 @@ void DrawPaused() {
     DisplayImage(FRM1, screenMatrix);
 }
 
-void ShowGameOverScreen() {
-    Game::SleepI(30);
-
-    // Yanýp sönme efekti için deðiþkenler
-    const int BLINK_COUNT = 5;        // Kaç kez yanýp sönecek
-    const int BLINK_DELAY = 300;      // Her yanýp sönme arasý ms cinsinden süre
-
-    for (int i = 0; i < BLINK_COUNT; i++) {
-        // Yazýyý göster
-        FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
-        RenderString(screenMatrix, "GAME OVER", 225, 375, 25);
-        DisplayImage(FRM1, screenMatrix);
-        Game::SleepI(BLINK_DELAY);
-
-        // Yazýyý gizle (sadece siyah kutu göster)
-        FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
-        DisplayImage(FRM1, screenMatrix);
-        Game::SleepI(BLINK_DELAY);
-    }
-
-    // Son olarak yazýyý kalýcý olarak göster
-    FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
-    RenderString(screenMatrix, "GAME OVER", 225, 375, 25);
-    DisplayImage(FRM1, screenMatrix);
-}
 
 void DrawScore() {
     static ICBYTES letterSprite;

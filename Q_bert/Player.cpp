@@ -60,10 +60,7 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
 void Player::lostLife(bool isFall) {
     lifes--; // Decrease life
     Game::SleepI(100);
-    if (lifes <= 0) {
-        ShowGameOverScreen();
-        return;
-    }
+
     if (isFall) {
         player.x = SquareBlocks[0].centerX;
         player.y = SquareBlocks[0].centerY;
