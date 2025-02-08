@@ -1,15 +1,14 @@
 ﻿#include "icb_gui.h"
-#include "PrintHelper.h"
-#include "intro.h"
+
 #include "Player.h"
 #include "Enemy.h"
 #include "Maze.h"
 #include "Main.h"
 
+#include "Game.h"
+#include "GameSession.h"
 // Globals
-bool gameRunning = false;
 bool gamePaused = false;
-HANDLE stopThreads = CreateEvent(NULL, TRUE, FALSE, NULL); // Event to signal threads to stop
 HANDLE renderMutex;
 ICBYTES screenMatrix, Sprites, Sprites3X;
 int FRM1;
@@ -28,7 +27,6 @@ HANDLE enemy1ThreadHandle = NULL;
 HANDLE enemy2ThreadHandle = NULL;
 HANDLE enemySnakeThreadHandle = NULL;
 HANDLE soundThreadHandle = NULL;
-HANDLE renderThreadHandle = NULL;
 
 // Create window
 void ICGUI_Create() {
@@ -36,81 +34,13 @@ void ICGUI_Create() {
     ICG_MWSize(740, 800);
 }
 
-void InterruptableSleep(int ms)
-{
-	WaitForSingleObject(stopThreads, ms);
-}
-bool Continue()
-{
-	return WaitForSingleObject(stopThreads, 0) == WAIT_TIMEOUT;
-}
-
-
-DWORD WINAPI renderThread(LPVOID lpParam) {
-    while (gameRunning) {
-        screenMatrix = 0; // Clear the screen
-
-        if (!Continue()) break;
-
-        if (player.mazeOrder) {
-            // Draw player first if falling
-            DrawPlayer();
-        }
-
-        if (!Continue()) break;
-
-        // Draw map
-        DrawMap();
-
-        if (!Continue()) break;
-
-        // Draw Disc()
-        DrawDisc();
-
-        if (!Continue()) break;
-
-        // Draw score
-        DrawScore();
-
-        if (!Continue()) break;
-
-        // Draw Qbert logo
-        DrawLogo();
-
-        if (!Continue()) break;
-
-        // Draw lives
-        DrawLives();
-
-        if (!Continue()) break;
-
-        // Draw enemies
-        DrawEnemies();
-
-        if (!Continue()) break;
-
-        if (!player.mazeOrder) {
-            // Draw player after map if not falling
-            DrawPlayer();
-        }
-
-        if (gamePaused) {
-            DrawPaused();
-        }
-
-        DisplayImage(FRM1, screenMatrix);
-        InterruptableSleep(30);
-    }
-    return 0;
-}
-
 DWORD WINAPI InputThread(LPVOID lpParam) {
-    while (Continue()) {
+    while (Game::Run()) {
         if (keyPressedControl) {
             if (keypressed == 'P' || keypressed == 'p') {
                 gamePaused = !gamePaused; // Toggle pause state
                 keypressed = 0; // Reset keypress
-                InterruptableSleep(200); // Prevent rapid re-press
+                Game::SleepI(200); // Prevent rapid re-press
                 continue;
             }
 
@@ -127,19 +57,19 @@ DWORD WINAPI InputThread(LPVOID lpParam) {
 
 DWORD WINAPI turnDiscThread(LPVOID lpParam) {
     int k = 0;
-    while (gameRunning && Continue()) {
+    while (Game::Run()) {
         SelectEffectDisc(k);
         k++;
         if (k == 4)
             k = 0;
-        InterruptableSleep(50);
+        Game::SleepI(50);
     }
     return 0;
 }
 
 DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
-    while (gameRunning && Continue()) {
-        InterruptableSleep(200);
+    while (Game::Run()) {
+        Game::SleepI(200);
         if (enemyBall1.isAlive)
             enemyBall1.move();
         else {
@@ -150,9 +80,9 @@ DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
 }
 
 DWORD WINAPI EnemyBall2Thread(LPVOID lpParam) {
-    InterruptableSleep(3000);
-    while (gameRunning && Continue()) {
-        InterruptableSleep(200);
+    Game::SleepI(3000);
+    while (Game::Run()) {
+        Game::SleepI(200);
         if (enemyBall2.isAlive)
             enemyBall2.move();
         else {
@@ -163,9 +93,9 @@ DWORD WINAPI EnemyBall2Thread(LPVOID lpParam) {
 }
 
 DWORD WINAPI EnemySnakeThread(LPVOID lpParam) {
-    InterruptableSleep(1000);
-    while (gameRunning && Continue()) {
-        InterruptableSleep(200);
+    Game::SleepI(1000);
+    while (Game::Run()) {
+        Game::SleepI(200);
         if (enemySnake.isAlive)
             enemySnake.move();
         else {
@@ -176,39 +106,15 @@ DWORD WINAPI EnemySnakeThread(LPVOID lpParam) {
 }
 
 DWORD WINAPI SoundThread(LPVOID lpParam) {
-    while (gameRunning && Continue()) {
+    while (Game::Run()) {
         //PlaySound
     }
     return 0;
 }
 
-void StopGame() {
-	SetEvent(stopThreads); // Thread'lere durma sinyali gönder
-
-    HANDLE threadHandles[] = {
-        renderThreadHandle,
-        inputThreadHandle,
-        turnDiscThreadHandle,
-        enemy1ThreadHandle,
-        enemy2ThreadHandle,
-        enemySnakeThreadHandle,
-        soundThreadHandle
-    };
-
-    // Threadlerin gerçekten bittiğini doğrula (5 saniye timeout)
-    WaitForMultipleObjects(7, threadHandles, TRUE, INFINITE);
-
-    //stopThreads = false; // Reset stop flag
-    keypressed = 0; // Reset keypressed
-}
-
-void StartGame() {
-    SetFocus(ICG_GetMainWindow());
-    if (gameRunning) {
-		StopGame();
-    }
-	ResetEvent(stopThreads); // Reset the stop signal
-    gameRunning = true;
+DWORD WINAPI GameControllerMain(LPVOID lpParam)
+{
+    GameSession* gameptr = new GameSession((int*)lpParam, 700, 700);
 
     keyPressedControl = true;
 
@@ -228,21 +134,41 @@ void StartGame() {
     // Yeni thread'leri oluştur
     inputThreadHandle = CreateThread(NULL, 0, InputThread, NULL, 0, NULL);
     turnDiscThreadHandle = CreateThread(NULL, 0, turnDiscThread, NULL, 0, NULL);
-    renderThreadHandle = CreateThread(NULL, 0, renderThread, NULL, 0, NULL);
     enemy1ThreadHandle = CreateThread(NULL, 0, EnemyBall1Thread, NULL, 0, NULL);
     enemy2ThreadHandle = CreateThread(NULL, 0, EnemyBall2Thread, NULL, 0, NULL);
     enemySnakeThreadHandle = CreateThread(NULL, 0, EnemySnakeThread, NULL, 0, NULL);
     soundThreadHandle = CreateThread(NULL, 0, SoundThread, NULL, 0, NULL);
-}
 
+    //Game::Run() freezes when Game::Pause() called
+	while (Game::RunMain()) 
+    {
+        gameptr->Refresh(); // Refresh the screen
+    }
+
+    //Delete the game object
+    delete gameptr;
+
+    return 0;
+}
+void StartStopGame(void* FRM1_PTR) {
+    SetFocus(ICG_GetMainWindow());
+
+    GameState state = Game::GetState();
+
+    if (state == Stopped)
+        Game::Start(FRM1_PTR);
+    else
+        Game::Stop();
+}
 
 void WhenKeyPressed(int k) {
     keypressed = k;
 }
 
 void ICGUI_main() {
-    ICG_Button(5, 5, 120, 25, "START GAME", StartGame);
     FRM1 = ICG_FrameMedium(5, 40, 1, 1);
+    int* FRM1_PTR = new int(FRM1);
+    ICG_Button(5, 5, 150, 25, "START/STOP GAME", StartStopGame, FRM1_PTR);
     ICG_SetOnKeyPressed(WhenKeyPressed);
     CreateImage(screenMatrix, 700, 700, ICB_UINT);
 

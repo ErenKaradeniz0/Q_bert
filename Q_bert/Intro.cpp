@@ -2,10 +2,10 @@
 #include "icb_gui.h"
 #include <xmemory>
 #include "Main.h"
+#include "Game.h"
 
 extern ICBYTES Sprites3X;
 extern int FRM1;
-extern bool gameRunning;
 extern ICBYTES screenMatrix;
 
 ICBYTES IntroCoordinates{
@@ -454,6 +454,6 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
 
         // Display frame and wait
         DisplayImage(FRM1, startScreen);
-        InterruptableSleep(33);
+        Game::SleepI(33);
     }
 }

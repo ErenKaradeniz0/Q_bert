@@ -6,6 +6,7 @@
 #include <cstdlib>  // For srand() and rand()
 #include <ctime>    // For time()
 #include "Main.h"
+#include "Game.h"
 
 extern Player player;
 extern Enemy enemyBall1;
@@ -27,7 +28,7 @@ void Enemy::Spawn(bool isHatch, int state, bool isAlive) {
         limit = 150;
     while (this->y < limit) {
         this->y += 5;
-        InterruptableSleep(30);
+        Game::SleepI(30);
     }
     if(!isHatch)
         if (state == 1)
@@ -55,7 +56,7 @@ void Enemy::FallOffEdge(int move) {
 		else {
 			y += 5;
 		}
-        InterruptableSleep(15);
+        Game::SleepI(15);
     }
     isAlive = false;
     willFall = false;
@@ -68,12 +69,12 @@ void Enemy::move() {
     if (state == 4 && currentTile.id > 20) {
         isHatch = true;
         state = 4;
-		InterruptableSleep(1000);
+		Game::SleepI(1000);
         Hatch(enemySnake);
     }
 
     if (!isHatch) {
-        InterruptableSleep(50);
+        Game::SleepI(50);
         if (state == 1)
             state = 2;
         else if (state == 3)
@@ -118,31 +119,31 @@ void Enemy::move() {
         // Determine the primary state to move
         if (deltaX > 0 && currentTile.right >= 0) {
             state = 9;
-            InterruptableSleep(100);
+            Game::SleepI(100);
             destinationTileId = currentTile.right;
-            InterruptableSleep(100);
+            Game::SleepI(100);
             state = 10;
         }
         else if (deltaX < 0 && currentTile.left >= 0) {
             state = 7;
-            InterruptableSleep(100);
+            Game::SleepI(100);
             destinationTileId = currentTile.left;
-            InterruptableSleep(100);
+            Game::SleepI(100);
             state = 8;
         }
 
         else if (deltaY > 0 && currentTile.down >= 0) {
             state = 11;
-            InterruptableSleep(100);
+            Game::SleepI(100);
             destinationTileId = currentTile.down;
-            InterruptableSleep(100);
+            Game::SleepI(100);
             state = 12;
         }
         else if (deltaY < 0 && currentTile.up >= 0) {
             state = 5;
-			InterruptableSleep(100);
+			Game::SleepI(100);
             destinationTileId = currentTile.up;
-            InterruptableSleep(100);
+            Game::SleepI(100);
             state = 6;
 
         }
@@ -161,7 +162,7 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
     int goal_y = GoalBlock.centerY;
     int br_x = 0, br_y = 0;
     this->y -= 40;
-    InterruptableSleep(50);
+    Game::SleepI(50);
 
     if (state == 2)
         state = 1;
@@ -177,7 +178,7 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
         if (y != goal_y) {
             y += br_y;
         }
-        InterruptableSleep(15);
+        Game::SleepI(15);
     }
 
     if (state == 1)
@@ -187,7 +188,7 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
 
     x = goal_x;
     y = goal_y;
-    InterruptableSleep(50);
+    Game::SleepI(50);
 
     currentTile = GoalBlock;
     if (player.currentTile == enemyBall1.currentTile.id || player.currentTile == enemyBall2.currentTile.id) {
