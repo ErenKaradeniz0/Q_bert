@@ -22,6 +22,7 @@ Enemy enemyBall2; // Global enemy 2
 Enemy enemySnake; // Global enemy 2
 
 HANDLE inputThreadHandle = NULL;
+HANDLE turnDiscThreadHandle = NULL;
 HANDLE enemy1ThreadHandle = NULL;
 HANDLE enemy2ThreadHandle = NULL;
 HANDLE enemySnakeThreadHandle = NULL;
@@ -67,7 +68,7 @@ void renderGrid() {
     Sleep(30);
 }
 
-VOID* turnDiscThread() {
+DWORD WINAPI turnDiscThread(LPVOID lpParam) {
     int k = 0;
     while (gameRunning) {
         SelectEffectDisc(k);
@@ -76,7 +77,7 @@ VOID* turnDiscThread() {
             k = 0;
         Sleep(50);
     }
-    return NULL;
+    return 0;
 }
 
 DWORD WINAPI renderThread(LPVOID lpParam) {
@@ -88,11 +89,13 @@ DWORD WINAPI renderThread(LPVOID lpParam) {
 
 DWORD WINAPI InputThread(LPVOID lpParam) {
     while (gameRunning && !stopThreads) {
-        if (keypressed == 37) player.move('l');
-        else if (keypressed == 39) player.move('r');
-        else if (keypressed == 38) player.move('u');
-        else if (keypressed == 40) player.move('d');
-        else if (keypressed == 'p') gameRunning = false; // Pause game
+        if (keyPressedControl) {
+            if (keypressed == 37) player.move('l');
+            else if (keypressed == 39) player.move('r');
+            else if (keypressed == 38) player.move('u');
+            else if (keypressed == 40) player.move('d');
+            else if (keypressed == 'p') gameRunning = false; // Pause game
+        }
     }
     return 0;
 }
@@ -174,7 +177,7 @@ void StartGame() {
 
     // Threads
     inputThreadHandle = CreateThread(NULL, 0, InputThread, NULL, 0, NULL);
-      CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)turnDiscThread, NULL, 0, NULL);
+    turnDiscThreadHandle = CreateThread(NULL, 0, turnDiscThread, NULL, 0, NULL);
     enemy1ThreadHandle = CreateThread(NULL, 0, EnemyBall1Thread, NULL, 0, NULL);
     enemy2ThreadHandle = CreateThread(NULL, 0, EnemyBall2Thread, NULL, 0, NULL);
 	enemySnakeThreadHandle = CreateThread(NULL, 0, EnemySnakeThread, NULL, 0, NULL);
