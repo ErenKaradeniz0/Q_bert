@@ -5,6 +5,7 @@
 #include "icb_gui.h"
 #include <cstdlib>  // For srand() and rand()
 #include <ctime>    // For time()
+#include "Main.h"
 
 extern Player player;
 extern Enemy enemyBall1;
@@ -26,7 +27,7 @@ void Enemy::Spawn(bool isHatch, int state, bool isAlive) {
         limit = 150;
     while (this->y < limit) {
         this->y += 5;
-        Sleep(30);
+        InterruptableSleep(30);
     }
     if(!isHatch)
         if (state == 1)
@@ -54,7 +55,7 @@ void Enemy::FallOffEdge(int move) {
 		else {
 			y += 5;
 		}
-        Sleep(15);
+        InterruptableSleep(15);
     }
     isAlive = false;
     willFall = false;
@@ -67,12 +68,12 @@ void Enemy::move() {
     if (state == 4 && currentTile.id > 20) {
         isHatch = true;
         state = 4;
-		Sleep(1000);
+		InterruptableSleep(1000);
         Hatch(enemySnake);
     }
 
     if (!isHatch) {
-        Sleep(50);
+        InterruptableSleep(50);
         if (state == 1)
             state = 2;
         else if (state == 3)
@@ -117,31 +118,31 @@ void Enemy::move() {
         // Determine the primary state to move
         if (deltaX > 0 && currentTile.right >= 0) {
             state = 9;
-            Sleep(100);
+            InterruptableSleep(100);
             destinationTileId = currentTile.right;
-            Sleep(100);
+            InterruptableSleep(100);
             state = 10;
         }
         else if (deltaX < 0 && currentTile.left >= 0) {
             state = 7;
-            Sleep(100);
+            InterruptableSleep(100);
             destinationTileId = currentTile.left;
-            Sleep(100);
+            InterruptableSleep(100);
             state = 8;
         }
 
         else if (deltaY > 0 && currentTile.down >= 0) {
             state = 11;
-            Sleep(100);
+            InterruptableSleep(100);
             destinationTileId = currentTile.down;
-            Sleep(100);
+            InterruptableSleep(100);
             state = 12;
         }
         else if (deltaY < 0 && currentTile.up >= 0) {
             state = 5;
-			Sleep(100);
+			InterruptableSleep(100);
             destinationTileId = currentTile.up;
-            Sleep(100);
+            InterruptableSleep(100);
             state = 6;
 
         }
@@ -160,7 +161,7 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
     int goal_y = GoalBlock.centerY;
     int br_x = 0, br_y = 0;
     this->y -= 40;
-    Sleep(50);
+    InterruptableSleep(50);
 
     if (state == 2)
         state = 1;
@@ -176,7 +177,7 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
         if (y != goal_y) {
             y += br_y;
         }
-        Sleep(15);
+        InterruptableSleep(15);
     }
 
     if (state == 1)
@@ -186,11 +187,11 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
 
     x = goal_x;
     y = goal_y;
-    Sleep(50);
+    InterruptableSleep(50);
 
     currentTile = GoalBlock;
     if (player.currentTile == enemyBall1.currentTile.id || player.currentTile == enemyBall2.currentTile.id) {
         player.lostLife(false);
-		//Sleep(1000);
+		//InterruptableInterruptableSleep(1000);
     }
 }  

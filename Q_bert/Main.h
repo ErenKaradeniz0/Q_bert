@@ -12,7 +12,8 @@
 
 // Global variables
 extern bool gameRunning;
-extern bool stopThreads;
+extern bool gamePaused;
+extern HANDLE stopThreads;
 extern HANDLE renderMutex;
 extern ICBYTES screenMatrix, Sprites, Sprites3X;
 extern int FRM1;
@@ -35,14 +36,16 @@ extern HANDLE renderThreadHandle;
 
 // Function declarations
 void ICGUI_Create();
-void renderGrid();
-DWORD WINAPI turnDiscThread(LPVOID lpParam);
+void InterruptableSleep(int ms);
+bool Continue();
 DWORD WINAPI renderThread(LPVOID lpParam);
 DWORD WINAPI InputThread(LPVOID lpParam);
+DWORD WINAPI turnDiscThread(LPVOID lpParam);
 DWORD WINAPI EnemyBall1Thread(LPVOID lpParam);
 DWORD WINAPI EnemyBall2Thread(LPVOID lpParam);
 DWORD WINAPI EnemySnakeThread(LPVOID lpParam);
 DWORD WINAPI SoundThread(LPVOID lpParam);
+void StopGame();
 void StartGame();
 void WhenKeyPressed(int k);
 void ICGUI_main();

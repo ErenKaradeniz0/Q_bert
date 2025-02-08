@@ -107,7 +107,7 @@ void DrawPaused() {
 
 void ShowGameOverScreen() {
     gameRunning = false;
-    Sleep(30);
+    InterruptableSleep(30);
 
     // Yanýp sönme efekti için deðiþkenler
     const int BLINK_COUNT = 5;        // Kaç kez yanýp sönecek
@@ -118,12 +118,12 @@ void ShowGameOverScreen() {
         FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
         RenderString(screenMatrix, "GAME OVER", 225, 375, 25);
         DisplayImage(FRM1, screenMatrix);
-        Sleep(BLINK_DELAY);
+        InterruptableSleep(BLINK_DELAY);
 
         // Yazýyý gizle (sadece siyah kutu göster)
         FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
         DisplayImage(FRM1, screenMatrix);
-        Sleep(BLINK_DELAY);
+        InterruptableSleep(BLINK_DELAY);
     }
 
     // Son olarak yazýyý kalýcý olarak göster
