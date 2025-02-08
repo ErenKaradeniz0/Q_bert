@@ -28,25 +28,26 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
     Sleep(50);
 
     direction++;
-    y -= 40;
+    player.y -= 40;
 
     Sleep(50);
 
-    x < goal_x ? br_x = 5 : br_x = -5;
-    y < goal_y ? br_y = 5 : br_y = -5;
-    while (x != goal_x || y != goal_y) {
-        if (x != goal_x) {
-            x += br_x;
+    player.x < goal_x ? br_x = 5 : br_x = -5;
+    player.y < goal_y ? br_y = 5 : br_y = -5;
+
+    while (player.x != goal_x || player.y != goal_y) {
+        if (player.x != goal_x) {
+            player.x += br_x;
         }
-        if (y != goal_y) {
-            y += br_y;
+        if (player.y != goal_y) {
+            player.y += br_y;
         }
         Sleep(15);
     }
 
     direction--;
-    x = goal_x;
-    y = goal_y;
+    player.x = goal_x;
+    player.y = goal_y;
     Sleep(50);
 
     if (SquareBlocks[currentTile].blk_clr_state == 0 && jumpStatus) {
@@ -100,27 +101,27 @@ void Player::JumpDiscAnimation(int disc_id, int goal_x, int goal_y) {
     Sleep(50);
 
     direction++;
-    y -= 40;
-    x < goal_x ? br_x = 5 : br_x = -5;
-    y < goal_y ? br_y = 5 : br_y = -5;
+    player.y -= 40;
+    player.x < goal_x ? br_x = 5 : br_x = -5;
+    player.y < goal_y ? br_y = 5 : br_y = -5;
 
     Sleep(50);
 
 
-    while (br_x < 0 ? x >= goal_x : x < goal_x || br_y < 0 ? y >= goal_y : y < goal_y) {
+    while (br_x < 0 ? player.x >= goal_x : player.x < goal_x || br_y < 0 ? player.y >= goal_y : player.y < goal_y) {
 
-        if (br_x < 0 ? x >= goal_x : x < goal_x) {
-            x += br_x;
+        if (br_x < 0 ? player.x >= goal_x : player.x < goal_x) {
+            player.x += br_x;
         }
-        if (br_y < 0 ? y >= goal_y : y < goal_y) {
-            y += br_y;
+        if (br_y < 0 ? player.y >= goal_y : player.y < goal_y) {
+            player.y += br_y;
         }
         Sleep(15);
     }
 
     direction--;
-    x = goal_x;
-    y = goal_y;
+    player.x = goal_x;
+    player.y = goal_y;
 
     Discs[disc_id].move_state = true;
     DiskAndPlayerMovingAnimation(disc_id);
@@ -139,14 +140,37 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
     while (br_x < 0 ? Discs[disc_id].x >= goal_x : Discs[disc_id].x < goal_x || Discs[disc_id].y > goal_y) {
         if (br_x < 0 ? Discs[disc_id].x >= goal_x : Discs[disc_id].x < goal_x) {
             Discs[disc_id].x += br_x;
-            x += br_x;
+            player.x += br_x;
         }
         if (Discs[disc_id].y > goal_y){
             Discs[disc_id].y += br_y;
-            y += br_y;
+            player.y += br_y;
         }
         Sleep(40);
     }
+    direction = 7;
+    Sleep(50);
+    direction++;
+    
+
+    while (player.y < SquareBlocks[0].centerY) {
+        player.y += 5;
+        Sleep(15);
+    }
+    direction--;
+    player.x = SquareBlocks[0].centerX;
+    player.y = SquareBlocks[0].centerY;
+    currentTile = 0;
+
+    Discs[disc_id].show_state = false;
+   
+    if (SquareBlocks[currentTile].blk_clr_state == 0 && jumpStatus) {
+        SquareBlocks[currentTile].blk_clr_state = 1;
+        jumpStatus = !jumpStatus;
+        score += 25; // Update score when tile color is changed
+    }
+
+
 }
 
 void Player::move(char key) {
@@ -211,7 +235,7 @@ void Player::move(char key) {
                 if (Discs[i].block_id == block_id) {
                     keyPressedControl = false;
                     JumpDiscAnimation(i,Discs[i].center_x - 12, Discs[i].center_y - 30);
-                    //keyPressedControl=true;
+                    keyPressedControl=true;
                 }
             }
 
