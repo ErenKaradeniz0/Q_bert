@@ -25,6 +25,9 @@ GameSession::GameSession(int* screenHandle, int x, int y)
 
 void GameSession::Refresh(int sleepTime)
 {
+    DisplayImage(FRM1, screenMatrix);
+    Sleep(30);
+
     if (player.lifes <= 0) {
         ShowGameOverScreen();
     }
@@ -66,8 +69,6 @@ void GameSession::Refresh(int sleepTime)
         }
     }
 
-    DisplayImage(FRM1, screenMatrix);
-    Sleep(30);
 }
 
 void GameSession:: ShowGameOverScreen() {
@@ -76,11 +77,11 @@ void GameSession:: ShowGameOverScreen() {
     {
         if (counter % 40 == 0)
         {
-			FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
+			FillRect(screenMatrix, 220, 370, 260, 30, 0x000000);
 		}
         else
         {
-            RenderString(screenMatrix, "GAME OVER", 225, 375, 25);
+            RenderString(screenMatrix, "GAME OVER", 220, 375, 30);
         }
     }
     counter++;
@@ -92,11 +93,11 @@ void GameSession:: DrawPaused()
     {
         if (counter % 30 == 0)
         {
-            FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
+            FillRect(screenMatrix, 270, 370, 170, 30, 0x000000);
         }
         else
         {
-            RenderString(screenMatrix, "PAUSED", 225, 375, 25);
+            RenderString(screenMatrix, "PAUSED", 270, 375, 30);
         }
     }
     counter++;

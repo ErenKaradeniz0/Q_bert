@@ -109,6 +109,9 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam)
 
     // Reset the screen
     screenMatrix = 0;
+	enemyBall1.isAlive = false;
+	enemyBall2.isAlive = false;
+	enemySnake.isAlive = false;
 
     // Create Pyramid
     PyramidMatrix();
@@ -167,7 +170,9 @@ void WhenKeyReleased(int k) {
 void ICGUI_main() {
     FRM1 = ICG_FrameMedium(5, 40, 1, 1);
     int* FRM1_PTR = new int(FRM1);
-    ICG_Button(5, 5, 150, 25, "START/STOP GAME", StartStopGame, FRM1_PTR);
+    ICG_Button(5, 5, 150, 25, "(I/O) Power Button", StartStopGame, FRM1_PTR);
+    ICG_Static(160, 0, 500, 20, "Created by: Eren Karadeniz, Sevval Gur, Ulas Deniz Cakmazel");
+    ICG_Static(160, 20, 550, 20, "Arrow Keys: Move  |   P: Pause    |   R: Resume   |   Power Button: Toggle Game");
     ICG_SetOnKeyPressed(WhenKeyPressed);
 	ICG_SetOnKeyUp(WhenKeyReleased);
     CreateImage(screenMatrix, 700, 700, ICB_UINT);
