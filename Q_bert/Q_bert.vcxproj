@@ -163,6 +163,16 @@
     <ClInclude Include="PrintHelper.h" />
     <ClInclude Include="Sound.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="Sounds\Hello.wav" />
+    <Media Include="Sounds\Jump.wav" />
+    <Media Include="Sounds\Jump2.wav" />
+    <Media Include="Sounds\Lift.wav" />
+    <Media Include="Sounds\PlayerFall.wav" />
+    <Media Include="Sounds\SnakeFall.wav" />
+    <Media Include="Sounds\Speech.wav" />
+    <Media Include="Sounds\Victory.wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

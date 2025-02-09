@@ -20,11 +20,11 @@ void PyramidMatrix() {
     SquareBlocks[8] = { 8, 345, 310, 0, 5, 12, 13, 4, 370, 300 };
     SquareBlocks[9] = { 9, 435, 310, 0, -1, 13, 14, 5, 460, 300 };
     //Line 5
-    SquareBlocks[10] = { 10, 120, 380, 0, 6, 15, 16, -1, 145, 370 };
+    SquareBlocks[10] = { 10, 120, 380, 0, 6, 15, 16, 28, 145, 370 };  //left disc on left 28th id
     SquareBlocks[11] = { 11, 210, 380, 0, 7, 16, 17, 6, 235, 370 };
     SquareBlocks[12] = { 12, 300, 380, 0, 8, 17, 18, 7, 325, 370 };
     SquareBlocks[13] = { 13, 390, 380, 0, 9, 18, 19, 8, 415, 370 };
-    SquareBlocks[14] = { 14, 480, 380, 0, -1, 19, 20, 9, 505, 370 };
+    SquareBlocks[14] = { 14, 480, 380, 0, 29, 19, 20, 9, 505, 370 };  //left disc on left 29th id
     //Line 6
     SquareBlocks[15] = { 15, 75, 450, 0, 10, 21, 22, -1, 100, 440 };
     SquareBlocks[16] = { 16, 165, 450, 0, 11, 22, 23, 10, 190, 440 };
@@ -43,18 +43,12 @@ void PyramidMatrix() {
 }
 
 void CreateDisc() {
-    SquareBlocks[10].left = 40; //left
-    Discs[0] = { SquareBlocks[10].x - 50,SquareBlocks[10].y - 40,10,true,false }; //x,y,block_id,show_state,move_state
+    Discs[0] = { SquareBlocks[10].x - 50,SquareBlocks[10].y - 40,28,true,false }; //x,y,block_id,show_state,move_state 28th   
     Discs[0].center_x = Discs[0].x + 8;
     Discs[0].center_y = Discs[0].y + 5;
 
-    SquareBlocks[14].up = 45; //rigth
-    Discs[1] = { SquareBlocks[14].x + 100,SquareBlocks[14].y - 40,14,true,false }; //x,y,block_id,show_state,move_state
+    Discs[1] = { SquareBlocks[14].x + 100,SquareBlocks[14].y - 40,29,true,false }; //x,y,block_id,show_state,move_state 29th
     Discs[1].center_x = Discs[1].x + 8;
     Discs[1].center_y = Discs[1].y + 5;
 
-}
-
-void DiskAndPlayerMovingAnimation(int id) {
-    
 }
