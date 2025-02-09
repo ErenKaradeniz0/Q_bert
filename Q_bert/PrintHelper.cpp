@@ -93,20 +93,14 @@ void DrawScore() {
         PasteNon0(letterSprite, x, y, screenMatrix);
         };
 
-    // Draw "SCORE" text
-    const char* scoreText = "SCORE";
-    int currentX = 10;
-    for (int i = 0; scoreText[i] != '\0'; i++) {
-        DrawCharacter(scoreText[i], currentX, 10);
-        currentX += 25;  // Space between letters
-    }
+    RenderString(screenMatrix, "SCORE", 10, 40, 25);
 
     // Convert score to string and draw each digit
-    currentX += 25;  // Extra space between "SCORE" and number
+    int currentX = 150;  // Extra space between "SCORE" and number
 
     // Handle case when score is 0
     if (score == 0) {
-        DrawCharacter('0', currentX, 10);
+        DrawCharacter('0', currentX, 40);
         return;
     }
 
@@ -122,7 +116,7 @@ void DrawScore() {
 
     // Draw digits in reverse order (right way around)
     for (int i = digitCount - 1; i >= 0; i--) {
-        DrawCharacter(digits[i], currentX, 10);
+        DrawCharacter(digits[i], currentX, 40);
         currentX += 25;
     }
 }

@@ -4,6 +4,6 @@
 #include "icb_gui.h"
 
 void DrawStartupAnimation();
-void DrawLogo();
+void DrawSideObjects();
 
 #endif // INTRO_H#pragma once

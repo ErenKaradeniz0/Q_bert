@@ -10,7 +10,7 @@ extern int FRM1;
 extern ICBYTES screenMatrix;
 ICBYTES QbertTitle, PinkC, QB, IntroletterSprite;
 ICBYTES normalBall, bouncedBall, QbertText, diskSprite;
-ICBYTES Qbert, Tile, LeftAr, RightAr, ChText;
+ICBYTES Qbert, Tile, LeftAr, RightAr, ChText, PlayerText, PlayerOne;
 
 ICBYTES IntroCoordinates{
     // Numbers (0-9)
@@ -69,60 +69,79 @@ ICBYTES IntroCoordinates{
     { 49, 1068, 48, 30},      //  Disk Frame 2 - idx 49
     { 97, 1068, 48, 30},      //  Disk Frame 3 - idx 50
     { 145, 1068, 48, 30},      //  Disk Frame 4 - idx 51
-    { 672, 96, 24, 30 }      //  Mini Qbert - idx 52
+    { 672, 96, 24, 30 },      //  Mini Qbert - idx 52
+
+    // Player Text
+    { 552, 337, 153, 24},    //  Player Text 1 - idx 53
+    { 552, 361, 153, 24},    //  Player Text 2 - idx 54
+    { 552, 385, 153, 24},    //  Player Text 3 - idx 55
+    { 552, 409, 153, 24},    //  Player Text 4 - idx 56
+    { 552, 433, 153, 24},    //  Player Text 5 - idx 57
+    { 552, 457, 153, 24},    //  Player Text 6 - idx 58
+    { 723, 355, 21, 30}      //  Player one  - idx 59
 };
 
-
-void DrawLogo() {
-    static bool initialized = false;
+void DrawSideObjects() {
     static int currentFrame = 0;
+    static int playerTextFrame = 53; // Start with the first player text frame
 
-    // One-time initialization
-    if (!initialized) {
-        CreateImage(Qbert, IntroCoordinates.I(3, 38), IntroCoordinates.I(4, 38), ICB_UINT);
-        CreateImage(Tile, IntroCoordinates.I(3, 47), IntroCoordinates.I(4, 47), ICB_UINT);
-        CreateImage(LeftAr, IntroCoordinates.I(3, 46), IntroCoordinates.I(4, 46), ICB_UINT);
-        CreateImage(RightAr, IntroCoordinates.I(3, 45), IntroCoordinates.I(4, 45), ICB_UINT);
-        CreateImage(ChText, IntroCoordinates.I(3, 44), IntroCoordinates.I(4, 44), ICB_UINT);
+    // Copy sprites once
+    Copy(Sprites3X,
+        IntroCoordinates.I(1, 38),
+        IntroCoordinates.I(2, 38),
+        IntroCoordinates.I(3, 38),
+        IntroCoordinates.I(4, 38),
+        Qbert);
 
-        // Copy sprites once
-        Copy(Sprites3X,
-            IntroCoordinates.I(1, 38),
-            IntroCoordinates.I(2, 38),
-            IntroCoordinates.I(3, 38),
-            IntroCoordinates.I(4, 38),
-            Qbert);
+    Copy(Sprites3X,
+        IntroCoordinates.I(1, 47),
+        IntroCoordinates.I(2, 47),
+        IntroCoordinates.I(3, 47),
+        IntroCoordinates.I(4, 47),
+        Tile);
 
-        Copy(Sprites3X,
-            IntroCoordinates.I(1, 47),
-            IntroCoordinates.I(2, 47),
-            IntroCoordinates.I(3, 47),
-            IntroCoordinates.I(4, 47),
-            Tile);
+    Copy(Sprites3X,
+        IntroCoordinates.I(1, 46),
+        IntroCoordinates.I(2, 46),
+        IntroCoordinates.I(3, 46),
+        IntroCoordinates.I(4, 46),
+        LeftAr);
 
-        Copy(Sprites3X,
-            IntroCoordinates.I(1, 46),
-            IntroCoordinates.I(2, 46),
-            IntroCoordinates.I(3, 46),
-            IntroCoordinates.I(4, 46),
-            LeftAr);
+    Copy(Sprites3X,
+        IntroCoordinates.I(1, 45),
+        IntroCoordinates.I(2, 45),
+        IntroCoordinates.I(3, 45),
+        IntroCoordinates.I(4, 45),
+        RightAr);
 
-        Copy(Sprites3X,
-            IntroCoordinates.I(1, 45),
-            IntroCoordinates.I(2, 45),
-            IntroCoordinates.I(3, 45),
-            IntroCoordinates.I(4, 45),
-            RightAr);
+    Copy(Sprites3X,
+        IntroCoordinates.I(1, 44),
+        IntroCoordinates.I(2, 44),
+        IntroCoordinates.I(3, 44),
+        IntroCoordinates.I(4, 44),
+        ChText);
 
-        Copy(Sprites3X,
-            IntroCoordinates.I(1, 44),
-            IntroCoordinates.I(2, 44),
-            IntroCoordinates.I(3, 44),
-            IntroCoordinates.I(4, 44),
-            ChText);
-
-        initialized = true;
+    // Update player text frame every 3 frames
+    if (currentFrame % 3 == 0) {
+        playerTextFrame++;
+        if (playerTextFrame > 58) {
+            playerTextFrame = 53; // Loop back to the first player text frame
+        }
     }
+
+    Copy(Sprites3X,
+        IntroCoordinates.I(1, playerTextFrame),
+        IntroCoordinates.I(2, playerTextFrame),
+        IntroCoordinates.I(3, playerTextFrame),
+        IntroCoordinates.I(4, playerTextFrame),
+        PlayerText);
+
+    Copy(Sprites3X,
+        IntroCoordinates.I(1, 59),
+        IntroCoordinates.I(2, 59),
+        IntroCoordinates.I(3, 59),
+        IntroCoordinates.I(4, 59),
+        PlayerOne);
 
     currentFrame++;
 
@@ -132,37 +151,35 @@ void DrawLogo() {
     Impress12x20(screenMatrix, 670, 10, "TM", 0xFFD700);
 
     // Draw Choose text
-    PasteNon0(ChText, 25, 50, screenMatrix);
+    PasteNon0(ChText, 25, 80, screenMatrix);
 
     // Arrow animation
     int animPhase = currentFrame % 20;
 
     if (animPhase < 10) {
-        PasteNon0(RightAr, 15, 80, screenMatrix);
-        PasteNon0(LeftAr, 155, 80, screenMatrix);
-        }
+        PasteNon0(RightAr, 15, 100, screenMatrix);
+        PasteNon0(LeftAr, 155, 100, screenMatrix);
+    }
 
-        if (animPhase >= 5 && animPhase < 15) {
-        PasteNon0(RightAr, 40, 80, screenMatrix);
-        PasteNon0(LeftAr, 130, 80, screenMatrix);
+    if (animPhase >= 5 && animPhase < 15) {
+        PasteNon0(RightAr, 40, 100, screenMatrix);
+        PasteNon0(LeftAr, 130, 100, screenMatrix);
     }
 
     // Animated tile
-    int tileY = 80 + (int)(5 * sin(currentFrame * 0.2f));
+    int tileY = 100 + (int)(5 * sin(currentFrame * 0.2f));
     PasteNon0(Tile, 75, tileY, screenMatrix);
+
+
+    // player text
+    PasteNon0(PlayerText, 10, 10, screenMatrix);
+
+    // one 
+    PasteNon0(PlayerOne, 170, 0, screenMatrix);
+
 }
 
 void DrawStartupAnimation() {
-    // Main image buffers
-    CreateImage(QbertTitle, IntroCoordinates.I(3, 38), IntroCoordinates.I(4, 38), ICB_UINT);
-    CreateImage(PinkC, IntroCoordinates.I(3, 40), IntroCoordinates.I(4, 40), ICB_UINT);
-    CreateImage(QB, IntroCoordinates.I(3, 43), IntroCoordinates.I(4, 43), ICB_UINT);
-    CreateImage(IntroletterSprite, 21, 21, ICB_UINT);
-    CreateImage(normalBall, IntroCoordinates.I(3, 42), IntroCoordinates.I(4, 42), ICB_UINT);
-    CreateImage(bouncedBall, IntroCoordinates.I(3, 41), IntroCoordinates.I(4, 41), ICB_UINT);
-    CreateImage(QbertText, IntroCoordinates.I(3, 39), IntroCoordinates.I(4, 39), ICB_UINT);
-    CreateImage(diskSprite, 48, 30, ICB_UINT);
-
     // Disk animation constants
     const int DISK_FRAME1 = 1;
     const int DISK_FRAME2 = 16 * 3 + 1;
@@ -242,8 +259,8 @@ void DrawStartupAnimation() {
 
     // Combined animation loop - extended to 480 frames total
     for (int frame = 0; frame < 480; frame++) {
-		if (Game::GetState() == Stopped)
-			return;
+        if (Game::GetState() == Stopped)
+            return;
 
         PlayStartupSounds(frame);
 
@@ -276,12 +293,12 @@ void DrawStartupAnimation() {
                     PinkC);
                 PasteNon0(PinkC, 100, 280, screenMatrix);
 
-                RenderString(screenMatrix,"2025", 130, 283);
-                RenderString(screenMatrix,"ESD STUDIOS", 280, 280);
-                RenderString(screenMatrix,"ALL RIGHTS RESERVED", 130, 320);
+                RenderString(screenMatrix, "2025", 130, 283);
+                RenderString(screenMatrix, "ESD STUDIOS", 280, 280);
+                RenderString(screenMatrix, "ALL RIGHTS RESERVED", 130, 320);
             }
             if (frame > 90 && frame <= 180) {
-                RenderString(screenMatrix,"1 COIN = 1 PLAY", 150, 500);
+                RenderString(screenMatrix, "1 COIN = 1 PLAY", 150, 500);
 
                 // Calculate disk position and animation frame
                 float progress = (frame - 90) / 90.0f;  // 90 frames for movement
@@ -358,28 +375,28 @@ void DrawStartupAnimation() {
                 PasteNon0(QB, currentX, currentY, screenMatrix);
             }
             if (frame > 240) {
-                RenderString(screenMatrix,"JUMP ON SQUARES TO", 120, 120);
-                RenderString(screenMatrix,"CHANGE THEM TO", 120, 150);
-                RenderString(screenMatrix,"THE TARGET COLOR", 120, 180);
+                RenderString(screenMatrix, "JUMP ON SQUARES TO", 120, 120);
+                RenderString(screenMatrix, "CHANGE THEM TO", 120, 150);
+                RenderString(screenMatrix, "THE TARGET COLOR", 120, 180);
             }
 
             if (frame > 270) {
-                RenderString(screenMatrix,"STAY ON PLAYFIELD", 145, 240);
-                RenderString(screenMatrix,"JUMPING OFF RESULTS", 145, 270);
-                RenderString(screenMatrix,"IN A FATAL PLUMMET", 145, 300);
-                RenderString(screenMatrix,"UNLESS A DISK IS THERE", 145, 330);
+                RenderString(screenMatrix, "STAY ON PLAYFIELD", 145, 240);
+                RenderString(screenMatrix, "JUMPING OFF RESULTS", 145, 270);
+                RenderString(screenMatrix, "IN A FATAL PLUMMET", 145, 300);
+                RenderString(screenMatrix, "UNLESS A DISK IS THERE", 145, 330);
             }
 
             if (frame > 300) {
-                RenderString(screenMatrix,"AVOID ALL OBJECTS", 170, 390);
-                RenderString(screenMatrix,"AND CREATURES THAT", 170, 420);
-                RenderString(screenMatrix,"ARE NOT GREEN", 170, 450);
+                RenderString(screenMatrix, "AVOID ALL OBJECTS", 170, 390);
+                RenderString(screenMatrix, "AND CREATURES THAT", 170, 420);
+                RenderString(screenMatrix, "ARE NOT GREEN", 170, 450);
             }
 
             if (frame > 330) {
-                RenderString(screenMatrix,"USE SPINNING DISKS", 195, 510);
-                RenderString(screenMatrix,"TO LURE SNAKE TO", 195, 540);
-                RenderString(screenMatrix,"HIS DEATH", 195, 570);
+                RenderString(screenMatrix, "USE SPINNING DISKS", 195, 510);
+                RenderString(screenMatrix, "TO LURE SNAKE TO", 195, 540);
+                RenderString(screenMatrix, "HIS DEATH", 195, 570);
             }
 
             // Ball animation (360-420 frames)
@@ -439,7 +456,7 @@ void DrawStartupAnimation() {
                     IntroCoordinates.I(3, 39),
                     IntroCoordinates.I(4, 39),
                     QbertText);
-              
+
                 float alpha = (frame - 420) / 30.0f;
                 if (alpha > 1.0f) alpha = 1.0f;
 
@@ -449,7 +466,7 @@ void DrawStartupAnimation() {
 
         // Display frame and wait
         DisplayImage(FRM1, screenMatrix);
-        if(isAnimationFaster)
+        if (isAnimationFaster)
             Game::SleepI(0);
         else
             Game::SleepI(33);
