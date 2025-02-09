@@ -9,10 +9,9 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Maze.h"
+#include "Sound.h"
 
 // Global variables
-extern bool gameRunning;
-extern bool stopThreads;
 extern HANDLE renderMutex;
 extern ICBYTES screenMatrix, Sprites, Sprites3X;
 extern int FRM1;
@@ -31,19 +30,17 @@ extern HANDLE enemy1ThreadHandle;
 extern HANDLE enemy2ThreadHandle;
 extern HANDLE enemySnakeThreadHandle;
 extern HANDLE soundThreadHandle;
-extern HANDLE renderThreadHandle;
 
 // Function declarations
 void ICGUI_Create();
-void renderGrid();
-DWORD WINAPI turnDiscThread(LPVOID lpParam);
-DWORD WINAPI renderThread(LPVOID lpParam);
+DWORD WINAPI GameControllerMain(LPVOID lpParam);
 DWORD WINAPI InputThread(LPVOID lpParam);
+DWORD WINAPI turnDiscThread(LPVOID lpParam);
 DWORD WINAPI EnemyBall1Thread(LPVOID lpParam);
 DWORD WINAPI EnemyBall2Thread(LPVOID lpParam);
 DWORD WINAPI EnemySnakeThread(LPVOID lpParam);
 DWORD WINAPI SoundThread(LPVOID lpParam);
-void StartGame();
+void StartStopGame(void* FRM1_PTR);
 void WhenKeyPressed(int k);
 void ICGUI_main();
 
