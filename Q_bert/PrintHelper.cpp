@@ -14,6 +14,7 @@ extern int FRM1;
 extern int score;
 extern Player player;
 extern Enemy enemyBall1, enemyBall2, enemySnake;
+extern bool showLostLifeText;
 ICBYTES CurrentTileMatrix, PlayerMatrix, Enemy1Matrix, Enemy2Matrix, DiscMatrix;
 
 std::map<char, int> CHAR_INDICES = {
@@ -223,7 +224,8 @@ ICBYTES PlayerCoordinates{
     { 192, 6, 45, 42 },  // 5 (DOWN-1)
     { 240, 1, 45, 48 },  // 6 (DOWN-2)
     { 291, 6, 45, 42 },  // 7 (RIGHT-1)
-    { 339, 1, 45, 48 }   // 8 (RIGHT-2)
+    { 339, 1, 45, 48 },   // 8 (RIGHT-2)
+    { 387, 249, 150, 78 }   //  Qbert text - idx 39
 };
 
 void DrawPlayer() {
@@ -233,6 +235,18 @@ void DrawPlayer() {
         PlayerMatrix);
 
     PasteNon0(PlayerMatrix, player.x, player.y, screenMatrix);
+
+    if (player.showLostLifeText) {
+        if (player.lostLifeCounter < 20) {
+            player.lostLifeCounter++;
+            Copy(Sprites3X, PlayerCoordinates.I(1, 9), PlayerCoordinates.I(2, 9), PlayerCoordinates.I(3, 9), PlayerCoordinates.I(4, 9), PlayerMatrix);
+            PasteNon0(PlayerMatrix, SquareBlocks[player.currentTile].centerX - 30, SquareBlocks[player.currentTile].centerY - 80, screenMatrix);
+        }
+        else {
+            player.showLostLifeText = false;
+            player.lostLifeCounter = 0; // Reset counter
+        }
+    }
 }
 
 ICBYTES EnemyCoordinates{

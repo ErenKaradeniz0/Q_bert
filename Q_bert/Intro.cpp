@@ -8,6 +8,8 @@
 extern ICBYTES Sprites3X;
 extern int FRM1;
 extern ICBYTES screenMatrix;
+ICBYTES QbertTitle, PinkC, QB, IntroletterSprite;
+ICBYTES normalBall, bouncedBall, QbertText, diskSprite;
 
 ICBYTES IntroCoordinates{
     // Numbers (0-9)
@@ -150,15 +152,12 @@ void DrawLogo() {
     PasteNon0(Tile, 550, tileY, screenMatrix);
 }
 
-void DrawStartupAnimation1(bool* gameRunningPtr) {
+void DrawStartupAnimation() {
     // Main image buffers
-    ICBYTES startScreen, QbertTitle, PinkC, QB, letterSprite;
-    ICBYTES normalBall, bouncedBall, QbertText, diskSprite;
-    CreateImage(startScreen, 700, 700, ICB_UINT);
     CreateImage(QbertTitle, IntroCoordinates.I(3, 38), IntroCoordinates.I(4, 38), ICB_UINT);
     CreateImage(PinkC, IntroCoordinates.I(3, 40), IntroCoordinates.I(4, 40), ICB_UINT);
     CreateImage(QB, IntroCoordinates.I(3, 43), IntroCoordinates.I(4, 43), ICB_UINT);
-    CreateImage(letterSprite, 21, 21, ICB_UINT);
+    CreateImage(IntroletterSprite, 21, 21, ICB_UINT);
     CreateImage(normalBall, IntroCoordinates.I(3, 42), IntroCoordinates.I(4, 42), ICB_UINT);
     CreateImage(bouncedBall, IntroCoordinates.I(3, 41), IntroCoordinates.I(4, 41), ICB_UINT);
     CreateImage(QbertText, IntroCoordinates.I(3, 39), IntroCoordinates.I(4, 39), ICB_UINT);
@@ -221,9 +220,9 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
             IntroCoordinates.I(2, spriteIndex),
             IntroCoordinates.I(3, spriteIndex),
             IntroCoordinates.I(4, spriteIndex),
-            letterSprite);
+            IntroletterSprite);
 
-        PasteNon0(letterSprite, x, y, startScreen);
+        PasteNon0(IntroletterSprite, x, y, screenMatrix);
         };
 
     // Helper function to draw text string
@@ -242,19 +241,12 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
     MSG msg;
 
     // Combined animation loop - extended to 480 frames total
-    for (int frame = 0; frame < 480 && *gameRunningPtr; frame++) {
-        // Process Windows messages
-        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-            if (msg.message == WM_QUIT) {
-                *gameRunningPtr = false;
-                return;
-            }
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+    for (int frame = 0; frame < 480; frame++) {
+		if (Game::GetState() == Stopped)
+			return;
 
         // Set background color
-        startScreen = 0x1A0F5F;
+        screenMatrix = 0x1A0F5F;
 
         // First Animation (0-180 frames)
         if (frame < 180) {
@@ -267,10 +259,10 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                     QbertTitle);
 
                 int yOffset = (frame % 16 > 8) ? 2 : -2;
-                PasteNon0(QbertTitle, 220, 200 + yOffset, startScreen);
+                PasteNon0(QbertTitle, 220, 200 + yOffset, screenMatrix);
 
                 ICG_SetFont(20, 0, "Arial");
-                Impress12x20(startScreen, 520, 190 + yOffset, "TM", 0xFFD700);
+                Impress12x20(screenMatrix, 520, 190 + yOffset, "TM", 0xFFD700);
             }
 
             if (frame > 60) {
@@ -280,14 +272,14 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                     IntroCoordinates.I(3, 40),
                     IntroCoordinates.I(4, 40),
                     PinkC);
-                PasteNon0(PinkC, 100, 280, startScreen);
+                PasteNon0(PinkC, 100, 280, screenMatrix);
 
-                DrawText("2025", 130, 283);
-                DrawText("ESD STUDIOS", 280, 280);
-                DrawText("ALL RIGHTS RESERVED", 130, 320);
+                RenderString(screenMatrix,"2025", 130, 283);
+                RenderString(screenMatrix,"ESD STUDIOS", 280, 280);
+                RenderString(screenMatrix,"ALL RIGHTS RESERVED", 130, 320);
             }
             if (frame > 90 && frame <= 180) {
-                DrawText("1 COIN = 1 PLAY", 150, 500);
+                RenderString(screenMatrix,"1 COIN = 1 PLAY", 150, 500);
 
                 // Calculate disk position and animation frame
                 float progress = (frame - 90) / 90.0f;  // 90 frames for movement
@@ -307,7 +299,7 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                     diskFrameOffset, DISK_Y,
                     DISK_WIDTH, DISK_HEIGHT,
                     diskSprite);
-                PasteNon0(diskSprite, diskX, 600, startScreen);
+                PasteNon0(diskSprite, diskX, 600, screenMatrix);
 
                 // Draw Q*bert on top of the disk
                 Copy(Sprites3X,
@@ -316,7 +308,7 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                     IntroCoordinates.I(3, 43),
                     IntroCoordinates.I(4, 43),
                     QB);
-                PasteNon0(QB, diskX + 10, 570, startScreen);
+                PasteNon0(QB, diskX + 10, 570, screenMatrix);
             }
         }
         // Second Animation (180+ frames)
@@ -328,9 +320,9 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                     IntroCoordinates.I(3, 38),
                     IntroCoordinates.I(4, 38),
                     QbertTitle);
-                PasteNon0(QbertTitle, 20, 20, startScreen);
+                PasteNon0(QbertTitle, 20, 20, screenMatrix);
                 ICG_SetFont(20, 0, "Arial");
-                Impress12x20(startScreen, 320, 15, "TM", 0xFFD700);
+                Impress12x20(screenMatrix, 320, 15, "TM", 0xFFD700);
 
                 // Q*bert jumping animation
                 int currentX = jumps[0].startX;
@@ -361,31 +353,31 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                     IntroCoordinates.I(3, 43),
                     IntroCoordinates.I(4, 43),
                     QB);
-                PasteNon0(QB, currentX, currentY, startScreen);
+                PasteNon0(QB, currentX, currentY, screenMatrix);
             }
             if (frame > 240) {
-                DrawText("JUMP ON SQUARES TO", 120, 120);
-                DrawText("CHANGE THEM TO", 120, 150);
-                DrawText("THE TARGET COLOR", 120, 180);
+                RenderString(screenMatrix,"JUMP ON SQUARES TO", 120, 120);
+                RenderString(screenMatrix,"CHANGE THEM TO", 120, 150);
+                RenderString(screenMatrix,"THE TARGET COLOR", 120, 180);
             }
 
             if (frame > 270) {
-                DrawText("STAY ON PLAYFIELD", 145, 240);
-                DrawText("JUMPING OFF RESULTS", 145, 270);
-                DrawText("IN A FATAL PLUMMET", 145, 300);
-                DrawText("UNLESS A DISK IS THERE", 145, 330);
+                RenderString(screenMatrix,"STAY ON PLAYFIELD", 145, 240);
+                RenderString(screenMatrix,"JUMPING OFF RESULTS", 145, 270);
+                RenderString(screenMatrix,"IN A FATAL PLUMMET", 145, 300);
+                RenderString(screenMatrix,"UNLESS A DISK IS THERE", 145, 330);
             }
 
             if (frame > 300) {
-                DrawText("AVOID ALL OBJECTS", 170, 390);
-                DrawText("AND CREATURES THAT", 170, 420);
-                DrawText("ARE NOT GREEN", 170, 450);
+                RenderString(screenMatrix,"AVOID ALL OBJECTS", 170, 390);
+                RenderString(screenMatrix,"AND CREATURES THAT", 170, 420);
+                RenderString(screenMatrix,"ARE NOT GREEN", 170, 450);
             }
 
             if (frame > 330) {
-                DrawText("USE SPINNING DISKS", 195, 510);
-                DrawText("TO LURE SNAKE TO", 195, 540);
-                DrawText("HIS DEATH", 195, 570);
+                RenderString(screenMatrix,"USE SPINNING DISKS", 195, 510);
+                RenderString(screenMatrix,"TO LURE SNAKE TO", 195, 540);
+                RenderString(screenMatrix,"HIS DEATH", 195, 570);
             }
 
             // Ball animation (360-420 frames)
@@ -412,11 +404,11 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                         IntroCoordinates.I(3, 41),
                         IntroCoordinates.I(4, 41),
                         bouncedBall);
-                    PasteNon0(bouncedBall, 140, ballY, startScreen);
+                    PasteNon0(bouncedBall, 140, ballY, screenMatrix);
                     ballHitHead = true;
                 }
                 else {
-                    PasteNon0(normalBall, 140, ballY, startScreen);
+                    PasteNon0(normalBall, 140, ballY, screenMatrix);
                 }
             }
 
@@ -434,7 +426,7 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                         IntroCoordinates.I(3, t < 0.5f ? 42 : 41),
                         IntroCoordinates.I(4, t < 0.5f ? 42 : 41),
                         t < 0.5f ? normalBall : bouncedBall);
-                    PasteNon0(t < 0.5f ? normalBall : bouncedBall, bounceX, bounceY, startScreen);
+                    PasteNon0(t < 0.5f ? normalBall : bouncedBall, bounceX, bounceY, screenMatrix);
                 }
             }
 
@@ -449,12 +441,15 @@ void DrawStartupAnimation1(bool* gameRunningPtr) {
                 float alpha = (frame - 420) / 30.0f;
                 if (alpha > 1.0f) alpha = 1.0f;
 
-                PasteNon0(QbertText, 120, 490, startScreen);
+                PasteNon0(QbertText, 120, 490, screenMatrix);
             }
         }
 
         // Display frame and wait
-        DisplayImage(FRM1, startScreen);
-        Game::SleepI(33);
+        DisplayImage(FRM1, screenMatrix);
+        if(isAnimationFaster)
+            Game::SleepI(0);
+        else
+            Game::SleepI(33);
     }
 }
