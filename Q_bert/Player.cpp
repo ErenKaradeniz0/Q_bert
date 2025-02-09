@@ -156,11 +156,7 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
     br_x = (goal_x - Discs[disc_id].x) / (precision+5);
     br_y = (goal_y - Discs[disc_id].y) / (precision+3);
 
-    /*const char* soundPath = "Sounds/Lift.wav";
-    CreateSoundThread(soundPath);*/
-
-    //CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LiftSound, NULL, 0, NULL);
-
+    LiftSound();
 
     while (br_x < 0 ? Discs[disc_id].x >= goal_x : Discs[disc_id].x < goal_x || Discs[disc_id].y > goal_y) {
         if (br_x < 0 ? Discs[disc_id].x >= goal_x : Discs[disc_id].x < goal_x) {
@@ -172,6 +168,7 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
             player.y += br_y;
         }
         Game::SleepI(40);
+        
     }
     direction = 7;
     Sleep(50);
