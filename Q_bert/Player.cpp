@@ -4,11 +4,12 @@
 #include "Sound.h"
 #include "icb_gui.h" 
 #include <cmath>
+#include "Main.h"
+#include "Game.h"
 
 extern int FRM1;
 extern int score;
 extern Player player;
-extern bool gameRunning;
 extern int keypressed;
 extern bool keyPressedControl;
 
@@ -26,12 +27,12 @@ void CreatePlayer() {
 void Player::MoveAnimation(char key, int goal_x, int goal_y) {
     int br_x = 0, br_y = 0;
 
-    Sleep(50);
+    Game::SleepI(50);
 
     direction++;
     player.y -= 40;
 
-    Sleep(50);
+    Game::SleepI(50);
 
     player.x < goal_x ? br_x = 5 : br_x = -5;
     player.y < goal_y ? br_y = 5 : br_y = -5;
@@ -43,13 +44,14 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
         if (player.y != goal_y) {
             player.y += br_y;
         }
-        Sleep(15);
+        Game::SleepI(15);
     }
 
     direction--;
     player.x = goal_x;
     player.y = goal_y;
-    Sleep(50);
+    Game::SleepI(50);
+
 
     if (SquareBlocks[currentTile].blk_clr_state == 0 && jumpStatus) {
         SquareBlocks[currentTile].blk_clr_state = 1;
@@ -63,12 +65,8 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
 
 void Player::lostLife(bool isFall) {
     lifes--; // Decrease life
-    Sleep(100);
-    if (lifes <= 0) {
-        gameRunning = false; // End game if no lives left
-        ShowGameOverScreen();
-        return;
-    }
+    Game::SleepI(100);
+
     if (isFall) {
         player.x = SquareBlocks[0].centerX;
         player.y = SquareBlocks[0].centerY;
@@ -94,7 +92,7 @@ void Player::FallOffEdge(char key) {
                 mazeOrder = true; // Set the falling flag
             y += 5;
         }
-        Sleep(15);
+          Game::SleepI(15);
     }
     lostLife(true); // Decrease life on fall
 
@@ -102,14 +100,14 @@ void Player::FallOffEdge(char key) {
 
 void Player::JumpDiscAnimation(int disc_id, int goal_x, int goal_y) {
     int br_x = 0, br_y = 0;
-    Sleep(50);
+    Game::SleepI(50);
 
     direction++;
     player.y -= 40;
     player.x < goal_x ? br_x = 5 : br_x = -5;
     player.y < goal_y ? br_y = 5 : br_y = -5;
 
-    Sleep(50);
+    Game::SleepI(50);
 
 
     while (br_x < 0 ? player.x >= goal_x : player.x < goal_x || br_y < 0 ? player.y >= goal_y : player.y < goal_y) {
@@ -120,7 +118,7 @@ void Player::JumpDiscAnimation(int disc_id, int goal_x, int goal_y) {
         if (br_y < 0 ? player.y >= goal_y : player.y < goal_y) {
             player.y += br_y;
         }
-        Sleep(15);
+        Game::SleepI(15);
     }
 
     direction--;
@@ -156,7 +154,7 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
             Discs[disc_id].y += br_y;
             player.y += br_y;
         }
-        Sleep(40);
+        Game::SleepI(40);
     }
     direction = 7;
     Sleep(50);
