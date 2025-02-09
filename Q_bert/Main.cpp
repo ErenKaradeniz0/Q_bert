@@ -13,6 +13,7 @@ bool gamePaused = false;
 HANDLE renderMutex;
 int keypressed;
 bool keyPressedControl;
+bool isAnimationFaster = false;
 int score = 0; // Global score variable
 
 HANDLE inputThreadHandle = NULL;
@@ -69,12 +70,12 @@ DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
 }
 
 DWORD WINAPI EnemyBall2Thread(LPVOID lpParam) {
-    Game::SleepI(3000);
     while (Game::Run()) {
         Game::SleepI(200);
         if (enemyBall2.isAlive)
             enemyBall2.move();
         else {
+            Game::SleepI(3000);
             enemyBall2.Spawn(false, 1);
         }
     }
@@ -82,12 +83,12 @@ DWORD WINAPI EnemyBall2Thread(LPVOID lpParam) {
 }
 
 DWORD WINAPI EnemySnakeThread(LPVOID lpParam) {
-    Game::SleepI(1000);
     while (Game::Run()) {
         Game::SleepI(200);
         if (enemySnake.isAlive)
             enemySnake.move();
         else {
+            Game::SleepI(1000);
             enemySnake.Spawn(false, 3);
         }
     }
@@ -105,10 +106,12 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam)
 
     keyPressedControl = true;
 
-    //DrawStartupAnimation1(&gameRunning);
+    DrawStartupAnimation();
 
     // Reset the screen
     screenMatrix = 0;
+
+    // Reset the enemies
 	enemyBall1.isAlive = false;
 	enemyBall2.isAlive = false;
 	enemySnake.isAlive = false;
@@ -166,6 +169,10 @@ void WhenKeyPressed(int k) {
 void WhenKeyReleased(int k) {
 	keypressed = 0;
 }
+void ToggleIntroAnimationSpeed(int state) {
+    isAnimationFaster = (state != 0); // If state is 1 (checked), set true; otherwise, set false
+    SetFocus(ICG_GetMainWindow());
+}
 
 void ICGUI_main() {
     FRM1 = ICG_FrameMedium(5, 40, 1, 1);
@@ -173,6 +180,7 @@ void ICGUI_main() {
     ICG_Button(5, 5, 150, 25, "(I/O) Power Button", StartStopGame, FRM1_PTR);
     ICG_Static(160, 0, 500, 20, "Created by: Eren Karadeniz, Sevval Gur, Ulas Deniz Cakmazel");
     ICG_Static(160, 20, 550, 20, "Arrow Keys: Move  |   P: Pause    |   R: Resume   |   Power Button: Toggle Game");
+    ICG_CheckBox(575, 0, 175, 20, "Faster Intro", ToggleIntroAnimationSpeed);
     ICG_SetOnKeyPressed(WhenKeyPressed);
 	ICG_SetOnKeyUp(WhenKeyReleased);
     CreateImage(screenMatrix, 700, 700, ICB_UINT);
