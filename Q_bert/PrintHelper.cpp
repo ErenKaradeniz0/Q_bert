@@ -27,15 +27,13 @@ std::map<char, int> CHAR_INDICES = {
     {'Z', 36}, {'=', 37}
 };
 
+    ICBYTES letterSprite;
 void RenderChar(ICBYTES& screen, char c, int x, int y) {
 
     int index = 0;
     index = CHAR_INDICES[c];
 
     if (index == 0) return;
-
-
-    ICBYTES letterSprite;
     Copy(Sprites3X,
         IntroCoordinates.I(1, index),
         IntroCoordinates.I(2, index),
