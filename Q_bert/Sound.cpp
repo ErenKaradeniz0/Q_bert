@@ -1,33 +1,61 @@
 #include "Sound.h"
 #include "Game.h"
 
+int SoundPlayer::soundCounter = 0;
+
 VOID* HelloSound() {
-    PlaySound("Sounds/Hello.wav", NULL, SND_ASYNC);
+    SoundPlayer::PlaySound("Sounds/Hello.wav");
     return 0;
 }
 
 VOID* LiftSound() {
-    PlaySound("Sounds/Lift.wav", NULL, SND_ASYNC);
+    SoundPlayer::PlaySound("Sounds/DiscSound.wav");
+    return 0;
+}
+
+VOID* IntroBallSound() {
+    SoundPlayer::PlaySound("Sounds/IntroBall.wav");
     return 0;
 }
 
 VOID* JumpSound() {
-    PlaySound("Sounds/Jump.wav", NULL, SND_ASYNC);
+    SoundPlayer::PlaySound("Sounds/Jump.wav");
     return 0;
 }
 
 VOID* SpeechSound() {
-    PlaySound("Sounds/Speech.wav", NULL, SND_ASYNC);
+    SoundPlayer::PlaySound("Sounds/Speech.wav");
     return 0;
 }
 
 VOID* PlayerFallSound() {
-    PlaySound("Sounds/PlayerFall.wav", NULL, SND_ASYNC);
+    SoundPlayer::PlaySound("Sounds/PlayerFall.wav");
+    return 0;
+}
+
+VOID* RedBallJumpSound() {
+    SoundPlayer::PlaySound("Sounds/RedBallJump.wav");
+    return 0;
+}
+
+VOID* SnakeEggJumpSound() {
+    SoundPlayer::PlaySound("Sounds/SnakeEggJump.wav");
+    return 0;
+}
+
+VOID* SnakeJumpSound() {
+    SoundPlayer::PlaySound("Sounds/SnakeJump.wav");
+    return 0;
+}
+
+VOID* SnakeFallSound() {
+    SoundPlayer::PlaySound("Sounds/SnakeFall.wav");
     return 0;
 }
 
 bool helloPlayed = false;
 bool liftPlayed = false;
+bool introBallPlayed = false;
 bool speechPlayed = false;
 bool jumpSoundPlayed[4] = { false, false, false, false }; // Her zýplama için bir flag
 
@@ -67,5 +95,10 @@ void PlayStartupSounds(int currentFrame) {
     if (currentFrame == 420 && !speechPlayed) {
         SpeechSound();
         speechPlayed = true;
+    }
+
+    if (currentFrame == 393 && !introBallPlayed) {
+        IntroBallSound();
+        introBallPlayed = true;
     }
 }

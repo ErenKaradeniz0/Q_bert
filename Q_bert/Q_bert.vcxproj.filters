@@ -39,6 +39,9 @@
     <ClCompile Include="GameSession.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assests\sprites.bmp">
@@ -70,5 +73,34 @@
     <ClInclude Include="GameSession.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Sounds\Jump2.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="Sounds\Jump.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="Sounds\Hello.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="Sounds\Lift.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="Sounds\PlayerFall.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="Sounds\SnakeFall.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="Sounds\Speech.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="Sounds\Victory.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
   </ItemGroup>
 </Project>
