@@ -70,7 +70,6 @@ void DrawScore() {
         initialized = true;
     }
 
-    // Helper function to draw a single character
     auto DrawCharacter = [&](char c, int x, int y) {
         int spriteIndex = 0;
 
@@ -130,37 +129,7 @@ void DrawScore() {
 
 void DrawLives() {
     static ICBYTES miniQbert;
-    static bool initialized = false;
-
-    // One-time initialization of mini Q*bert sprite
-    if (!initialized) {
-        CreateImage(miniQbert, IntroCoordinates.I(3, 52), IntroCoordinates.I(4, 52), ICB_UINT);
-        initialized = true;
-    }
-
-    // First draw "LIVES" text using sprite letters
-    static ICBYTES letterSprite;
-    if (!initialized) {
-        CreateImage(letterSprite, 21, 21, ICB_UINT);
-    }
-
-    // Draw "LIVES" text
-    const char* livesText = "LIVES";
-    int currentX = 10;
-    for (int i = 0; livesText[i] != '\0'; i++) {
-        int spriteIndex = (livesText[i] - 'A') + 11;  // Convert letter to sprite index
-
-        Copy(Sprites3X,
-            IntroCoordinates.I(1, spriteIndex),
-            IntroCoordinates.I(2, spriteIndex),
-            IntroCoordinates.I(3, spriteIndex),
-            IntroCoordinates.I(4, spriteIndex),
-            letterSprite);
-
-        PasteNon0(letterSprite, currentX, 40, screenMatrix);
-        currentX += 25;
-    }
-
+    
     // Then draw mini Q*berts for each life
     Copy(Sprites3X,
         IntroCoordinates.I(1, 52),
@@ -169,12 +138,11 @@ void DrawLives() {
         IntroCoordinates.I(4, 52),
         miniQbert);
 
-    // Draw mini Q*berts vertically, starting under the "LIVES" text
     const int MINI_QBERT_SPACING = 35;  // Vertical spacing between Q*berts
-    const int START_Y = 70;  // Starting Y position (below "LIVES" text)
+    const int START_Y = 170;  // Starting Y position (below "LIVES" text)
 
     for (int i = 0; i < player.lifes; i++) {
-        PasteNon0(miniQbert, 20, START_Y + (i * MINI_QBERT_SPACING), screenMatrix);
+        PasteNon0(miniQbert, 25, START_Y + (i * MINI_QBERT_SPACING), screenMatrix);
     }
 }
 

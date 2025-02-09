@@ -10,6 +10,7 @@ extern int FRM1;
 extern ICBYTES screenMatrix;
 ICBYTES QbertTitle, PinkC, QB, IntroletterSprite;
 ICBYTES normalBall, bouncedBall, QbertText, diskSprite;
+ICBYTES Qbert, Tile, LeftAr, RightAr, ChText;
 
 ICBYTES IntroCoordinates{
     // Numbers (0-9)
@@ -73,7 +74,6 @@ ICBYTES IntroCoordinates{
 
 
 void DrawLogo() {
-    static ICBYTES Qbert, Tile, LeftAr, RightAr, ChText;
     static bool initialized = false;
     static int currentFrame = 0;
 
@@ -132,24 +132,24 @@ void DrawLogo() {
     Impress12x20(screenMatrix, 670, 10, "TM", 0xFFD700);
 
     // Draw Choose text
-    PasteNon0(ChText, 500, 80, screenMatrix);
+    PasteNon0(ChText, 25, 50, screenMatrix);
 
     // Arrow animation
     int animPhase = currentFrame % 20;
 
     if (animPhase < 10) {
-        PasteNon0(RightAr, 490, 110, screenMatrix);
-        PasteNon0(LeftAr, 630, 110, screenMatrix);
-    }
+        PasteNon0(RightAr, 15, 80, screenMatrix);
+        PasteNon0(LeftAr, 155, 80, screenMatrix);
+        }
 
-    if (animPhase >= 5 && animPhase < 15) {
-        PasteNon0(RightAr, 515, 110, screenMatrix);
-        PasteNon0(LeftAr, 605, 110, screenMatrix);
+        if (animPhase >= 5 && animPhase < 15) {
+        PasteNon0(RightAr, 40, 80, screenMatrix);
+        PasteNon0(LeftAr, 130, 80, screenMatrix);
     }
 
     // Animated tile
-    int tileY = 110 + (int)(5 * sin(currentFrame * 0.2f));
-    PasteNon0(Tile, 550, tileY, screenMatrix);
+    int tileY = 80 + (int)(5 * sin(currentFrame * 0.2f));
+    PasteNon0(Tile, 75, tileY, screenMatrix);
 }
 
 void DrawStartupAnimation() {
