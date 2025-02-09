@@ -245,6 +245,8 @@ void DrawStartupAnimation() {
 		if (Game::GetState() == Stopped)
 			return;
 
+        PlayStartupSounds(frame);
+
         // Set background color
         screenMatrix = 0x1A0F5F;
 
