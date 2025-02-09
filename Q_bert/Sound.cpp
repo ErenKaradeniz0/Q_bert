@@ -1,49 +1,66 @@
-#include "icb_gui.h"
 #include "Sound.h"
+#include "Game.h"
 
-
-//VOID* SoundThread2(LPVOID lpParam) {
-//    const char* soundFile = (const char*)lpParam;
-//    PlaySound(soundFile, NULL, SND_SYNC);
-//
-//    return 0;  // VOID* dönüþ tipiyle NULL döndür
-//}
-//
-//void CreateSoundThread(const char* soundPath) {
-//    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)SoundThread2, (LPVOID)soundPath, 0, NULL);
-//}
+VOID* HelloSound() {
+    PlaySound("Sounds/Hello.wav", NULL, SND_ASYNC);
+    return 0;
+}
 
 VOID* LiftSound() {
-    /*ICBYTES A;
-    ReadWave(A, "Sounds/Lift.wav");
-    A *= 1;
-    WaveOut(A, 0);*/
-    
-    PlaySound("Sounds/Lift.wav", NULL, SND_SYNC);
-
-    return 0;  // VOID* dönüþ tipiyle NULL döndür
+    PlaySound("Sounds/Lift.wav", NULL, SND_ASYNC);
+    return 0;
 }
 
 VOID* JumpSound() {
-    /*ICBYTES C;
-    ReadWave(C, "C://Users/deniz/Desktop/UniversityLessons4thClass/Parallel Programming/Projects/Q_bert/Q_bert/Sounds/Jump.wav");
-    C *= 6;
-    WaveOut(C, 1);*/
-
-    PlaySound("Sounds/Jump.wav", NULL, SND_FILENAME);
-
-    return 0;  // VOID* dönüþ tipiyle NULL döndür
+    PlaySound("Sounds/Jump.wav", NULL, SND_ASYNC);
+    return 0;
 }
 
-
-VOID* Jump2Sound() {
-    /*ICBYTES B;
-    ReadWave(B, "Sounds/Jump2.wav");
-    B *= 1;
-    WaveOut(B, 1);*/
-
-    PlaySound("Sounds/Jump2.wav", NULL, SND_SYNC);
-
-    return 0;  // VOID* dönüþ tipiyle NULL döndür
+VOID* SpeechSound() {
+    PlaySound("Sounds/Speech.wav", NULL, SND_ASYNC);
+    return 0;
 }
 
+bool helloPlayed = false;
+bool liftPlayed = false;
+bool speechPlayed = false;
+bool jumpSoundPlayed[4] = { false, false, false, false }; // Her zýplama için bir flag
+
+void PlayStartupSounds(int currentFrame) {
+    // Hello sesi için kontrol (frame 30)
+    if (currentFrame == 30 && !helloPlayed) {
+        HelloSound();
+        helloPlayed = true;
+    }
+
+    // Lift sesi için kontrol (frame 90)
+    if (currentFrame == 90 && !liftPlayed) {
+        LiftSound();
+        liftPlayed = true;
+    }
+
+    // Zýplama sesleri için kontrol
+    // Her zýplama baþlangýcýnda ses çal
+    if (currentFrame == 240 && !jumpSoundPlayed[0]) {
+        JumpSound();
+        jumpSoundPlayed[0] = true;
+    }
+    if (currentFrame == 290 && !jumpSoundPlayed[1]) {
+        JumpSound();
+        jumpSoundPlayed[1] = true;
+    }
+    if (currentFrame == 320 && !jumpSoundPlayed[2]) {
+        JumpSound();
+        jumpSoundPlayed[2] = true;
+    }
+    if (currentFrame == 350 && !jumpSoundPlayed[3]) {
+        JumpSound();
+        jumpSoundPlayed[3] = true;
+    }
+
+    // QBert text için speech sesi
+    if (currentFrame == 420 && !speechPlayed) {
+        SpeechSound();
+        speechPlayed = true;
+    }
+}
