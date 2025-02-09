@@ -2,6 +2,7 @@
 #include "Maze.h"
 #include "Player.h"
 #include "PrintHelper.h"
+#include "Sound.h"
 #include "icb_gui.h"
 #include <cstdlib>  // For srand() and rand()
 #include <ctime>    // For time()
@@ -195,4 +196,12 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
         player.lostLife(false);
 		//InterruptableInterruptableSleep(1000);
     }
+
+    /*const char* soundPath = "Sounds/Jump2.wav";
+    CreateSoundThread(soundPath);*/
+
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Jump2Sound, NULL, 0, NULL);
+
+
+
 }  

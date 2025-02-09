@@ -1,4 +1,5 @@
 #include "PrintHelper.h"
+#include "Sound.h"
 #include "icb_gui.h"
 #include <xmemory>
 #include "Main.h"

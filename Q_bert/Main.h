@@ -9,6 +9,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Maze.h"
+#include "Sound.h"
 
 // Global variables
 extern HANDLE renderMutex;

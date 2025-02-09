@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Maze.h"
+#include "Sound.h"
 #include "Main.h"
 
 #include "Game.h"
@@ -19,7 +20,7 @@ HANDLE turnDiscThreadHandle = NULL;
 HANDLE enemy1ThreadHandle = NULL;
 HANDLE enemy2ThreadHandle = NULL;
 HANDLE enemySnakeThreadHandle = NULL;
-HANDLE soundThreadHandle = NULL;
+//HANDLE soundThreadHandle = NULL;
 
 // Create window
 void ICGUI_Create() {
@@ -93,12 +94,10 @@ DWORD WINAPI EnemySnakeThread(LPVOID lpParam) {
     return 0;
 }
 
-DWORD WINAPI SoundThread(LPVOID lpParam) {
-    while (Game::Run()) {
-        //PlaySound
-    }
-    return 0;
-}
+//DWORD WINAPI SoundThread(LPVOID lpParam) {
+//    
+//    return 0;
+//}
 
 DWORD WINAPI GameControllerMain(LPVOID lpParam)
 {
@@ -124,8 +123,8 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam)
     turnDiscThreadHandle = CreateThread(NULL, 0, turnDiscThread, NULL, 0, NULL);
     enemy1ThreadHandle = CreateThread(NULL, 0, EnemyBall1Thread, NULL, 0, NULL);
     enemy2ThreadHandle = CreateThread(NULL, 0, EnemyBall2Thread, NULL, 0, NULL);
-    enemySnakeThreadHandle = CreateThread(NULL, 0, EnemySnakeThread, NULL, 0, NULL);
-    soundThreadHandle = CreateThread(NULL, 0, SoundThread, NULL, 0, NULL);
+	enemySnakeThreadHandle = CreateThread(NULL, 0, EnemySnakeThread, NULL, 0, NULL);
+    //soundThreadHandle = CreateThread(NULL, 0, SoundThread, NULL, 0, NULL);
 
     //Game::Run() freezes when Game::Pause() called
 	while (Game::RunMain()) 
