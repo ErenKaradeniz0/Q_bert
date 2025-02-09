@@ -60,7 +60,7 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
     }
 
     //PlaySound("Sounds/Jump.wav", NULL, SND_ASYNC);
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)JumpSound, NULL, 0, NULL);
+    //CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)JumpSound, NULL, 0, NULL);
 }
 
 void Player::lostLife(bool isFall) {
@@ -142,7 +142,7 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
     /*const char* soundPath = "Sounds/Lift.wav";
     CreateSoundThread(soundPath);*/
 
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LiftSound, NULL, 0, NULL);
+    //CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LiftSound, NULL, 0, NULL);
 
 
     while (br_x < 0 ? Discs[disc_id].x >= goal_x : Discs[disc_id].x < goal_x || Discs[disc_id].y > goal_y) {
