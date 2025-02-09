@@ -70,8 +70,11 @@ void Player::lostLife(bool isFall) {
     lifes--; // Decrease life
     Game::SleepI(100);
 	enemyBall1.isAlive = false;
+	enemyBall1.currentTile.id = -1;
 	enemyBall2.isAlive = false;
+    enemyBall1.currentTile.id = -1;
 	enemySnake.isAlive = false;
+    enemyBall1.currentTile.id = -1;
     if (isFall) {
         player.x = SquareBlocks[0].centerX;
         player.y = SquareBlocks[0].centerY;
