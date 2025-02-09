@@ -58,8 +58,8 @@ ICBYTES IntroCoordinates{
     { 387, 99, 282, 45},    //  QBERT Logo - idx 38
     { 387, 249, 150, 78},   //  Qbert text - idx 39
     { 816, 121, 27, 24},    //  Pink c Logo - idx 40
-    { 6, 72, 45, 30},       //  Bounced Ball - idx 41
-    { 54, 66, 45, 30},      //  Normal Ball - idx 42
+    { 6, 72, 45, 28},       //  Bounced Ball - idx 41
+    { 54, 66, 45, 32},      //  Normal Ball - idx 42
     { 240, 3, 47, 45},      //  Qbert Character - idx 43
     { 720, 438, 144, 18},    //  Change to Text - idx 44
     { 795, 354, 21, 24},       //  -> Symbol - idx 45
@@ -78,7 +78,9 @@ ICBYTES IntroCoordinates{
     { 552, 409, 153, 24},    //  Player Text 4 - idx 56
     { 552, 433, 153, 24},    //  Player Text 5 - idx 57
     { 552, 457, 153, 24},    //  Player Text 6 - idx 58
-    { 723, 355, 21, 30}      //  Player one  - idx 59
+    { 723, 355, 21, 30},      //  Player one  - idx 59
+
+    { 192, 6, 47, 45}      //  Bowing Qbert Character  - idx 60
 };
 
 void DrawSideObjects() {
@@ -366,14 +368,25 @@ void DrawStartupAnimation() {
                     }
                 }
 
-                Copy(Sprites3X,
-                    IntroCoordinates.I(1, 43),
-                    IntroCoordinates.I(2, 43),
-                    IntroCoordinates.I(3, 43),
-                    IntroCoordinates.I(4, 43),
-                    QB);
+                if (frame >= 390 && frame < 400) {  
+                    Copy(Sprites3X,
+                        IntroCoordinates.I(1, 60),  // Using Bowing Qbert
+                        IntroCoordinates.I(2, 60),
+                        IntroCoordinates.I(3, 60),
+                        IntroCoordinates.I(4, 60),
+                        QB);
+                }
+                else {
+                    Copy(Sprites3X,
+                        IntroCoordinates.I(1, 43),  // Using normal Q*bert
+                        IntroCoordinates.I(2, 43),
+                        IntroCoordinates.I(3, 43),
+                        IntroCoordinates.I(4, 43),
+                        QB);
+                }
                 PasteNon0(QB, currentX, currentY, screenMatrix);
             }
+
             if (frame > 240) {
                 RenderString(screenMatrix, "JUMP ON SQUARES TO", 120, 120);
                 RenderString(screenMatrix, "CHANGE THEM TO", 120, 150);
@@ -400,8 +413,6 @@ void DrawStartupAnimation() {
             }
 
             // Ball animation (360-420 frames)
-            bool ballHitHead = false;
-
             if (frame > 360 && frame <= 390) {
                 Copy(Sprites3X,
                     IntroCoordinates.I(1, 42),
@@ -411,9 +422,8 @@ void DrawStartupAnimation() {
                     normalBall);
 
                 float ballProgress = (frame - 360) / 30.0f;
-                if (ballProgress > 1.0f) ballProgress = 1.0f;
-
-                int ballY = 80 + (540 - 80) * ballProgress;
+                float easedProgress = ballProgress * ballProgress;  // Quadratic easing
+                int ballY = 80 + (540 - 80) * easedProgress;
 
                 if (ballY >= 540) {
                     ballY = 540;
@@ -424,28 +434,41 @@ void DrawStartupAnimation() {
                         IntroCoordinates.I(4, 41),
                         bouncedBall);
                     PasteNon0(bouncedBall, 140, ballY, screenMatrix);
-                    ballHitHead = true;
                 }
                 else {
                     PasteNon0(normalBall, 140, ballY, screenMatrix);
                 }
             }
 
+            // Çarpma sonrasý bekleme ve sekme (390-420 frames)
             if (frame > 390 && frame <= 420) {
-                float t = (frame - 390) / 30.0f;
-                if (t > 1.0f) t = 1.0f;
-
-                int bounceX = 140 + 50 * t;
-                int bounceY = 540 - 100 * t + 300 * t * t;
-
-                if (bounceY < 700) {
+                // Sadece 3 frame bounced ball göster (390-393 arasý)
+                if (frame <= 393) {
                     Copy(Sprites3X,
-                        IntroCoordinates.I(1, t < 0.5f ? 42 : 41),
-                        IntroCoordinates.I(2, t < 0.5f ? 42 : 41),
-                        IntroCoordinates.I(3, t < 0.5f ? 42 : 41),
-                        IntroCoordinates.I(4, t < 0.5f ? 42 : 41),
-                        t < 0.5f ? normalBall : bouncedBall);
-                    PasteNon0(t < 0.5f ? normalBall : bouncedBall, bounceX, bounceY, screenMatrix);
+                        IntroCoordinates.I(1, 41),
+                        IntroCoordinates.I(2, 41),
+                        IntroCoordinates.I(3, 41),
+                        IntroCoordinates.I(4, 41),
+                        bouncedBall);
+                    PasteNon0(bouncedBall, 140, 540, screenMatrix);
+                }
+                else {
+                    // Geri kalan tüm frameler'de sekme animasyonu (393-420 arasý)
+                    float t = (frame - 393) / 27.0f;
+                    if (t > 1.0f) t = 1.0f;
+
+                    int bounceX = 140 + 100 * t;
+                    int bounceY = 540 - 100 * t + 300 * t * t;
+
+                    if (bounceY < 700) {
+                        Copy(Sprites3X,
+                            IntroCoordinates.I(1, 42),
+                            IntroCoordinates.I(2, 42),
+                            IntroCoordinates.I(3, 42),
+                            IntroCoordinates.I(4, 42),
+                            normalBall);
+                        PasteNon0(normalBall, bounceX, bounceY, screenMatrix);
+                    }
                 }
             }
 
