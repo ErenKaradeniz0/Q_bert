@@ -21,6 +21,11 @@ VOID* SpeechSound() {
     return 0;
 }
 
+VOID* PlayerFallSound() {
+    PlaySound("Sounds/PlayerFall.wav", NULL, SND_ASYNC);
+    return 0;
+}
+
 bool helloPlayed = false;
 bool liftPlayed = false;
 bool speechPlayed = false;
