@@ -18,9 +18,9 @@ Enemy::Enemy() : isHatch(false),currentTile(SquareBlock()), state(7), willFall(f
 
 void Enemy::Spawn(bool isHatch, int state, bool isAlive) {
     srand(time(NULL));  // Seed the random number generator with the current time
+    SquareBlock randomtile = SquareBlocks[rand() % 2 + 1];
     this->isHatch = isHatch;
-	this->currentTile = SquareBlocks[rand() % 2 + 1];
-    this->x = currentTile.centerX;
+    this->x = randomtile.centerX;
     this->y = 0;
     this->state = state;
     this->isAlive = isAlive;
@@ -30,6 +30,8 @@ void Enemy::Spawn(bool isHatch, int state, bool isAlive) {
     while (this->y < limit) {
         this->y += 5;
         Game::SleepI(30);
+		if (this->y == 75)
+			this->currentTile = randomtile; // Set the current tile at %50 of animation
     }
     if(!isHatch)
         if (state == 1)
@@ -44,6 +46,10 @@ void Enemy::FallOffEdge(int move) {
         else if (state == 4)
             state = 3;
     // Calculate the total change in x
+
+    if (isHatch) {
+        SnakeFallSound();
+    }
 
     int x_change = (move == 0) ? 5 : (move == 1) ? -5 : 0;
 	int y_change = 5;
@@ -165,6 +171,19 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
     this->y -= 40;
     Game::SleepI(50);
 
+    // Zýplama baþlangýcýnda düþman tipine göre ses çal
+    if (!isHatch) {  // Red Ball veya Snake Egg
+        if (state == 1 || state == 2) {  // Red Ball
+            RedBallJumpSound();
+        }
+        else if (state == 3 || state == 4) {  // Snake Egg
+            SnakeEggJumpSound();
+        }
+    }
+    else {  // Snake
+        SnakeJumpSound();
+    }
+
     if (state == 2)
         state = 1;
     else if (state == 4)
@@ -189,19 +208,14 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
 
     x = goal_x;
     y = goal_y;
-    Game::SleepI(50);
-
     currentTile = GoalBlock;
-    if (player.currentTile == enemyBall1.currentTile.id || player.currentTile == enemyBall2.currentTile.id) {
+    if (player.currentTile == enemyBall1.currentTile.id || player.currentTile == enemyBall2.currentTile.id || player.currentTile == enemySnake.currentTile.id) {
         player.lostLife(false);
-		//InterruptableInterruptableSleep(1000);
     }
 
     /*const char* soundPath = "Sounds/Jump2.wav";
     CreateSoundThread(soundPath);*/
 
     //CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Jump2Sound, NULL, 0, NULL);
-
-
 
 }  

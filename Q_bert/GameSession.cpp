@@ -55,7 +55,7 @@ void GameSession::Refresh(int sleepTime)
         DrawScore();
 
         // Draw Qbert logo
-        DrawLogo();
+        DrawSideObjects();
 
         // Draw lives
         DrawLives();
@@ -71,36 +71,24 @@ void GameSession::Refresh(int sleepTime)
 
 }
 
-void GameSession:: ShowGameOverScreen() {
+void GameSession::ShowGameOverScreen() {
 
-    if (counter % 10 == 0)
+    if (counter % 60 < 20)
     {
-        if (counter % 40 == 0)
-        {
-			FillRect(screenMatrix, 220, 370, 260, 30, 0x000000);
-		}
-        else
-        {
+        FillRect(screenMatrix, 220, 370, 260, 30, 0x000000);
+    }
+    else
+    {
             RenderString(screenMatrix, "GAME OVER", 220, 375, 30);
-        }
     }
     counter++;
 }
 
+
 void GameSession:: DrawPaused()
 {
-    if (counter % 10 == 0)
-    {
-        if (counter % 30 == 0)
-        {
-            FillRect(screenMatrix, 270, 370, 170, 30, 0x000000);
-        }
-        else
-        {
-            RenderString(screenMatrix, "PAUSED", 270, 375, 30);
-        }
-    }
-    counter++;
+    FillRect(screenMatrix, 270, 370, 170, 30, 0x000000);
+    RenderString(screenMatrix,"PAUSED", 270, 375, 30);
 }
 
 GameSession::~GameSession()

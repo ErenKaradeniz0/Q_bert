@@ -17,6 +17,7 @@ extern ICBYTES screenMatrix, Sprites, Sprites3X;
 extern int FRM1;
 extern int keypressed;
 extern bool keyPressedControl;
+extern bool isAnimationFaster;	
 extern int score;
 
 extern Player player;

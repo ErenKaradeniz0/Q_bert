@@ -13,7 +13,7 @@ extern Player player;
 extern int keypressed;
 extern bool keyPressedControl;
 
-Player::Player() : x(0), y(0), currentTile(0), direction(7), jumpStatus(false), willFall(false), mazeOrder(false), lifes(3){}
+Player::Player() : x(0), y(0), currentTile(0), direction(7), willFall(false), mazeOrder(false), lifes(3){}
 
 void CreatePlayer() {
     player.x = SquareBlocks[0].centerX;
@@ -28,6 +28,8 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
     int br_x = 0, br_y = 0;
 
     Game::SleepI(50);
+
+    JumpSound();
 
     direction++;
     player.y -= 40;
@@ -53,9 +55,8 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
     Game::SleepI(50);
 
 
-    if (SquareBlocks[currentTile].blk_clr_state == 0 && jumpStatus) {
+    if (SquareBlocks[currentTile].blk_clr_state == 0) {
         SquareBlocks[currentTile].blk_clr_state = 1;
-        jumpStatus = !jumpStatus;
         score += 25; // Update score when tile color is changed
     }
 
@@ -64,9 +65,15 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
 }
 
 void Player::lostLife(bool isFall) {
+
     lifes--; // Decrease life
     Game::SleepI(100);
-
+	enemyBall1.isAlive = false;
+	enemyBall1.currentTile.id = -1;
+	enemyBall2.isAlive = false;
+    enemyBall1.currentTile.id = -1;
+	enemySnake.isAlive = false;
+    enemyBall1.currentTile.id = -1;
     if (isFall) {
         player.x = SquareBlocks[0].centerX;
         player.y = SquareBlocks[0].centerY;
@@ -74,10 +81,17 @@ void Player::lostLife(bool isFall) {
         direction = 7;
         mazeOrder = false; // Reset the falling flag
     }
+    else {
+		player.showLostLifeText = true;
+
+    }
 }
 
 void Player::FallOffEdge(char key) {
     willFall = false;
+
+    PlayerFallSound();
+
     // Calculate the total change in x
     int x_change = key == 'l' ? -5 : key == 'r' ? 5 : key == 'u' ? 5 : key == 'd' ? -5 : 0;
     int y_change = key == 'l' ? -5 : key == 'r' ? -5 : key == 'u' ? -5 : key == 'd' ? -5 : 0;
@@ -101,6 +115,8 @@ void Player::FallOffEdge(char key) {
 void Player::JumpDiscAnimation(int disc_id, int goal_x, int goal_y) {
     int br_x = 0, br_y = 0;
     Game::SleepI(50);
+
+    JumpSound();
 
     direction++;
     player.y -= 40;
@@ -139,11 +155,7 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
     br_x = (goal_x - Discs[disc_id].x) / (precision+5);
     br_y = (goal_y - Discs[disc_id].y) / (precision+3);
 
-    /*const char* soundPath = "Sounds/Lift.wav";
-    CreateSoundThread(soundPath);*/
-
-    //CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LiftSound, NULL, 0, NULL);
-
+    LiftSound();
 
     while (br_x < 0 ? Discs[disc_id].x >= goal_x : Discs[disc_id].x < goal_x || Discs[disc_id].y > goal_y) {
         if (br_x < 0 ? Discs[disc_id].x >= goal_x : Discs[disc_id].x < goal_x) {
@@ -155,6 +167,7 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
             player.y += br_y;
         }
         Game::SleepI(40);
+        
     }
     direction = 7;
     Sleep(50);
@@ -172,9 +185,8 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
 
     Discs[disc_id].show_state = false;
    
-    if (SquareBlocks[currentTile].blk_clr_state == 0 && jumpStatus) {
+    if (SquareBlocks[currentTile].blk_clr_state == 0) {
         SquareBlocks[currentTile].blk_clr_state = 1;
-        jumpStatus = !jumpStatus;
         score += 25; // Update score when tile color is changed
     }
 
@@ -182,50 +194,41 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
 }
 
 void Player::move(char key) {
-    int block_id = 0;
-    jumpStatus = true;
+    willFall = true;
     switch (key)
     {
     case 'l':
         direction = 3;
         if (SquareBlocks[currentTile].left >= 0) {
+
             //Also checks disk is available to jump
-            SquareBlocks[currentTile].left == 40 ? block_id = currentTile : currentTile = SquareBlocks[currentTile].left;
-        }
-        else {
-            jumpStatus = false;
-            willFall = true;
+            currentTile = SquareBlocks[currentTile].left;
+            willFall = false;
         }
         break;
     case 'r':
         direction = 5;
         if (SquareBlocks[currentTile].right >= 0) {
+
             currentTile = SquareBlocks[currentTile].right;
-        }
-        else {
-            jumpStatus = false;
-            willFall = true;
+            willFall = false;
         }
         break;
     case 'd':
         direction = 7;
         if (SquareBlocks[currentTile].down >= 0) {
+
             currentTile = SquareBlocks[currentTile].down;
-        }
-        else {
-            jumpStatus = false;
-            willFall = true;
+            willFall = false;
         }
         break;
     case 'u':
         direction = 1;
         if (SquareBlocks[currentTile].up >= 0) {
+
             //Also checks disk is available to jump
-            SquareBlocks[currentTile].up == 45 ? block_id = currentTile : currentTile = SquareBlocks[currentTile].up;
-        }
-        else {
-            jumpStatus = false;
-            willFall = true;
+            currentTile = SquareBlocks[currentTile].up;
+            willFall = false;
         }
         break;
     default:
@@ -237,23 +240,21 @@ void Player::move(char key) {
         return;
     }
 
-    if (jumpStatus) {
-        if (block_id != 0) {
-            for (int i = 0; i < 2; i++) {
-                if (Discs[i].block_id == block_id) {
-                    keyPressedControl = false;
-                    JumpDiscAnimation(i,Discs[i].center_x - 12, Discs[i].center_y - 30);
-                    keyPressedControl=true;
-                }
-            }
+    if (currentTile == 28 || currentTile == 29) {
+            keyPressedControl = false;
 
-        }
-        else {
-            MoveAnimation(key, SquareBlocks[currentTile].centerX, SquareBlocks[currentTile].centerY);
-        }
+            if (Discs[0].block_id == currentTile) {
+                JumpDiscAnimation(0,Discs[0].center_x - 12, Discs[0].center_y - 30);
+            }
+            else {
+                JumpDiscAnimation(1, Discs[1].center_x - 12, Discs[1].center_y - 30);
+            }
+            keyPressedControl = true;
+
+
     }
     else {
-        MoveAnimation(key, x + (key == 'l' ? -20 : key == 'r' ? 20 : key == 'w' ? -20 : key == 's' ? 20 : 0), y + (key == 'u' ? -10 : key == 'd' ? 10 : 0));
+        MoveAnimation(key, SquareBlocks[currentTile].centerX, SquareBlocks[currentTile].centerY);
     }
 }
 
