@@ -64,15 +64,22 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
 }
 
 void Player::lostLife(bool isFall) {
+
     lifes--; // Decrease life
     Game::SleepI(100);
-
+	enemyBall1.isAlive = false;
+	enemyBall2.isAlive = false;
+	enemySnake.isAlive = false;
     if (isFall) {
         player.x = SquareBlocks[0].centerX;
         player.y = SquareBlocks[0].centerY;
         player.currentTile = 0;
         direction = 7;
         mazeOrder = false; // Reset the falling flag
+    }
+    else {
+		player.showLostLifeText = true;
+
     }
 }
 

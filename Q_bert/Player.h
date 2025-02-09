@@ -8,6 +8,8 @@ public:
     bool willFall;
     bool mazeOrder;
     int lifes;
+	bool showLostLifeText;
+    int lostLifeCounter;
 
     Player();
     void MoveAnimation(char key, int goal_x, int goal_y);
