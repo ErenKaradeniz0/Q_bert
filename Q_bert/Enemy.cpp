@@ -189,19 +189,14 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
 
     x = goal_x;
     y = goal_y;
-    Game::SleepI(50);
-
     currentTile = GoalBlock;
-    if (player.currentTile == enemyBall1.currentTile.id || player.currentTile == enemyBall2.currentTile.id) {
+    if (player.currentTile == enemyBall1.currentTile.id || player.currentTile == enemyBall2.currentTile.id || player.currentTile == enemySnake.currentTile.id) {
         player.lostLife(false);
-		//InterruptableInterruptableSleep(1000);
     }
 
     /*const char* soundPath = "Sounds/Jump2.wav";
     CreateSoundThread(soundPath);*/
 
     //CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Jump2Sound, NULL, 0, NULL);
-
-
 
 }  

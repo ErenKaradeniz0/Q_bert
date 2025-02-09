@@ -29,6 +29,8 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
 
     Game::SleepI(50);
 
+    JumpSound();
+
     direction++;
     player.y -= 40;
 
@@ -68,8 +70,11 @@ void Player::lostLife(bool isFall) {
     lifes--; // Decrease life
     Game::SleepI(100);
 	enemyBall1.isAlive = false;
+	enemyBall1.currentTile.id = -1;
 	enemyBall2.isAlive = false;
+    enemyBall1.currentTile.id = -1;
 	enemySnake.isAlive = false;
+    enemyBall1.currentTile.id = -1;
     if (isFall) {
         player.x = SquareBlocks[0].centerX;
         player.y = SquareBlocks[0].centerY;
@@ -85,6 +90,9 @@ void Player::lostLife(bool isFall) {
 
 void Player::FallOffEdge(char key) {
     willFall = false;
+
+    PlayerFallSound();
+
     // Calculate the total change in x
     int x_change = key == 'l' ? -5 : key == 'r' ? 5 : key == 'u' ? 5 : key == 'd' ? -5 : 0;
     int y_change = key == 'l' ? -5 : key == 'r' ? -5 : key == 'u' ? -5 : key == 'd' ? -5 : 0;
@@ -108,6 +116,8 @@ void Player::FallOffEdge(char key) {
 void Player::JumpDiscAnimation(int disc_id, int goal_x, int goal_y) {
     int br_x = 0, br_y = 0;
     Game::SleepI(50);
+
+    JumpSound();
 
     direction++;
     player.y -= 40;

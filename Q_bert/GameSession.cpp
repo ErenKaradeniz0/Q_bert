@@ -55,7 +55,7 @@ void GameSession::Refresh(int sleepTime)
         DrawScore();
 
         // Draw Qbert logo
-        DrawLogo();
+        DrawSideObjects();
 
         // Draw lives
         DrawLives();
