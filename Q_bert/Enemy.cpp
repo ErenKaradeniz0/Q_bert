@@ -200,7 +200,7 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
     /*const char* soundPath = "Sounds/Jump2.wav";
     CreateSoundThread(soundPath);*/
 
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Jump2Sound, NULL, 0, NULL);
+    //CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Jump2Sound, NULL, 0, NULL);
 
 
 
