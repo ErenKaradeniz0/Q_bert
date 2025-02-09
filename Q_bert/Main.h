@@ -11,7 +11,6 @@
 #include "Maze.h"
 
 // Global variables
-extern bool gamePaused;
 extern HANDLE renderMutex;
 extern ICBYTES screenMatrix, Sprites, Sprites3X;
 extern int FRM1;

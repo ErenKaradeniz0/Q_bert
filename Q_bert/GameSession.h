@@ -8,6 +8,7 @@
 
 class GameSession
 {
+    long long counter;
     int* _screenHandle;
     ICBYTES _screenMatrix;
 
@@ -18,6 +19,7 @@ public:
     GameSession(int* screenHandle, int x, int y);
     void Refresh(int sleepTime = 30);
     void ShowGameOverScreen();
+    void DrawPaused();
     ~GameSession();
 };
 

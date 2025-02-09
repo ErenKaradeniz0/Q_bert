@@ -16,7 +16,7 @@ extern Player player;
 extern Enemy enemyBall1, enemyBall2, enemySnake;
 ICBYTES CurrentTileMatrix, PlayerMatrix, Enemy1Matrix, Enemy2Matrix, DiscMatrix;
 
-const std::map<char, int> CHAR_INDICES = {
+std::map<char, int> CHAR_INDICES = {
     {'0', 1}, {'1', 2}, {'2', 3}, {'3', 4}, {'4', 5},
     {'5', 6}, {'6', 7}, {'7', 8}, {'8', 9}, {'9', 10},
     {'A', 11}, {'B', 12}, {'C', 13}, {'D', 14}, {'E', 15},
@@ -28,84 +28,38 @@ const std::map<char, int> CHAR_INDICES = {
 };
 
 void RenderChar(ICBYTES& screen, char c, int x, int y) {
-    auto it = CHAR_INDICES.find(c);
-    if (it == CHAR_INDICES.end()) return;
+
+    int index = 0;
+    index = CHAR_INDICES[c];
+
+    if (index == 0) return;
+
 
     ICBYTES letterSprite;
     Copy(Sprites3X,
-        IntroCoordinates.I(1, it->second),
-        IntroCoordinates.I(2, it->second),
-        IntroCoordinates.I(3, it->second),
-        IntroCoordinates.I(4, it->second),
+        IntroCoordinates.I(1, index),
+        IntroCoordinates.I(2, index),
+        IntroCoordinates.I(3, index),
+        IntroCoordinates.I(4, index),
         letterSprite);
     PasteNon0(letterSprite, x, y, screen);
+    Free(letterSprite);
 }
 
 void RenderString(ICBYTES& screen, const char* text, int x, int y, int spacing) {
     int currentX = x;
-    while (*text) {
-        if (*text != ' ') {
+    while (true)
+    {
+		if (*text == '\0') break;
+
+        if (*text != ' ')
+        {
             RenderChar(screen, *text, currentX, y);
         }
         currentX += spacing;
         text++;
     }
 }
-
-void DrawPaused() {
-    static ICBYTES letterSprite;
-    static bool initialized = false;
-    static bool showText = true;
-    static int blinkTimer = 0;
-    const int BLINK_SPEED = 500;
-
-    // One-time initialization
-    if (!initialized) {
-        CreateImage(letterSprite, 21, 21, ICB_UINT);
-        initialized = true;
-    }
-
-    // Helper function to draw a single character
-    auto DrawCharacter = [&](char c, int x, int y) {
-        int spriteIndex = 0;
-
-        if (c >= 'A' && c <= 'Z') {
-            spriteIndex = (c - 'A') + 11;  // Letters start at index 11
-        }
-        else {
-            return;
-        }
-
-        Copy(Sprites3X,
-            IntroCoordinates.I(1, spriteIndex),
-            IntroCoordinates.I(2, spriteIndex),
-            IntroCoordinates.I(3, spriteIndex),
-            IntroCoordinates.I(4, spriteIndex),
-            letterSprite);
-
-        PasteNon0(letterSprite, x, y, screenMatrix);
-        };
-
-    FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
-
-    if (GetTickCount() - blinkTimer > BLINK_SPEED) {
-        showText = !showText;
-        blinkTimer = GetTickCount();
-    }
-
-
-    if (showText) {
-        const char* pausedText = "PAUSED";
-        int currentX = 265;
-        for (int i = 0; pausedText[i] != '\0'; i++) {
-            DrawCharacter(pausedText[i], currentX, 375);
-            currentX += 25;
-        }
-    }
-
-    DisplayImage(FRM1, screenMatrix);
-}
-
 
 void DrawScore() {
     static ICBYTES letterSprite;

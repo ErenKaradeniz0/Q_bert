@@ -48,7 +48,7 @@ int Game::Pause()
 		return COMMAND_FAILED;
 
 	wait = INFINITE;
-	ResetEvent(gameRunningEvent);
+	ResetEvent(gameRunningEvent); //true -> false
 
 	return COMMAND_SUCCESS;
 }
@@ -81,6 +81,6 @@ bool Game::Run()
 
 bool Game::RunMain()
 {
-	return WaitForSingleObject(gameStoppingEvent, wait) == WAIT_TIMEOUT;
+	return WaitForSingleObject(gameStoppingEvent, 0) == WAIT_TIMEOUT;
 }
 

@@ -27,17 +27,12 @@ void ICGUI_Create() {
     ICG_MWSize(740, 800);
 }
 
+bool paused = false;
 DWORD WINAPI InputThread(LPVOID lpParam) {
     while (Game::Run()) {
         if (keyPressedControl) {
-            if (keypressed == 'P' || keypressed == 'p') {
-                gamePaused = !gamePaused; // Toggle pause state
-                keypressed = 0; // Reset keypress
-                Game::SleepI(200); // Prevent rapid re-press
-                continue;
-            }
-
-            if (!gamePaused) { // Only move if the game is not paused
+			//Sleep(200); // Prevent rapid re-press
+            if (Game::GetState() == Running) { // Only move if the game is not paused
                 if (keypressed == 37) player.move('l');
                 else if (keypressed == 39) player.move('r');
                 else if (keypressed == 38) player.move('u');
@@ -136,6 +131,14 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam)
 	while (Game::RunMain()) 
     {
         gameptr->Refresh(); // Refresh the screen
+        if ((keypressed == 'P' || keypressed == 'p') && Game::GetState() == Running)
+		{
+			Game::Pause();
+		}
+		else if ((keypressed == 'R' || keypressed == 'r') && Game::GetState() == Paused)
+		{
+			Game::Resume();
+		}
     }
 
     //Delete the game object
@@ -158,11 +161,16 @@ void WhenKeyPressed(int k) {
     keypressed = k;
 }
 
+void WhenKeyReleased(int k) {
+	keypressed = 0;
+}
+
 void ICGUI_main() {
     FRM1 = ICG_FrameMedium(5, 40, 1, 1);
     int* FRM1_PTR = new int(FRM1);
     ICG_Button(5, 5, 150, 25, "START/STOP GAME", StartStopGame, FRM1_PTR);
     ICG_SetOnKeyPressed(WhenKeyPressed);
+	ICG_SetOnKeyUp(WhenKeyReleased);
     CreateImage(screenMatrix, 700, 700, ICB_UINT);
 
     ReadImage("Assests/sprites.bmp", Sprites);

@@ -28,10 +28,13 @@ void GameSession::Refresh(int sleepTime)
     if (player.lifes <= 0) {
         ShowGameOverScreen();
     }
-	else if (Game::GetState() == GameState::Paused)
+    else if (Game::GetState() == GameState::Paused)
+    {
 		DrawPaused();
+    }
     else if(Game::GetState() == GameState::Running && !isGameOver)
     {
+        counter = 0;
         screenMatrix = 0; // Clear the screen
 
         if (player.mazeOrder) {
@@ -67,24 +70,36 @@ void GameSession::Refresh(int sleepTime)
     Sleep(30);
 }
 
-
 void GameSession:: ShowGameOverScreen() {
-    isGameOver = true;
-    Game::SleepI(30); 
 
-    const int BLINK_COUNT = 10;
-    const int BLINK_DELAY = 300;
-
-    for (int i = 0; i < BLINK_COUNT; i++) {
-		if (i % 2 == 0)
+    if (counter % 10 == 0)
+    {
+        if (counter % 40 == 0)
+        {
 			FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
-		else
-			RenderString(screenMatrix, "GAME OVER", 225, 375, 25);
-        Game::SleepI(BLINK_DELAY);
-
-        DisplayImage(FRM1, screenMatrix);
+		}
+        else
+        {
+            RenderString(screenMatrix, "GAME OVER", 225, 375, 25);
+        }
     }
-	Game::Stop();
+    counter++;
+}
+
+void GameSession:: DrawPaused()
+{
+    if (counter % 10 == 0)
+    {
+        if (counter % 30 == 0)
+        {
+            FillRect(screenMatrix, 200, 350, 275, 75, 0x000000);
+        }
+        else
+        {
+            RenderString(screenMatrix, "PAUSED", 225, 375, 25);
+        }
+    }
+    counter++;
 }
 
 GameSession::~GameSession()
