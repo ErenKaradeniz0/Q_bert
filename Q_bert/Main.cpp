@@ -10,18 +10,10 @@
 #include "GameSession.h"
 // Globals
 bool gamePaused = false;
-HANDLE renderMutex;
 int keypressed;
 bool keyPressedControl;
 bool isAnimationFaster = false;
 int score = 0; // Global score variable
-
-HANDLE inputThreadHandle = NULL;
-HANDLE turnDiscThreadHandle = NULL;
-HANDLE enemy1ThreadHandle = NULL;
-HANDLE enemy2ThreadHandle = NULL;
-HANDLE enemySnakeThreadHandle = NULL;
-//HANDLE soundThreadHandle = NULL;
 
 // Create window
 void ICGUI_Create() {
@@ -39,6 +31,51 @@ DWORD WINAPI InputThread(LPVOID lpParam) {
                 else if (keypressed == 38) player.move('u');
                 else if (keypressed == 40) player.move('d');
             }
+        }
+    }
+    return 0;
+}
+DWORD WINAPI playerSoundThread(LPVOID lpParam) {
+    while (Game::Run()) {
+        if (player.playJumpSound) {
+			player.playJumpSound = false;
+            JumpSound();
+        }
+		if (player.playFallingSound) {
+			player.playFallingSound = false;
+			PlayerFallSound();
+		}
+        if (player.playSwearingSound) {
+			player.playSwearingSound = false;
+			SpeechSound();
+        }
+    }
+    return 0;
+}
+
+DWORD WINAPI enemyBall1SoundThread(LPVOID lpParam) {
+    while (Game::Run()) {
+        if (enemyBall1.PlayJumpSound) {
+            enemyBall1.PlayJumpSound = false;
+            RedBallJumpSound();
+        }
+    }
+    return 0;
+}
+DWORD WINAPI enemyBall2SoundThread(LPVOID lpParam) {
+    while (Game::Run()) {
+        if (enemyBall2.PlayJumpSound) {
+            enemyBall2.PlayJumpSound = false;
+            RedBallJumpSound();;
+        }
+    }
+    return 0;
+}
+DWORD WINAPI SnakeSoundThread(LPVOID lpParam) {
+    while (Game::Run()) {
+        if (enemySnake.PlayJumpSound) {
+            enemySnake.PlayJumpSound = false;
+            SnakeEggJumpSound();
         }
     }
     return 0;
@@ -124,11 +161,20 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam)
     CreatePlayer();
 
     // Yeni thread'leri oluştur
-    inputThreadHandle = CreateThread(NULL, 0, InputThread, NULL, 0, NULL);
-    turnDiscThreadHandle = CreateThread(NULL, 0, turnDiscThread, NULL, 0, NULL);
-    enemy1ThreadHandle = CreateThread(NULL, 0, EnemyBall1Thread, NULL, 0, NULL);
-    enemy2ThreadHandle = CreateThread(NULL, 0, EnemyBall2Thread, NULL, 0, NULL);
-	enemySnakeThreadHandle = CreateThread(NULL, 0, EnemySnakeThread, NULL, 0, NULL);
+    
+
+    CreateThread(NULL, 0, InputThread, NULL, 0, NULL);
+    CreateThread(NULL, 0, turnDiscThread, NULL, 0, NULL);
+    CreateThread(NULL, 0, EnemyBall1Thread, NULL, 0, NULL);
+    CreateThread(NULL, 0, EnemyBall2Thread, NULL, 0, NULL);
+    CreateThread(NULL, 0, EnemySnakeThread, NULL, 0, NULL);
+
+    //Sound Threads
+    CreateThread(NULL, 0, playerSoundThread, NULL, 0, NULL);
+    CreateThread(NULL, 0, enemyBall1SoundThread, NULL, 0, NULL);
+    CreateThread(NULL, 0, enemyBall2SoundThread, NULL, 0, NULL);
+    CreateThread(NULL, 0, SnakeSoundThread, NULL, 0, NULL);
+
     //soundThreadHandle = CreateThread(NULL, 0, SoundThread, NULL, 0, NULL);
 
     //Game::Run() freezes when Game::Pause() called
@@ -137,7 +183,7 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam)
         gameptr->Refresh(); // Refresh the screen
         if ((keypressed == 'P' || keypressed == 'p') && Game::GetState() == Running)
 		{
-			Game::Pause();
+			Game::Pause(true);
 		}
 		else if ((keypressed == 'R' || keypressed == 'r') && Game::GetState() == Paused)
 		{

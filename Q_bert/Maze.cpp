@@ -43,11 +43,11 @@ void PyramidMatrix() {
 }
 
 void CreateDisc() {
-    Discs[0] = { SquareBlocks[10].x - 50,SquareBlocks[10].y - 40,10,true,false }; //x,y,block_id,show_state,move_state 10th   
+    Discs[0] = { SquareBlocks[10].x - 50,SquareBlocks[10].y - 40,28,10,true,false }; //x,y,block_id,show_state,move_state 10th   
     Discs[0].center_x = Discs[0].x + 8;
     Discs[0].center_y = Discs[0].y + 5;
 
-    Discs[1] = { SquareBlocks[14].x + 100,SquareBlocks[14].y - 40,14,true,false }; //x,y,block_id,show_state,move_state 14th
+    Discs[1] = { SquareBlocks[14].x + 100,SquareBlocks[14].y - 40,29,14,true,false }; //x,y,block_id,show_state,move_state 14th
     Discs[1].center_x = Discs[1].x + 8;
     Discs[1].center_y = Discs[1].y + 5;
 }

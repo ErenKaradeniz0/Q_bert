@@ -12,7 +12,6 @@
 #include "Sound.h"
 
 // Global variables
-extern HANDLE renderMutex;
 extern ICBYTES screenMatrix, Sprites, Sprites3X;
 extern int FRM1;
 extern int keypressed;

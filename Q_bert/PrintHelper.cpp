@@ -199,12 +199,16 @@ void DrawPlayer() {
     PasteNon0(PlayerMatrix, player.x, player.y, screenMatrix);
 
     if (player.showLostLifeText) {
+
+		Game::Pause(false);
         if (player.lostLifeCounter < 20) {
             player.lostLifeCounter++;
             Copy(Sprites3X, PlayerCoordinates.I(1, 9), PlayerCoordinates.I(2, 9), PlayerCoordinates.I(3, 9), PlayerCoordinates.I(4, 9), PlayerMatrix);
             PasteNon0(PlayerMatrix, player.currentTile.centerX - 30, player.currentTile.centerY - 80, screenMatrix);
         }
         else {
+            Game::Resume();
+
             player.showLostLifeText = false;
             player.lostLifeCounter = 0; // Reset counter
         }
