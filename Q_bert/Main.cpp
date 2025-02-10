@@ -33,7 +33,6 @@ bool paused = false;
 DWORD WINAPI InputThread(LPVOID lpParam) {
     while (Game::Run()) {
         if (keyPressedControl) {
-			//Sleep(200); // Prevent rapid re-press
             if (Game::GetState() == Running) { // Only move if the game is not paused
                 if (keypressed == 37) player.move('l');
                 else if (keypressed == 39) player.move('r');
@@ -58,7 +57,7 @@ DWORD WINAPI turnDiscThread(LPVOID lpParam) {
 }
 
 DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
-    while (Game::Run()) {
+    while (!Game::Run()) {
         Game::SleepI(200);
         if (enemyBall1.isAlive)
             enemyBall1.move();
@@ -70,7 +69,7 @@ DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
 }
 
 DWORD WINAPI EnemyBall2Thread(LPVOID lpParam) {
-    while (Game::Run()) {
+    while (!Game::Run()) {
         Game::SleepI(200);
         if (enemyBall2.isAlive)
             enemyBall2.move();
@@ -83,7 +82,7 @@ DWORD WINAPI EnemyBall2Thread(LPVOID lpParam) {
 }
 
 DWORD WINAPI EnemySnakeThread(LPVOID lpParam) {
-    while (Game::Run()) {
+    while (!Game::Run()) {
         Game::SleepI(200);
         if (enemySnake.isAlive)
             enemySnake.move();
@@ -106,7 +105,7 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam)
 
     keyPressedControl = true;
 
-    DrawStartupAnimation();
+    //DrawStartupAnimation();
 
     // Reset the screen
     screenMatrix = 0;
