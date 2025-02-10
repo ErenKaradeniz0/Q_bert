@@ -10,6 +10,9 @@ public:
     int lifes;
 	bool showLostLifeText;
     int lostLifeCounter;
+	bool playJumpSound;
+    bool playFallingSound;
+    bool playSwearingSound;
 
     Player();
     void MoveAnimation(char key, int goal_x, int goal_y);

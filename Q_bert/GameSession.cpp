@@ -16,7 +16,9 @@ Enemy enemySnake; // Global enemy 2
 int Victorycounter = 0;
 bool isGameOver = false;
 bool isVictory = false;
+bool isPaused = false;
 extern int score;
+extern int keypressed;
 
 GameSession::GameSession(int* screenHandle, int x, int y)
 {
@@ -36,10 +38,7 @@ void GameSession::Refresh(int sleepTime)
     if (player.lifes <= 0) {
         ShowGameOverScreen();
     }
-    else if (Game::GetState() == GameState::Paused) {
-        DrawPaused();
-    }
-    else if (Game::GetState() == GameState::Running && !isGameOver) {
+    else if (Game::GetState() != GameState::Stopped && !isGameOver) {
         counter = 0;
         screenMatrix = 0; // Clear the screen
 
@@ -70,6 +69,8 @@ void GameSession::Refresh(int sleepTime)
             // Draw player after map if not falling
             DrawPlayer();
         }
+		if (isPaused)
+			DrawPaused();
         if (score == 700) {
             isVictory = true;
             ShowVictoryScreen();
@@ -78,6 +79,7 @@ void GameSession::Refresh(int sleepTime)
 }
 
 void GameSession::ShowGameOverScreen() {
+    Game::Pause(false);
     if (counter % 60 < 20) {
         FillRect(screenMatrix, 220, 370, 260, 30, 0x000000);
     }
@@ -85,7 +87,8 @@ void GameSession::ShowGameOverScreen() {
         RenderString(screenMatrix, "GAME OVER", 220, 375, 30);
     }
     counter++;
-    if (counter == 180) {
+    if (counter == 90) {
+        Game::Resume();
         Game::Stop();
     }
 }
