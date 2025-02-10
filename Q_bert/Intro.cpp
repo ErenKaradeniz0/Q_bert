@@ -4,6 +4,7 @@
 #include <xmemory>
 #include "Main.h"
 #include "Game.h"
+#include <vector>
 
 extern ICBYTES Sprites3X;
 extern int FRM1;
@@ -82,6 +83,134 @@ ICBYTES IntroCoordinates{
 
     { 192, 6, 47, 45}      //  Bowing Qbert Character  - idx 60
 };
+
+// intro.cpp'nin üstüne ekle
+std::vector<std::pair<std::string, int>> highScores;
+char currentName[4] = "AAA";
+int currentLetterIndex = 0;
+
+// Dosya iþlemleri için fonksiyonlar
+void LoadHighScores() {
+    std::ifstream file("highscores.txt");
+    if (file.is_open()) {
+        std::string name;
+        int score;
+        while (file >> name >> score) {
+            if (name.length() > 3) name = name.substr(0, 3);
+            highScores.push_back({ name, score });
+        }
+        file.close();
+    }
+}
+
+void SaveHighScores() {
+    std::ofstream file("highscores.txt");
+    if (file.is_open()) {
+        for (const auto& score : highScores) {
+            file << score.first << " " << score.second << "\n";
+        }
+        file.close();
+    }
+}
+
+void ShowHighScoreScreen(int currentScore) {
+    // High scores'larý yükle
+    highScores.clear();
+    LoadHighScores();
+
+   
+    bool isEnteringName = false;
+    if (highScores.size() < 5 || currentScore > highScores.back().second) {
+        isEnteringName = true;
+        currentLetterIndex = 0;
+        strcpy_s(currentName, "AAA");
+    }
+
+    int frame = 0;
+
+    while (Game::GetState() != Stopped) {
+        screenMatrix = 0x1A0F5F;  // Koyu mavi arka plan
+
+        // HIGH SCORES baþlýðý
+        RenderString(screenMatrix, "HIGH SCORES", 200, 50);
+
+        // Skorlar listesi
+        int startY = 150;
+        for (size_t i = 0; i < highScores.size(); i++) {
+            char buffer[50];
+
+            // Sýra ve isim
+            sprintf_s(buffer, sizeof(buffer), "%d. %s", (int)(i + 1), highScores[i].first.c_str());
+            RenderString(screenMatrix, buffer, 150, startY + i * 40);
+
+            // Skor
+            sprintf_s(buffer, sizeof(buffer), "%d", highScores[i].second);
+            RenderString(screenMatrix, buffer, 350, startY + i * 40);
+        }
+
+        if (isEnteringName) {
+            RenderString(screenMatrix, "ENTER YOUR NAME:", 150, 400);
+
+            // Ýsim giriþi
+            for (int i = 0; i < 3; i++) {
+                char letterStr[2] = { currentName[i], '\0' };
+                if (i == currentLetterIndex && frame % 30 < 15) {
+                    RenderString(screenMatrix, "_", 250 + i * 30, 450);
+                }
+                else {
+                    RenderString(screenMatrix, letterStr, 250 + i * 30, 450);
+                }
+            }
+
+            if (keypressed != 0) {
+                if (keypressed >= 'A' && keypressed <= 'Z') {
+                    currentName[currentLetterIndex] = keypressed;
+                    if (currentLetterIndex < 2) currentLetterIndex++;
+                }
+                else if (keypressed >= 'a' && keypressed <= 'z') {
+                    currentName[currentLetterIndex] = toupper(keypressed);
+                    if (currentLetterIndex < 2) currentLetterIndex++;
+                }
+                else if (keypressed == VK_LEFT && currentLetterIndex > 0) {
+                    currentLetterIndex--;
+                }
+                else if (keypressed == VK_RIGHT && currentLetterIndex < 2) {
+                    currentLetterIndex++;
+                }
+                else if (keypressed == VK_BACK && currentLetterIndex > 0) {
+                    currentLetterIndex--;
+                    currentName[currentLetterIndex] = 'A';
+                }
+                else if (keypressed == VK_RETURN) {
+                    std::string name(currentName, 3);
+                    highScores.push_back({ name, currentScore });
+                    std::sort(highScores.begin(), highScores.end(),
+                        [](const auto& a, const auto& b) { return a.second > b.second; });
+                    if (highScores.size() > 5) {
+                        highScores.resize(5);
+                    }
+                    SaveHighScores();
+                    isEnteringName = false;
+                }
+                keypressed = 0;
+            }
+        }
+        else {
+            if (frame % 60 < 30) {
+                RenderString(screenMatrix, "PRESS ENTER TO CONTINUE", 150, 500);
+            }
+
+            if (keypressed == VK_RETURN) {
+                Game::Stop();
+                break;
+            }
+        }
+
+        DisplayImage(FRM1, screenMatrix);
+        Game::SleepI(33);
+        frame++;
+    }
+}
 
 void DrawSideObjects() {
     static int currentFrame = 0;
