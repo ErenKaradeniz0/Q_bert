@@ -25,14 +25,19 @@ void CreatePlayer() {
 }
 
 void Player::MoveAnimation(char key, int goal_x, int goal_y) {
-    int br_x = 0, br_y = 0;
-	player.playJumpSound = true; 
-
+    player.playJumpSound = true;
     direction++;
+
+    int initial_diff_x = abs(goal_x - player.x);
+    int initial_diff_y = abs(goal_y - player.y);
+    int totalSteps = max(initial_diff_x, initial_diff_y) / 5;
+    int halfSteps = totalSteps / 2;
+    int stepCount = 0;
+
     player.y -= 40;
 
-    player.x < goal_x ? br_x = 5 : br_x = -5;
-    player.y < goal_y ? br_y = 5 : br_y = -5;
+    int br_x = (player.x < goal_x) ? 5 : -5;
+    int br_y = (player.y < goal_y) ? 5 : -5;
 
     while (player.x != goal_x || player.y != goal_y) {
         if (player.x != goal_x) {
@@ -41,33 +46,31 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
         if (player.y != goal_y) {
             player.y += br_y;
         }
+
+        stepCount++;
+
+        // %50
+        if (stepCount == halfSteps) {
+            if (key == 'l') currentTile = *currentTile.left;
+            else if (key == 'u') currentTile = *currentTile.up;
+            else if (key == 'd') currentTile = *currentTile.down;
+            else if (key == 'r') currentTile = *currentTile.right;
+        }
+
         Game::SleepI(15);
     }
 
     direction--;
     player.x = goal_x;
     player.y = goal_y;
-
-    if (key == 'l') {
-        currentTile = *currentTile.left;
-    }
-    else if (key == 'u') {
-        currentTile = *currentTile.up;
-    }
-    else if (key == 'd') {
-        currentTile = *currentTile.down;
-    }
-    else if (key == 'r') {
-        currentTile = *currentTile.right;
-    }
-
     willFall = false;
 
     if (SquareBlocks[currentTile.id].state == 0) {
         SquareBlocks[currentTile.id].state = 2;
-        score += 25; // Update score when tile color is changed
+        score += 25;
     }
 }
+
 
 void Player::lostLife(bool isFall) {
 
@@ -202,6 +205,33 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
 
 void Player::move(char key) {
     willFall = true;
+
+    if (currentTile.id == 10 && key == 'l') {
+        if (Discs[0].show_state) {  // Only use disc if it's still available
+            keyPressedControl = false;
+            JumpDiscAnimation(0, Discs[0].center_x - 12, Discs[0].center_y - 30);
+            keyPressedControl = true;
+            willFall = false;
+        }
+        else {
+            // Disc was already used, Q*bert should fall
+            FallOffEdge(key);
+            return;
+        }
+    }
+    else if (currentTile.id == 14 && key == 'u') {
+        if (Discs[1].show_state) {  // Only use disc if it's still available
+            keyPressedControl = false;
+            JumpDiscAnimation(1, Discs[1].center_x - 12, Discs[1].center_y - 30);
+            keyPressedControl = true;
+            willFall = false;
+        }
+        else {
+            // Disc was already used, Q*bert should fall
+            FallOffEdge(key);
+            return;
+        }
+    }
     switch (key)
     {
     case 'l':
@@ -234,34 +264,6 @@ void Player::move(char key) {
         break;
     }
     keypressed = 0;
-
-
-    if (currentTile.id == 10 && key == 'l') {
-        if (Discs[0].show_state) {  // Only use disc if it's still available
-            keyPressedControl = false;
-            JumpDiscAnimation(0, Discs[0].center_x - 12, Discs[0].center_y - 30);
-            keyPressedControl = true;
-            willFall = false;
-        }
-        else {
-            // Disc was already used, Q*bert should fall
-            FallOffEdge(key);
-            return;
-        }
-    }
-    else if (currentTile.id == 14 && key == 'u') {
-        if (Discs[1].show_state) {  // Only use disc if it's still available
-            keyPressedControl = false;
-            JumpDiscAnimation(1, Discs[1].center_x - 12, Discs[1].center_y - 30);
-            keyPressedControl = true;
-            willFall = false;
-        }
-        else {
-            // Disc was already used, Q*bert should fall
-            FallOffEdge(key);
-            return;
-        }
-    }
 
     if (willFall) {
         FallOffEdge(key);

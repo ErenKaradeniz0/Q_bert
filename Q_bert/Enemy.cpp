@@ -30,7 +30,7 @@ void Enemy::Spawn(bool isHatch, int state, bool isAlive) {
     while (this->y < limit) {
         this->y += 5;
         Game::SleepI(30);
-		if (this->y == 75)
+		if (this->y == 130)
 			this->currentTile = randomtile; // Set the current tile at %50 of animation
     }
     if(!isHatch)
@@ -77,16 +77,13 @@ void Enemy::Hatch(Enemy enemy) {
 void Enemy::JumpToDiskAndFall(int disc_id) {
     playSnakeJumpSound = true;
 
-    // Diskin konumunu al
     int target_x = Discs[disc_id].center_x;
     int target_y = Discs[disc_id].center_y;
 
-    // Diske zýplama
     int original_x = x;
     int original_y = y;
-    y -= 40; // Ýlk yükseliþ
+    y -= 40;
 
-    // Diske doðru hareket
     for (int i = 0; i < 20; i++) {
         if (x < target_x) x += 3;
         if (x > target_x) x -= 3;
@@ -95,17 +92,13 @@ void Enemy::JumpToDiskAndFall(int disc_id) {
         Game::SleepI(15);
     }
 
-    // Disk pozisyonuna ulaþtýktan sonra düþme
     playSnakeFallSound = true;
-    x = target_x; // x'i sabitle
+    x = target_x;
 
-    // Sadece aþaðý düþ
     for (int i = 0; i < 40; i++) {
         y += 12;
         Game::SleepI(15);
     }
-
-    // Yýlaný temizle
     isAlive = false;
     currentTile.id = -1;
 }
@@ -219,13 +212,18 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
         enemySnake.playSnakeJumpSound = true;
     }
 
-    if (state == 2)
-        state = 1;
-    else if (state == 4)
-        state = 3;
+    if (state == 2) state = 1;
+    else if (state == 4) state = 3;
 
     x < goal_x ? br_x = 5 : br_x = -5;
     y < goal_y ? br_y = 5 : br_y = -5;
+
+    int initial_diff_x = abs(goal_x - x);
+    int initial_diff_y = abs(goal_y - y);
+    int totalSteps = max(initial_diff_x, initial_diff_y) / 5;
+    int halfSteps = totalSteps / 2;
+    int stepCount = 0;
+
     while (x != goal_x || y != goal_y) {
         if (x != goal_x) {
             x += br_x;
@@ -233,18 +231,23 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
         if (y != goal_y) {
             y += br_y;
         }
+
+        stepCount++;
+
+        //%50
+        if (stepCount == halfSteps) {
+            currentTile = GoalBlock;
+        }
+
         Game::SleepI(15);
     }
 
-    if (state == 1)
-        state = 2;
-    else if (state == 3)
-        state = 4;
+    if (state == 1) state = 2;
+    else if (state == 3) state = 4;
 
     x = goal_x;
     y = goal_y;
-    currentTile = GoalBlock;
-    if (player.currentTile.id == enemyBall1.currentTile.id || player.currentTile.id == enemyBall2.currentTile.id || player.currentTile.id == enemySnake.currentTile.id) {
-        player.lostLife(false);
-    }
-}  
+
+
+}
+
