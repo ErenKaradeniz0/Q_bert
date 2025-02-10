@@ -18,9 +18,9 @@ Enemy::Enemy() : isHatch(false),currentTile(SquareBlock()), state(7), willFall(f
 
 void Enemy::Spawn(bool isHatch, int state, bool isAlive) {
     srand(time(NULL));  // Seed the random number generator with the current time
+    SquareBlock randomtile = SquareBlocks[rand() % 2 + 1];
     this->isHatch = isHatch;
-	this->currentTile = SquareBlocks[rand() % 2 + 1];
-    this->x = currentTile.centerX;
+    this->x = randomtile.centerX;
     this->y = 0;
     this->state = state;
     this->isAlive = isAlive;
@@ -30,6 +30,8 @@ void Enemy::Spawn(bool isHatch, int state, bool isAlive) {
     while (this->y < limit) {
         this->y += 5;
         Game::SleepI(30);
+		if (this->y == 75)
+			this->currentTile = randomtile; // Set the current tile at %50 of animation
     }
     if(!isHatch)
         if (state == 1)

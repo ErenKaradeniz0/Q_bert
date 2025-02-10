@@ -4,7 +4,6 @@ class Player {
 public:
     int x, y, currentTile;
     int direction;
-    bool jumpStatus;
     bool willFall;
     bool mazeOrder;
     int lifes;
