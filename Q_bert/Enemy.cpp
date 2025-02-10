@@ -39,6 +39,7 @@ void Enemy::Spawn(bool isHatch, int state, bool isAlive) {
         else if (state == 3)
             state = 4;
 }
+
 void Enemy::FallOffEdge(int move) {
     if (!isHatch)
         if (state == 2)
@@ -72,30 +73,66 @@ void Enemy::Hatch(Enemy enemy) {
 
 
 }
+
+void Enemy::JumpToDiskAndFall(int disc_id) {
+    playSnakeJumpSound = true;
+
+    // Diskin konumunu al
+    int target_x = Discs[disc_id].center_x;
+    int target_y = Discs[disc_id].center_y;
+
+    // Diske zýplama
+    int original_x = x;
+    int original_y = y;
+    y -= 40; // Ýlk yükseliþ
+
+    // Diske doðru hareket
+    for (int i = 0; i < 20; i++) {
+        if (x < target_x) x += 3;
+        if (x > target_x) x -= 3;
+        if (y < target_y) y += 3;
+        if (y > target_y) y -= 3;
+        Game::SleepI(15);
+    }
+
+    // Disk pozisyonuna ulaþtýktan sonra düþme
+    playSnakeFallSound = true;
+    x = target_x; // x'i sabitle
+
+    // Sadece aþaðý düþ
+    for (int i = 0; i < 40; i++) {
+        y += 12;
+        Game::SleepI(15);
+    }
+
+    // Yýlaný temizle
+    isAlive = false;
+    currentTile.id = -1;
+}
+
 void Enemy::move() {
     if (state == 4 && currentTile.id > 20) {
         isHatch = true;
         state = 4;
-		Game::SleepI(1000);
+        Game::SleepI(1000);
         Hatch(enemySnake);
     }
 
     if (!isHatch) {
+        // Top düþmanlarýn hareketi - deðiþmedi
         Game::SleepI(50);
         if (state == 1)
             state = 2;
         else if (state == 3)
             state = 4;
 
-        // Randomly choose to move right or down
-        int randomMove = rand() % 2; // 0 or 1
+        int randomMove = rand() % 2;
         randomMove = 0;
         if (randomMove == 0) {
             if (currentTile.right != nullptr) {
                 MoveAnimation(*currentTile.right);
             }
             else if (state == 4) {
-
             }
             else {
                 willFall = true;
@@ -106,24 +143,31 @@ void Enemy::move() {
                 MoveAnimation(*currentTile.down);
             }
             else if (state == 4) {
-
             }
             else {
                 willFall = true;
             }
-
         }
         if (willFall)
             FallOffEdge(randomMove);
         return;
     }
     else {
-        // Calculate the difference between enemy and player positions
+        // Yýlan için disk kontrolü
+        if (currentTile.id == 10 && Discs[0].move_state) {
+            JumpToDiskAndFall(0);
+            return;
+        }
+        else if (currentTile.id == 14 && Discs[1].move_state) {
+            JumpToDiskAndFall(1);
+            return;
+        }
+
+        // Normal yýlan hareketi - deðiþmedi
         int deltaX = player.x - x;
         int deltaY = player.y - y;
-		SquareBlock destinationTile = SquareBlock();
+        SquareBlock destinationTile = SquareBlock();
 
-        // Determine the primary state to move
         if (deltaX > 0 && currentTile.right != nullptr) {
             state = 9;
             Game::SleepI(100);
@@ -138,7 +182,6 @@ void Enemy::move() {
             Game::SleepI(100);
             state = 8;
         }
-
         else if (deltaY > 0 && currentTile.down != nullptr) {
             state = 11;
             Game::SleepI(100);
@@ -148,16 +191,12 @@ void Enemy::move() {
         }
         else if (deltaY < 0 && currentTile.up != nullptr) {
             state = 5;
-			Game::SleepI(100);
+            Game::SleepI(100);
             destinationTile = *currentTile.up;
             Game::SleepI(100);
             state = 6;
-
         }
 
-        // Animate the 
-        currentTile;
-        destinationTile;
         if (destinationTile.id != -1) {
             MoveAnimation(destinationTile);
         }

@@ -20,4 +20,5 @@ public:
     void Spawn(bool isHatch, int state, bool isAlive = true);
 	void MoveAnimation(SquareBlock GoalBlock);
 	void FallOffEdge(int move);
+    void JumpToDiskAndFall(int disc_id);
 };
