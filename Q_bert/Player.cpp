@@ -98,8 +98,7 @@ void Player::lostLife(bool isFall) {
 
 void Player::FallOffEdge(char key) {
     willFall = false;
-
-    PlayerFallSound();
+	player.playFallingSound = true;
 
     // Calculate the total change in x
     int x_change = key == 'l' ? -5 : key == 'r' ? 5 : key == 'u' ? 5 : key == 'd' ? -5 : 0;
@@ -122,28 +121,22 @@ void Player::FallOffEdge(char key) {
 }
 
 void Player::JumpDiscAnimation(int disc_id, int goal_x, int goal_y) {
+	player.currentTile.id = Discs[disc_id].disc_id;
     int br_x = 0, br_y = 0;
-    Game::SleepI(50);
-
-    JumpSound();
-
     direction++;
     player.y -= 40;
     player.x < goal_x ? br_x = 5 : br_x = -5;
     player.y < goal_y ? br_y = 5 : br_y = -5;
 
-    Game::SleepI(50);
-
-
     while (br_x < 0 ? player.x >= goal_x : player.x < goal_x || br_y < 0 ? player.y >= goal_y : player.y < goal_y) {
+        Game::SleepI(15);
 
         if (br_x < 0 ? player.x >= goal_x : player.x < goal_x) {
-            player.x += br_x;
+            player.x +=  br_x;
         }
         if (br_y < 0 ? player.y >= goal_y : player.y < goal_y) {
             player.y += br_y;
         }
-        Game::SleepI(15);
     }
 
     direction--;
@@ -239,10 +232,10 @@ void Player::move(char key) {
 
 
     if (currentTile.id == 10 && key == 'l') {
-            keyPressedControl = false;
-            JumpDiscAnimation(0, Discs[0].center_x - 12, Discs[0].center_y - 30);
-            keyPressedControl = true;
-            willFall = false;
+        keyPressedControl = false;
+        JumpDiscAnimation(0, Discs[0].center_x - 12, Discs[0].center_y - 30);
+        keyPressedControl = true;
+        willFall = false;
     }
     else if (currentTile.id == 14 && key == 'u') {
         keyPressedControl = false;

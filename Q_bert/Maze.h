@@ -32,6 +32,7 @@ class Disc {
 public:
     int x;
     int y;
+	int disc_id;
     int block_id;
     bool show_state;
     bool move_state;
