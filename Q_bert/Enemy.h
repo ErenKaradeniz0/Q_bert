@@ -8,7 +8,10 @@ public:
     int state;
     bool willFall;
     bool isAlive;
-    bool PlayJumpSound;
+    bool playRedBallJumpSound;
+    bool playSnakeEggJumpSound;
+    bool playSnakeJumpSound;
+    bool playSnakeFallSound;
     SquareBlock currentTile;
 
     Enemy();
@@ -17,4 +20,5 @@ public:
     void Spawn(bool isHatch, int state, bool isAlive = true);
 	void MoveAnimation(SquareBlock GoalBlock);
 	void FallOffEdge(int move);
+    void JumpToDiskAndFall(int disc_id);
 };

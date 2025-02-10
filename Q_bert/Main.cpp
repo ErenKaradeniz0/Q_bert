@@ -5,7 +5,6 @@
 #include "Maze.h"
 #include "Sound.h"
 #include "Main.h"
-
 #include "Game.h"
 #include "GameSession.h"
 // Globals
@@ -35,19 +34,24 @@ DWORD WINAPI InputThread(LPVOID lpParam) {
     }
     return 0;
 }
+
 DWORD WINAPI playerSoundThread(LPVOID lpParam) {
     while (Game::Run()) {
         if (player.playJumpSound) {
 			player.playJumpSound = false;
-            JumpSound();
+            PlayerJumpSound();
         }
 		if (player.playFallingSound) {
 			player.playFallingSound = false;
 			PlayerFallSound();
 		}
-        if (player.playSwearingSound) {
-			player.playSwearingSound = false;
-			SpeechSound();
+        if (player.playDiscSound) {
+            player.playDiscSound = false;
+            DiscSound();
+        }
+        if (player.playSpeechSound) {
+            player.playSpeechSound = false;
+            PlayerSpeechSound();
         }
     }
     return 0;
@@ -55,27 +59,33 @@ DWORD WINAPI playerSoundThread(LPVOID lpParam) {
 
 DWORD WINAPI enemyBall1SoundThread(LPVOID lpParam) {
     while (Game::Run()) {
-        if (enemyBall1.PlayJumpSound) {
-            enemyBall1.PlayJumpSound = false;
+        if (enemyBall1.playRedBallJumpSound) {
+            enemyBall1.playRedBallJumpSound = false;
             RedBallJumpSound();
         }
     }
     return 0;
 }
+
 DWORD WINAPI enemyBall2SoundThread(LPVOID lpParam) {
     while (Game::Run()) {
-        if (enemyBall2.PlayJumpSound) {
-            enemyBall2.PlayJumpSound = false;
-            RedBallJumpSound();;
+        if (enemyBall2.playRedBallJumpSound) {
+            enemyBall2.playRedBallJumpSound = false;
+            RedBallJumpSound();
         }
     }
     return 0;
 }
+
 DWORD WINAPI SnakeSoundThread(LPVOID lpParam) {
     while (Game::Run()) {
-        if (enemySnake.PlayJumpSound) {
-            enemySnake.PlayJumpSound = false;
-            SnakeEggJumpSound();
+        if (enemySnake.playSnakeJumpSound) {
+            enemySnake.playSnakeJumpSound = false;
+            SnakeJumpSound();
+        }
+        if (enemySnake.playSnakeFallSound) {
+            enemySnake.playSnakeFallSound = false;
+            SnakeFallSound();
         }
     }
     return 0;
@@ -141,6 +151,8 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam)
     GameSession* gameptr = new GameSession((int*)lpParam, 700, 700);
 
     keyPressedControl = true;
+
+    ResetSoundFlags();
 
     DrawStartupAnimation();
 
@@ -220,6 +232,7 @@ void ToggleIntroAnimationSpeed(int state) {
 }
 
 void ICGUI_main() {
+	prepareWave(); //Prepare the sound waves
     FRM1 = ICG_FrameMedium(5, 40, 1, 1);
     int* FRM1_PTR = new int(FRM1);
     ICG_Button(5, 5, 150, 25, "(I/O) Power Button", StartStopGame, FRM1_PTR);

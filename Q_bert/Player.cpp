@@ -26,8 +26,7 @@ void CreatePlayer() {
 
 void Player::MoveAnimation(char key, int goal_x, int goal_y) {
     int br_x = 0, br_y = 0;
-	player.playJumpSound = true;
-    //JumpSound(); 
+	player.playJumpSound = true; 
 
     direction++;
     player.y -= 40;
@@ -68,9 +67,6 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
         SquareBlocks[currentTile.id].state = 2;
         score += 25; // Update score when tile color is changed
     }
-
-    //PlaySound("Sounds/Jump.wav", NULL, SND_ASYNC);
-    //CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)JumpSound, NULL, 0, NULL);
 }
 
 void Player::lostLife(bool isFall) {
@@ -92,6 +88,7 @@ void Player::lostLife(bool isFall) {
     }
     else {
 		player.showLostLifeText = true;
+        player.playSpeechSound = true;
 
     }
 }
@@ -128,6 +125,8 @@ void Player::JumpDiscAnimation(int disc_id, int goal_x, int goal_y) {
     player.x < goal_x ? br_x = 5 : br_x = -5;
     player.y < goal_y ? br_y = 5 : br_y = -5;
 
+    player.playJumpSound = true;
+
     while (br_x < 0 ? player.x >= goal_x : player.x < goal_x || br_y < 0 ? player.y >= goal_y : player.y < goal_y) {
         Game::SleepI(15);
 
@@ -157,7 +156,7 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
     br_x = (goal_x - Discs[disc_id].x) / (precision+5);
     br_y = (goal_y - Discs[disc_id].y) / (precision+3);
 
-    LiftSound();
+    player.playDiscSound = true;
 
     while (br_x < 0 ? Discs[disc_id].x >= goal_x : Discs[disc_id].x < goal_x || Discs[disc_id].y > goal_y) {
         if (br_x < 0 ? Discs[disc_id].x >= goal_x : Discs[disc_id].x < goal_x) {

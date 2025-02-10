@@ -1,5 +1,3 @@
-// GameSession.h
-
 #ifndef GAMESESSION_H
 #define GAMESESSION_H
 
