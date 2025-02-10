@@ -73,15 +73,13 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
 
 
 void Player::lostLife(bool isFall) {
-
+    enemyBall1.isAlive = false;
+    enemyBall2.isAlive = false;
+    enemySnake.isAlive = false;
+    enemyBall1.currentTile.id = -1;
+    enemyBall2.currentTile.id = -1;
+    enemySnake.currentTile.id = -1;
     lifes--; // Decrease life
-    Game::SleepI(100);
-	enemyBall1.isAlive = false;
-	enemyBall1.currentTile.id = -1;
-	enemyBall2.isAlive = false;
-    enemyBall1.currentTile.id = -1;
-	enemySnake.isAlive = false;
-    enemyBall1.currentTile.id = -1;
     if (isFall) {
         player.x = SquareBlocks[0].centerX;
         player.y = SquareBlocks[0].centerY;
@@ -205,29 +203,27 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
 
 void Player::move(char key) {
     willFall = true;
-
+	//Check if the player is moving to a disk
     if (currentTile.id == 10 && key == 'l') {
-        if (Discs[0].show_state) {  // Only use disc if it's still available
+        if (Discs[0].show_state) {
             keyPressedControl = false;
             JumpDiscAnimation(0, Discs[0].center_x - 12, Discs[0].center_y - 30);
             keyPressedControl = true;
             willFall = false;
         }
         else {
-            // Disc was already used, Q*bert should fall
             FallOffEdge(key);
             return;
         }
     }
     else if (currentTile.id == 14 && key == 'u') {
-        if (Discs[1].show_state) {  // Only use disc if it's still available
+        if (Discs[1].show_state) {
             keyPressedControl = false;
             JumpDiscAnimation(1, Discs[1].center_x - 12, Discs[1].center_y - 30);
             keyPressedControl = true;
             willFall = false;
         }
         else {
-            // Disc was already used, Q*bert should fall
             FallOffEdge(key);
             return;
         }
@@ -237,7 +233,6 @@ void Player::move(char key) {
     case 'l':
         direction = 3;
         if (currentTile.left != nullptr) {
-            //Also checks disk is available to jump
             MoveAnimation(key, currentTile.left->centerX, currentTile.left->centerY);
         }
         break;
@@ -256,7 +251,6 @@ void Player::move(char key) {
     case 'u':
         direction = 1;
         if (currentTile.up != nullptr) {
-            //Also checks disk is available to jump
             MoveAnimation(key, currentTile.up->centerX, currentTile.up->centerY);
         }
         break;

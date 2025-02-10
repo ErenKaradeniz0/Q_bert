@@ -37,7 +37,6 @@ DWORD WINAPI turnDiscThread(LPVOID lpParam);
 DWORD WINAPI EnemyBall1Thread(LPVOID lpParam);
 DWORD WINAPI EnemyBall2Thread(LPVOID lpParam);
 DWORD WINAPI EnemySnakeThread(LPVOID lpParam);
-DWORD WINAPI SoundThread(LPVOID lpParam);
 void StartStopGame(void* FRM1_PTR);
 void WhenKeyPressed(int k);
 void ICGUI_main();

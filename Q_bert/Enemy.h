@@ -12,6 +12,7 @@ public:
     bool playSnakeEggJumpSound;
     bool playSnakeJumpSound;
     bool playSnakeFallSound;
+	bool mazeOrder;
     SquareBlock currentTile;
 
     Enemy();

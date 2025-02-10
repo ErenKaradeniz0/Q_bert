@@ -21,7 +21,6 @@ private:
 	static int wait;
 
 public:
-	static int Start();
 	static int Start(void* param);
 	static int Stop();
 	static void SleepI(int ms);

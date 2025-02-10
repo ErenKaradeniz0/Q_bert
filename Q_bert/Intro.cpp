@@ -55,22 +55,22 @@ ICBYTES IntroCoordinates{
     { 987, 27, 21, 21},     //  Z - idx 36
 
     // Special Elements
-    { 846, 129, 15, 15},    //  = - idx 37
-    { 387, 99, 282, 45},    //  QBERT Logo - idx 38
-    { 387, 249, 150, 78},   //  Qbert text - idx 39
-    { 816, 121, 27, 24},    //  Pink c Logo - idx 40
-    { 6, 72, 45, 28},       //  Bounced Ball - idx 41
-    { 54, 66, 45, 32},      //  Normal Ball - idx 42
-    { 240, 3, 47, 45},      //  Qbert Character - idx 43
+    { 846, 129, 15, 15},     //  = - idx 37
+    { 387, 99, 282, 45},     //  QBERT Logo - idx 38
+    { 387, 249, 150, 78},    //  Qbert text - idx 39
+    { 816, 121, 27, 24},     //  Pink c Logo - idx 40
+    { 6, 72, 45, 28},        //  Bounced Ball - idx 41
+    { 54, 66, 45, 32},       //  Normal Ball - idx 42
+    { 240, 3, 47, 45},       //  Qbert Character - idx 43
     { 720, 438, 144, 18},    //  Change to Text - idx 44
-    { 795, 354, 21, 24},       //  -> Symbol - idx 45
-    { 819, 354, 21, 24},      //  <- Symbol - idx 46
-    { 195, 588, 45, 39},      //  Yellow Tile - idx 47
-    { 1, 1068, 48, 30},       //  Disk Frame 1 - idx 48
-    { 49, 1068, 48, 30},      //  Disk Frame 2 - idx 49
-    { 97, 1068, 48, 30},      //  Disk Frame 3 - idx 50
-    { 145, 1068, 48, 30},      //  Disk Frame 4 - idx 51
-    { 672, 96, 24, 30 },      //  Mini Qbert - idx 52
+    { 795, 354, 21, 24},     //  -> Symbol - idx 45
+    { 819, 354, 21, 24},     //  <- Symbol - idx 46
+    { 195, 588, 45, 39},     //  Yellow Tile - idx 47
+    { 1, 1068, 48, 30},      //  Disk Frame 1 - idx 48
+    { 49, 1068, 48, 30},     //  Disk Frame 2 - idx 49
+    { 97, 1068, 48, 30},     //  Disk Frame 3 - idx 50
+    { 145, 1068, 48, 30},    //  Disk Frame 4 - idx 51
+    { 672, 96, 24, 30 },     //  Mini Qbert - idx 52
 
     // Player Text
     { 552, 337, 153, 24},    //  Player Text 1 - idx 53
@@ -79,20 +79,18 @@ ICBYTES IntroCoordinates{
     { 552, 409, 153, 24},    //  Player Text 4 - idx 56
     { 552, 433, 153, 24},    //  Player Text 5 - idx 57
     { 552, 457, 153, 24},    //  Player Text 6 - idx 58
-    { 723, 355, 21, 30},      //  Player one  - idx 59
+    { 723, 355, 21, 30},     //  Player one  - idx 59
 
-    { 192, 6, 47, 45},      //  Bowing Qbert Character  - idx 60
-    { 1152, 240, 81, 96},      // HighScore Qbert Character 1 - idx 61
-    { 1236, 240, 81, 96}      //  HighScore Qbert Character 2 - idx 62
+    { 192, 6, 47, 45},       //  Bowing Qbert Character  - idx 60
+    { 1152, 240, 81, 96},    //  HighScore Qbert Character 1 - idx 61
+    { 1236, 240, 81, 96}     //  HighScore Qbert Character 2 - idx 62
 
 };
 
-// intro.cpp'nin üstüne ekle
 std::vector<std::pair<std::string, int>> highScores;
 char currentName[4] = "AAA";
 int currentLetterIndex = 0;
 
-// Dosya iþlemleri için fonksiyonlar
 void LoadHighScores() {
     std::ifstream file("highscores.txt");
     if (file.is_open()) {
@@ -117,7 +115,6 @@ void SaveHighScores() {
 }
 
 void ShowHighScoreScreen(int currentScore) {
-    // High scores'larý yükle
     highScores.clear();
     LoadHighScores();
 
@@ -230,7 +227,7 @@ void ShowHighScoreScreen(int currentScore) {
 
 void DrawSideObjects() {
     static int currentFrame = 0;
-    static int playerTextFrame = 53; // Start with the first player text frame
+    static int playerTextFrame = 53;
 
     // Copy sprites once
     Copy(Sprites3X,
@@ -268,11 +265,10 @@ void DrawSideObjects() {
         IntroCoordinates.I(4, 44),
         ChText);
 
-    // Update player text frame every 3 frames
     if (currentFrame % 3 == 0) {
         playerTextFrame++;
         if (playerTextFrame > 58) {
-            playerTextFrame = 53; // Loop back to the first player text frame
+            playerTextFrame = 53;
         }
     }
 

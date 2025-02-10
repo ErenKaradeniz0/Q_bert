@@ -34,8 +34,6 @@ DWORD WINAPI InputThread(LPVOID lpParam) {
     return 0;
 }
 
-
-
 DWORD WINAPI SnakeSoundThread(LPVOID lpParam) {
     while (Game::Run()) {
         if (enemySnake.playSnakeJumpSound) {
@@ -63,11 +61,12 @@ DWORD WINAPI turnDiscThread(LPVOID lpParam) {
 }
 
 DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
-    while (Game::Run()) {
+    while (!Game::Run()) {
         Game::SleepI(200);
         if (enemyBall1.isAlive)
             enemyBall1.move();
         else {
+            Sleep(3000);
             enemyBall1.Spawn(false, 1);
         }
     }
@@ -75,12 +74,12 @@ DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
 }
 
 DWORD WINAPI EnemyBall2Thread(LPVOID lpParam) {
-    while (Game::Run()) {
+    while (!Game::Run()) {
         Game::SleepI(200);
         if (enemyBall2.isAlive)
             enemyBall2.move();
         else {
-            Game::SleepI(3000);
+            Sleep(6000);
             enemyBall2.Spawn(false, 1);
         }
     }
@@ -93,7 +92,7 @@ DWORD WINAPI EnemySnakeThread(LPVOID lpParam) {
         if (enemySnake.isAlive)
             enemySnake.move();
         else {
-            Game::SleepI(1000);
+            Sleep(2000);
             enemySnake.Spawn(false, 3);
         }
     }
@@ -170,7 +169,6 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam)
 
     // Yeni thread'leri oluştur
     
-
     CreateThread(NULL, 0, InputThread, NULL, 0, NULL);
     CreateThread(NULL, 0, turnDiscThread, NULL, 0, NULL);
     CreateThread(NULL, 0, EnemyBall1Thread, NULL, 0, NULL);
@@ -231,10 +229,12 @@ void ICGUI_main() {
 	prepareWave(); //Prepare the sound waves
     FRM1 = ICG_FrameMedium(5, 40, 1, 1);
     int* FRM1_PTR = new int(FRM1);
+
     ICG_Button(5, 5, 150, 25, "(I/O) Power Button", StartStopGame, FRM1_PTR);
     ICG_Static(160, 0, 500, 20, "Created by: Eren Karadeniz, Sevval Gur, Ulas Deniz Cakmazel");
     ICG_Static(160, 20, 550, 20, "Arrow Keys: Move  |   P: Pause    |   R: Resume   |   Power Button: Toggle Game");
     ICG_CheckBox(575, 0, 175, 20, "Faster Intro", ToggleIntroAnimationSpeed);
+
     ICG_SetOnKeyPressed(WhenKeyPressed);
 	ICG_SetOnKeyUp(WhenKeyReleased);
     CreateImage(screenMatrix, 700, 700, ICB_UINT);

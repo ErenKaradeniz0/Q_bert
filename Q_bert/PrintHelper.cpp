@@ -233,7 +233,7 @@ ICBYTES EnemyCoordinates{
     { 339, 99, 45, 93 }  // Snake down jump
 };
 
-void DrawEnemies() {
+void DrawRedBalls() {
     if (enemyBall1.isAlive == true){
         int i = enemyBall1.state;
 
@@ -278,6 +278,8 @@ void DrawEnemies() {
         PasteNon0(Enemy2Matrix, printx, printy, screenMatrix);
 
     }
+}
+void DrawSnake() {
     if (enemySnake.isAlive == true) {
         int i = enemySnake.state;
 
@@ -306,5 +308,4 @@ void DrawEnemies() {
         PasteNon0(Enemy2Matrix, printx, printy, screenMatrix);
 
     }
-
 }
