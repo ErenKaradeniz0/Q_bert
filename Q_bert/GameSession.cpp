@@ -1,10 +1,9 @@
-// GameSession.cpp
-
 #include "GameSession.h"
 #include "PrintHelper.h"
 #include "intro.h"
 #include "Game.h"
 #include "Enemy.h"
+#include "Sound.h"
 
 int FRM1;
 ICBYTES screenMatrix, Sprites, Sprites3X;
@@ -17,6 +16,7 @@ int Victorycounter = 0;
 bool isGameOver = false;
 bool isVictory = false;
 bool isPaused = false;
+static bool victoryPlayed = false;
 extern int score;
 extern int keypressed;
 
@@ -25,6 +25,7 @@ GameSession::GameSession(int* screenHandle, int x, int y)
     Victorycounter = 0;
     isGameOver = false;
     isVictory = false;
+    victoryPlayed = false;
     _screenHandle = screenHandle;
     CreateImage(_screenMatrix, x, y, ICB_UINT);
     //player = new Player(&_screenMatrix);
@@ -94,6 +95,13 @@ void GameSession::ShowGameOverScreen() {
 }
 
 void GameSession::ShowVictoryScreen() {
+    static bool victoryPlayed = false;
+
+    if (!victoryPlayed) {
+        VictorySound();
+        victoryPlayed = true;
+    }
+
     for (int i = 0; i < 28; ++i) {
         if (Victorycounter % 3 == 0) {
             SquareBlocks[i].state = 0;

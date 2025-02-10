@@ -12,6 +12,7 @@ public:
     int lostLifeCounter;
 	bool playJumpSound;
     bool playFallingSound;
+    bool playLiftSound;
     bool playSwearingSound;
 
     Player();

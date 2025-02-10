@@ -35,6 +35,8 @@ int Game::Stop()
 
 	gameMainThread = nullptr;
 
+	ResetSoundFlags();
+
 	return COMMAND_SUCCESS;
 }
 

@@ -3,6 +3,22 @@
 
 int SoundPlayer::soundCounter = 0;
 
+bool helloPlayed = false;
+bool liftPlayed = false;
+bool introBallPlayed = false;
+bool speechPlayed = false;
+bool jumpSoundPlayed[4] = { false, false, false, false };
+
+void ResetSoundFlags() {
+    helloPlayed = false;
+    liftPlayed = false;
+    introBallPlayed = false;
+    speechPlayed = false;
+    for (int i = 0; i < 4; i++) {
+        jumpSoundPlayed[i] = false;
+    }
+}
+
 VOID* HelloSound() {
     SoundPlayer::PlaySound("Sounds/Hello.wav");
     return 0;
@@ -53,11 +69,11 @@ VOID* SnakeFallSound() {
     return 0;
 }
 
-bool helloPlayed = false;
-bool liftPlayed = false;
-bool introBallPlayed = false;
-bool speechPlayed = false;
-bool jumpSoundPlayed[4] = { false, false, false, false }; // Her zýplama için bir flag
+VOID* VictorySound() {
+    SoundPlayer::PlaySound("Sounds/Victory.wav");
+    return 0;
+}
+
 
 void PlayStartupSounds(int currentFrame) {
     // Hello sesi için kontrol (frame 30)

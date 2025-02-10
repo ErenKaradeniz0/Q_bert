@@ -45,9 +45,13 @@ DWORD WINAPI playerSoundThread(LPVOID lpParam) {
 			player.playFallingSound = false;
 			PlayerFallSound();
 		}
+        if (player.playLiftSound) {
+            player.playLiftSound = false;
+            LiftSound();
+        }
         if (player.playSwearingSound) {
-			player.playSwearingSound = false;
-			SpeechSound();
+            player.playSwearingSound = false;
+            SpeechSound();
         }
     }
     return 0;
@@ -55,27 +59,33 @@ DWORD WINAPI playerSoundThread(LPVOID lpParam) {
 
 DWORD WINAPI enemyBall1SoundThread(LPVOID lpParam) {
     while (Game::Run()) {
-        if (enemyBall1.PlayJumpSound) {
-            enemyBall1.PlayJumpSound = false;
+        if (enemyBall1.playRedBallJumpSound) {
+            enemyBall1.playRedBallJumpSound = false;
             RedBallJumpSound();
         }
     }
     return 0;
 }
+
 DWORD WINAPI enemyBall2SoundThread(LPVOID lpParam) {
     while (Game::Run()) {
-        if (enemyBall2.PlayJumpSound) {
-            enemyBall2.PlayJumpSound = false;
-            RedBallJumpSound();;
+        if (enemyBall2.playSnakeEggJumpSound) {
+            enemyBall2.playSnakeEggJumpSound = false;
+            SnakeEggJumpSound();
         }
     }
     return 0;
 }
+
 DWORD WINAPI SnakeSoundThread(LPVOID lpParam) {
     while (Game::Run()) {
-        if (enemySnake.PlayJumpSound) {
-            enemySnake.PlayJumpSound = false;
-            SnakeEggJumpSound();
+        if (enemySnake.playSnakeJumpSound) {
+            enemySnake.playSnakeJumpSound = false;
+            SnakeJumpSound();
+        }
+        if (enemySnake.playSnakeFallSound) {
+            enemySnake.playSnakeFallSound = false;
+            SnakeFallSound();
         }
     }
     return 0;
@@ -141,6 +151,8 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam)
     GameSession* gameptr = new GameSession((int*)lpParam, 700, 700);
 
     keyPressedControl = true;
+
+    ResetSoundFlags();
 
     DrawStartupAnimation();
 

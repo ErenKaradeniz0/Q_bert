@@ -48,7 +48,7 @@ void Enemy::FallOffEdge(int move) {
     // Calculate the total change in x
 
     if (isHatch) {
-        SnakeFallSound();
+        enemySnake.playSnakeFallSound = true;
     }
 
     int x_change = (move == 0) ? 5 : (move == 1) ? -5 : 0;
@@ -171,18 +171,16 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
     this->y -= 40;
     Game::SleepI(50);
 
-    // Zýplama baþlangýcýnda düþman tipine göre ses çal
-    if (!isHatch) {  // Red Ball veya Snake Egg
-        PlayJumpSound = true;
-        //if (state == 1 || state == 2) {  // Red Ball
-        //    //RedBallJumpSound();
-        //}
-        //else if (state == 3 || state == 4) {  // Snake Egg
-        //    //SnakeEggJumpSound();
-        //}
+    if (!isHatch) {
+        if (state == 1 || state == 2) {  // Red Ball
+            enemyBall1.playRedBallJumpSound = true;
+        }
+        else if (state == 3 || state == 4) {  // Snake Egg
+            enemyBall2.playSnakeEggJumpSound = true;
+        }
     }
     else {  // Snake
-        SnakeJumpSound();
+        enemySnake.playSnakeJumpSound = true;
     }
 
     if (state == 2)

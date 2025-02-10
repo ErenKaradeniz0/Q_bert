@@ -8,7 +8,10 @@ public:
     int state;
     bool willFall;
     bool isAlive;
-    bool PlayJumpSound;
+    bool playRedBallJumpSound;
+    bool playSnakeEggJumpSound;
+    bool playSnakeJumpSound;
+    bool playSnakeFallSound;
     SquareBlock currentTile;
 
     Enemy();
