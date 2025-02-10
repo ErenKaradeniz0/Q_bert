@@ -19,6 +19,7 @@ Enemy::Enemy() : isHatch(false),currentTile(SquareBlock()), state(7), willFall(f
 void Enemy::Spawn(bool isHatch, int state, bool isAlive) {
     srand(time(NULL));  // Seed the random number generator with the current time
     SquareBlock randomtile = SquareBlocks[rand() % 2 + 1];
+	this->mazeOrder = false;
     this->isHatch = isHatch;
     this->x = randomtile.centerX;
     this->y = 0;
@@ -75,6 +76,7 @@ void Enemy::Hatch(Enemy enemy) {
 }
 
 void Enemy::JumpToDiskAndFall(int disc_id) {
+	mazeOrder = true;
     playSnakeJumpSound = true;
 
     int target_x = Discs[disc_id].center_x;
@@ -212,8 +214,8 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
         enemySnake.playSnakeJumpSound = true;
     }
 
-    if (state == 2) state = 1;
-    else if (state == 4) state = 3;
+    if (state == 2) state = 1; //red ball 
+    else if (state == 4) state = 3; //snake move
 
     x < goal_x ? br_x = 5 : br_x = -5;
     y < goal_y ? br_y = 5 : br_y = -5;

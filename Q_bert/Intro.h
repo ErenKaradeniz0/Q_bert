@@ -11,8 +11,8 @@ void DrawSideObjects();
 void ShowHighScoreScreen(int currentScore);
 
 struct HighScore {
-    char name[4];  // 3 karakter + null terminator
+    char name[4];
     int score;
 };
 
-#endif // INTRO_H#pragma once
+#endif // INTRO_H

@@ -10,7 +10,7 @@ bool speechPlayed = false;
 bool jumpSoundPlayed[4] = { false, false, false, false };
 
 ICBYTES waveHello, waveDisc, waveIntroBall, waveJumpSound, waveSpeechSound, waveFallingSound, waveDiscSound,
-waveSwearingSound, waveRedBallJumpSound, waveSnakeEggJumpSound, waveSnakeJumpSound, waveplaySnakeFallSound;
+waveSwearingSound, waveRedBallJumpSound, waveSnakeEggJumpSound, waveSnakeJumpSound, waveplaySnakeFallSound, waveVictorySound;
 
 void ResetSoundFlags() {
     helloPlayed = false;
@@ -36,6 +36,9 @@ void prepareWave() {
     ReadWave(waveSnakeEggJumpSound, "Sounds/SnakeEggJump.wav");
     ReadWave(waveSnakeJumpSound, "Sounds/SnakeJump.wav");
     ReadWave(waveplaySnakeFallSound, "Sounds/SnakeFall.wav");
+    
+    ReadWave(waveVictorySound, "Sounds/Victory.wav");
+
 }
 
 // Update the WaveOut calls with the correct number of arguments
@@ -90,7 +93,7 @@ VOID* SnakeFallSound() {
 }
 
 VOID* VictorySound() {
-    WaveOut(waveIntroBall, 0); // Assuming Victory sound is the same as IntroBall
+    WaveOut(waveVictorySound, 0);
     return 0;
 }
 
