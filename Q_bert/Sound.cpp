@@ -1,13 +1,16 @@
+#include <windows.h> 
+#include <icb_gui.h>
 #include "Sound.h"
 #include "Game.h"
-
-int SoundPlayer::soundCounter = 0;
 
 bool helloPlayed = false;
 bool liftPlayed = false;
 bool introBallPlayed = false;
 bool speechPlayed = false;
 bool jumpSoundPlayed[4] = { false, false, false, false };
+
+ICBYTES waveHello, waveDisc, waveIntroBall, waveJumpSound, waveSpeechSound, waveFallingSound, waveDiscSound,
+waveSwearingSound, waveRedBallJumpSound, waveSnakeEggJumpSound, waveSnakeJumpSound, waveplaySnakeFallSound;
 
 void ResetSoundFlags() {
     helloPlayed = false;
@@ -19,97 +22,108 @@ void ResetSoundFlags() {
     }
 }
 
+void prepareWave() {
+    //Intro
+    ReadWave(waveHello, "Sounds/Hello.wav");
+    ReadWave(waveDisc, "Sounds/DiscSound.wav");
+    ReadWave(waveIntroBall, "Sounds/IntroBall.wav");
+    //Player
+    ReadWave(waveJumpSound, "Sounds/Jump.wav");
+    ReadWave(waveFallingSound, "Sounds/PlayerFall.wav");
+    ReadWave(waveSpeechSound, "Sounds/Speech.wav");
+    //Enemies
+    ReadWave(waveRedBallJumpSound, "Sounds/RedBallJump.wav");
+    ReadWave(waveSnakeEggJumpSound, "Sounds/SnakeEggJump.wav");
+    ReadWave(waveSnakeJumpSound, "Sounds/SnakeJump.wav");
+    ReadWave(waveplaySnakeFallSound, "Sounds/SnakeFall.wav");
+}
+
+// Update the WaveOut calls with the correct number of arguments
 VOID* HelloSound() {
-    SoundPlayer::PlaySound("Sounds/Hello.wav");
+    WaveOut(waveHello, 0);
     return 0;
 }
 
-VOID* LiftSound() {
-    SoundPlayer::PlaySound("Sounds/DiscSound.wav");
+VOID* DiscSound() {
+    WaveOut(waveDisc, 0);
     return 0;
 }
 
 VOID* IntroBallSound() {
-    SoundPlayer::PlaySound("Sounds/IntroBall.wav");
+    WaveOut(waveIntroBall, 0);
     return 0;
 }
 
-VOID* JumpSound() {
-    SoundPlayer::PlaySound("Sounds/Jump.wav");
-    return 0;
-}
-
-VOID* SpeechSound() {
-    SoundPlayer::PlaySound("Sounds/Speech.wav");
+VOID* PlayerJumpSound() {
+    WaveOut(waveJumpSound, 0);
     return 0;
 }
 
 VOID* PlayerFallSound() {
-    SoundPlayer::PlaySound("Sounds/PlayerFall.wav");
+    WaveOut(waveFallingSound, 0);
+    return 0;
+}
+
+VOID* PlayerSpeechSound() {
+    WaveOut(waveSpeechSound, 0);
     return 0;
 }
 
 VOID* RedBallJumpSound() {
-    SoundPlayer::PlaySound("Sounds/RedBallJump.wav");
+    WaveOut(waveRedBallJumpSound, 0);
     return 0;
 }
 
 VOID* SnakeEggJumpSound() {
-    SoundPlayer::PlaySound("Sounds/SnakeEggJump.wav");
+    WaveOut(waveSnakeEggJumpSound, 0);
     return 0;
 }
 
 VOID* SnakeJumpSound() {
-    SoundPlayer::PlaySound("Sounds/SnakeJump.wav");
+    WaveOut(waveSnakeJumpSound, 0);
     return 0;
 }
 
 VOID* SnakeFallSound() {
-    SoundPlayer::PlaySound("Sounds/SnakeFall.wav");
+    WaveOut(waveplaySnakeFallSound, 0);
     return 0;
 }
 
 VOID* VictorySound() {
-    SoundPlayer::PlaySound("Sounds/Victory.wav");
+    WaveOut(waveIntroBall, 0); // Assuming Victory sound is the same as IntroBall
     return 0;
 }
 
-
 void PlayStartupSounds(int currentFrame) {
-    // Hello sesi için kontrol (frame 30)
     if (currentFrame == 30 && !helloPlayed) {
         HelloSound();
         helloPlayed = true;
     }
 
-    // Lift sesi için kontrol (frame 90)
     if (currentFrame == 90 && !liftPlayed) {
-        LiftSound();
+        DiscSound();
         liftPlayed = true;
     }
 
-    // Zýplama sesleri için kontrol
-    // Her zýplama baþlangýcýnda ses çal
     if (currentFrame == 240 && !jumpSoundPlayed[0]) {
-        JumpSound();
+        PlayerJumpSound();
         jumpSoundPlayed[0] = true;
     }
     if (currentFrame == 290 && !jumpSoundPlayed[1]) {
-        JumpSound();
+        PlayerJumpSound();
         jumpSoundPlayed[1] = true;
     }
     if (currentFrame == 320 && !jumpSoundPlayed[2]) {
-        JumpSound();
+        PlayerJumpSound();
         jumpSoundPlayed[2] = true;
     }
     if (currentFrame == 350 && !jumpSoundPlayed[3]) {
-        JumpSound();
+        PlayerJumpSound();
         jumpSoundPlayed[3] = true;
     }
 
-    // QBert text için speech sesi
     if (currentFrame == 420 && !speechPlayed) {
-        SpeechSound();
+        PlayerSpeechSound();
         speechPlayed = true;
     }
 

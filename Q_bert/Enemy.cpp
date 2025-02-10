@@ -211,10 +211,4 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
     if (player.currentTile.id == enemyBall1.currentTile.id || player.currentTile.id == enemyBall2.currentTile.id || player.currentTile.id == enemySnake.currentTile.id) {
         player.lostLife(false);
     }
-
-    /*const char* soundPath = "Sounds/Jump2.wav";
-    CreateSoundThread(soundPath);*/
-
-    //CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Jump2Sound, NULL, 0, NULL);
-
 }  

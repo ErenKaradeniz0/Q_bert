@@ -12,8 +12,8 @@ public:
     int lostLifeCounter;
 	bool playJumpSound;
     bool playFallingSound;
-    bool playLiftSound;
-    bool playSwearingSound;
+    bool playDiscSound;
+    bool playSpeechSound;
 
     Player();
     void MoveAnimation(char key, int goal_x, int goal_y);
