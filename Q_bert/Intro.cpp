@@ -118,7 +118,7 @@ void ShowHighScoreScreen(int currentScore) {
     highScores.clear();
     LoadHighScores();
 
-    // Yeni high score kontrolü
+   
     bool isEnteringName = false;
     if (highScores.size() < 5 || currentScore > highScores.back().second) {
         isEnteringName = true;
