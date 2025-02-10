@@ -119,7 +119,7 @@ void Enemy::move() {
     }
 
     if (!isHatch) {
-        // Top düþmanlarýn hareketi - deðiþmedi
+        // Ball enemies movement - unchanged
         Game::SleepI(50);
         if (state == 1)
             state = 2;
@@ -153,17 +153,14 @@ void Enemy::move() {
         return;
     }
     else {
-        // Yýlan için disk kontrolü
-        if (currentTile.id == 10 && Discs[0].move_state) {
-            JumpToDiskAndFall(0);
-            return;
-        }
-        else if (currentTile.id == 14 && Discs[1].move_state) {
-            JumpToDiskAndFall(1);
+        // Snake disc check with Q*bert position verification
+        if ((currentTile.id == 10 && Discs[0].move_state && player.currentTile.id == Discs[0].disc_id) ||
+            (currentTile.id == 14 && Discs[1].move_state && player.currentTile.id == Discs[1].disc_id)) {
+            JumpToDiskAndFall(currentTile.id == 10 ? 0 : 1);
             return;
         }
 
-        // Normal yýlan hareketi - deðiþmedi
+        // Normal snake movement - unchanged
         int deltaX = player.x - x;
         int deltaY = player.y - y;
         SquareBlock destinationTile = SquareBlock();
