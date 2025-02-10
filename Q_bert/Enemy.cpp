@@ -173,12 +173,13 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
 
     // Zýplama baþlangýcýnda düþman tipine göre ses çal
     if (!isHatch) {  // Red Ball veya Snake Egg
-        if (state == 1 || state == 2) {  // Red Ball
-            RedBallJumpSound();
-        }
-        else if (state == 3 || state == 4) {  // Snake Egg
-            SnakeEggJumpSound();
-        }
+        PlayJumpSound = true;
+        //if (state == 1 || state == 2) {  // Red Ball
+        //    //RedBallJumpSound();
+        //}
+        //else if (state == 3 || state == 4) {  // Snake Egg
+        //    //SnakeEggJumpSound();
+        //}
     }
     else {  // Snake
         SnakeJumpSound();

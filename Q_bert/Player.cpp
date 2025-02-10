@@ -26,8 +26,8 @@ void CreatePlayer() {
 
 void Player::MoveAnimation(char key, int goal_x, int goal_y) {
     int br_x = 0, br_y = 0;
-
-    JumpSound();
+	player.playJumpSound = true;
+    //JumpSound(); 
 
     direction++;
     player.y -= 40;
