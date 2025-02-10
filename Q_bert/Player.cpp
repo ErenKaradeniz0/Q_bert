@@ -13,12 +13,12 @@ extern Player player;
 extern int keypressed;
 extern bool keyPressedControl;
 
-Player::Player() : x(0), y(0), currentTile(0), direction(7), willFall(false), mazeOrder(false), lifes(3){}
+Player::Player() : x(0), y(0), currentTile(SquareBlock()), direction(7), willFall(false), mazeOrder(false), lifes(3){}
 
 void CreatePlayer() {
     player.x = SquareBlocks[0].centerX;
     player.y = SquareBlocks[0].centerY;
-    player.currentTile = 0;
+    player.currentTile = SquareBlocks[0];
     player.lifes = 3; // Reset lives
     score = 0; // Reset score
 	player.mazeOrder = false; // Reset the falling flag
@@ -27,14 +27,10 @@ void CreatePlayer() {
 void Player::MoveAnimation(char key, int goal_x, int goal_y) {
     int br_x = 0, br_y = 0;
 
-    Game::SleepI(50);
-
     JumpSound();
 
     direction++;
     player.y -= 40;
-
-    Game::SleepI(50);
 
     player.x < goal_x ? br_x = 5 : br_x = -5;
     player.y < goal_y ? br_y = 5 : br_y = -5;
@@ -52,11 +48,24 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
     direction--;
     player.x = goal_x;
     player.y = goal_y;
-    Game::SleepI(50);
 
+    if (key == 'l') {
+        currentTile = *currentTile.left;
+    }
+    else if (key == 'u') {
+        currentTile = *currentTile.up;
+    }
+    else if (key == 'd') {
+        currentTile = *currentTile.down;
+    }
+    else if (key == 'r') {
+        currentTile = *currentTile.right;
+    }
 
-    if (SquareBlocks[currentTile].blk_clr_state == 0) {
-        SquareBlocks[currentTile].blk_clr_state = 1;
+    willFall = false;
+
+    if (SquareBlocks[currentTile.id].state == 0) {
+        SquareBlocks[currentTile.id].state = 2;
         score += 25; // Update score when tile color is changed
     }
 
@@ -77,7 +86,7 @@ void Player::lostLife(bool isFall) {
     if (isFall) {
         player.x = SquareBlocks[0].centerX;
         player.y = SquareBlocks[0].centerY;
-        player.currentTile = 0;
+        player.currentTile = SquareBlocks[0];
         direction = 7;
         mazeOrder = false; // Reset the falling flag
     }
@@ -181,12 +190,12 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
     direction--;
     player.x = SquareBlocks[0].centerX;
     player.y = SquareBlocks[0].centerY;
-    currentTile = 0;
+    currentTile = SquareBlocks[0];
 
     Discs[disc_id].show_state = false;
    
-    if (SquareBlocks[currentTile].blk_clr_state == 0) {
-        SquareBlocks[currentTile].blk_clr_state = 1;
+    if (SquareBlocks[currentTile.id].state == 0) {
+        SquareBlocks[currentTile.id].state = 2;
         score += 25; // Update score when tile color is changed
     }
 
@@ -199,62 +208,54 @@ void Player::move(char key) {
     {
     case 'l':
         direction = 3;
-        if (SquareBlocks[currentTile].left >= 0) {
-
+        if (currentTile.left != nullptr) {
             //Also checks disk is available to jump
-            currentTile = SquareBlocks[currentTile].left;
-            willFall = false;
+            MoveAnimation(key, currentTile.left->centerX, currentTile.left->centerY);
         }
         break;
     case 'r':
         direction = 5;
-        if (SquareBlocks[currentTile].right >= 0) {
-
-            currentTile = SquareBlocks[currentTile].right;
-            willFall = false;
+        if (currentTile.right != nullptr) {
+            MoveAnimation(key, currentTile.right->centerX, currentTile.right->centerY);
         }
         break;
     case 'd':
         direction = 7;
-        if (SquareBlocks[currentTile].down >= 0) {
-
-            currentTile = SquareBlocks[currentTile].down;
-            willFall = false;
+        if (currentTile.down != nullptr) {
+            MoveAnimation(key, currentTile.down->centerX, currentTile.down->centerY);
         }
         break;
     case 'u':
         direction = 1;
-        if (SquareBlocks[currentTile].up >= 0) {
-
+        if (currentTile.up != nullptr) {
             //Also checks disk is available to jump
-            currentTile = SquareBlocks[currentTile].up;
-            willFall = false;
+            MoveAnimation(key, currentTile.up->centerX, currentTile.up->centerY);
         }
         break;
     default:
         break;
     }
     keypressed = 0;
+
+
+    if (currentTile.id == 10 && key == 'l') {
+            keyPressedControl = false;
+            JumpDiscAnimation(0, Discs[0].center_x - 12, Discs[0].center_y - 30);
+            keyPressedControl = true;
+            willFall = false;
+    }
+    else if (currentTile.id == 14 && key == 'u') {
+        keyPressedControl = false;
+        JumpDiscAnimation(1, Discs[1].center_x - 12, Discs[1].center_y - 30);
+        keyPressedControl = true;
+        willFall = false;
+    }
+
     if (willFall) {
         FallOffEdge(key);
         return;
     }
 
-    if (currentTile == 28 || currentTile == 29) {
-            keyPressedControl = false;
 
-            if (Discs[0].block_id == currentTile) {
-                JumpDiscAnimation(0,Discs[0].center_x - 12, Discs[0].center_y - 30);
-            }
-            else {
-                JumpDiscAnimation(1, Discs[1].center_x - 12, Discs[1].center_y - 30);
-            }
-            keyPressedControl = true;
-
-
-    }
-    else {
-        MoveAnimation(key, SquareBlocks[currentTile].centerX, SquareBlocks[currentTile].centerY);
-    }
 }
 

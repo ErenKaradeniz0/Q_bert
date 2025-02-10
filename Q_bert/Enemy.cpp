@@ -91,8 +91,8 @@ void Enemy::move() {
         int randomMove = rand() % 2; // 0 or 1
         randomMove = 0;
         if (randomMove == 0) {
-            if (currentTile.right >= 0) {
-                MoveAnimation(SquareBlocks[currentTile.right]);
+            if (currentTile.right != nullptr) {
+                MoveAnimation(*currentTile.right);
             }
             else if (state == 4) {
 
@@ -102,8 +102,8 @@ void Enemy::move() {
             }
         }
         else {
-            if (currentTile.down >= 0) {
-                MoveAnimation(SquareBlocks[currentTile.down]);
+            if (currentTile.down != nullptr) {
+                MoveAnimation(*currentTile.down);
             }
             else if (state == 4) {
 
@@ -121,35 +121,35 @@ void Enemy::move() {
         // Calculate the difference between enemy and player positions
         int deltaX = player.x - x;
         int deltaY = player.y - y;
-        int destinationTileId = -1;
+		SquareBlock destinationTile = SquareBlock();
 
         // Determine the primary state to move
-        if (deltaX > 0 && currentTile.right >= 0) {
+        if (deltaX > 0 && currentTile.right != nullptr) {
             state = 9;
             Game::SleepI(100);
-            destinationTileId = currentTile.right;
+            destinationTile = *currentTile.right;
             Game::SleepI(100);
             state = 10;
         }
-        else if (deltaX < 0 && currentTile.left >= 0) {
+        else if (deltaX < 0 && currentTile.left != nullptr) {
             state = 7;
             Game::SleepI(100);
-            destinationTileId = currentTile.left;
+            destinationTile = *currentTile.left;
             Game::SleepI(100);
             state = 8;
         }
 
-        else if (deltaY > 0 && currentTile.down >= 0) {
+        else if (deltaY > 0 && currentTile.down != nullptr) {
             state = 11;
             Game::SleepI(100);
-            destinationTileId = currentTile.down;
+            destinationTile = *currentTile.down;
             Game::SleepI(100);
             state = 12;
         }
-        else if (deltaY < 0 && currentTile.up >= 0) {
+        else if (deltaY < 0 && currentTile.up != nullptr) {
             state = 5;
 			Game::SleepI(100);
-            destinationTileId = currentTile.up;
+            destinationTile = *currentTile.up;
             Game::SleepI(100);
             state = 6;
 
@@ -157,9 +157,9 @@ void Enemy::move() {
 
         // Animate the 
         currentTile;
-        destinationTileId;
-        if (destinationTileId != -1) {
-            MoveAnimation(SquareBlocks[destinationTileId]);
+        destinationTile;
+        if (destinationTile.id != -1) {
+            MoveAnimation(destinationTile);
         }
     }
 }
@@ -209,7 +209,7 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
     x = goal_x;
     y = goal_y;
     currentTile = GoalBlock;
-    if (player.currentTile == enemyBall1.currentTile.id || player.currentTile == enemyBall2.currentTile.id || player.currentTile == enemySnake.currentTile.id) {
+    if (player.currentTile.id == enemyBall1.currentTile.id || player.currentTile.id == enemyBall2.currentTile.id || player.currentTile.id == enemySnake.currentTile.id) {
         player.lostLife(false);
     }
 
