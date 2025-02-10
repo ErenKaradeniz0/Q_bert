@@ -4,7 +4,13 @@
 #pragma comment(lib, "winmm.lib")
 #include <string>
 
+extern bool helloPlayed;
+extern bool liftPlayed;
+extern bool introBallPlayed;
+extern bool speechPlayed;
+extern bool jumpSoundPlayed[4];
 
+void ResetSoundFlags();
 VOID* HelloSound();
 VOID* LiftSound();
 VOID* IntroBallSound();
@@ -15,6 +21,7 @@ VOID* RedBallJumpSound();
 VOID* SnakeEggJumpSound();
 VOID* SnakeJumpSound();
 VOID* SnakeFallSound();
+VOID* VictorySound();
 void PlayStartupSounds(int currentFrame);
 
 // Yeni ses çalma sistemi
