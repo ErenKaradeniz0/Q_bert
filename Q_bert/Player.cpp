@@ -118,6 +118,12 @@ void Player::FallOffEdge(char key) {
 }
 
 void Player::JumpDiscAnimation(int disc_id, int goal_x, int goal_y) {
+    
+    if (!Discs[disc_id].show_state) {
+        FallOffEdge(disc_id == 0 ? 'l' : 'u');
+        return;
+    }
+
 	player.currentTile.id = Discs[disc_id].disc_id;
     int br_x = 0, br_y = 0;
     direction++;
@@ -231,23 +237,35 @@ void Player::move(char key) {
 
 
     if (currentTile.id == 10 && key == 'l') {
-        keyPressedControl = false;
-        JumpDiscAnimation(0, Discs[0].center_x - 12, Discs[0].center_y - 30);
-        keyPressedControl = true;
-        willFall = false;
+        if (Discs[0].show_state) {  // Only use disc if it's still available
+            keyPressedControl = false;
+            JumpDiscAnimation(0, Discs[0].center_x - 12, Discs[0].center_y - 30);
+            keyPressedControl = true;
+            willFall = false;
+        }
+        else {
+            // Disc was already used, Q*bert should fall
+            FallOffEdge(key);
+            return;
+        }
     }
     else if (currentTile.id == 14 && key == 'u') {
-        keyPressedControl = false;
-        JumpDiscAnimation(1, Discs[1].center_x - 12, Discs[1].center_y - 30);
-        keyPressedControl = true;
-        willFall = false;
+        if (Discs[1].show_state) {  // Only use disc if it's still available
+            keyPressedControl = false;
+            JumpDiscAnimation(1, Discs[1].center_x - 12, Discs[1].center_y - 30);
+            keyPressedControl = true;
+            willFall = false;
+        }
+        else {
+            // Disc was already used, Q*bert should fall
+            FallOffEdge(key);
+            return;
+        }
     }
 
     if (willFall) {
         FallOffEdge(key);
         return;
     }
-
-
 }
 
