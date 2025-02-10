@@ -144,10 +144,11 @@ void DrawMap() {
     int temp = 0;
 
     for (int i = 0; i < 28; i++) {
-        switch (SquareBlocks[i].blk_clr_state)
+        switch (SquareBlocks[i].state)
         {
         case 0: Copy(Sprites3X, 2, 224 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
-        case 1: Copy(Sprites3X, 2, 192 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
+        case 1: Copy(Sprites3X, 2, 160 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
+        case 2: Copy(Sprites3X, 2, 192 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
         default:
             break;
         }

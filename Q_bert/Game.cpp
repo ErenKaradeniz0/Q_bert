@@ -8,6 +8,7 @@ HANDLE Game::gameRunningEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 HANDLE Game::gameStoppingEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 HANDLE Game::gameMainThread = nullptr;
 int Game::wait = NULL;
+extern bool isVictory;
 
 int Game::Start(void* param)
 {
@@ -76,6 +77,9 @@ GameState Game::GetState()
 
 bool Game::Run()
 {
+	if (isVictory) {
+		return false;
+	}
   	return WaitForSingleObject(gameRunningEvent, wait) == WAIT_OBJECT_0;
 }
 

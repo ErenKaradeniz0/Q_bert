@@ -64,8 +64,8 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
 
     willFall = false;
 
-    if (SquareBlocks[currentTile.id].blk_clr_state == 0) {
-        SquareBlocks[currentTile.id].blk_clr_state = 1;
+    if (SquareBlocks[currentTile.id].state == 0) {
+        SquareBlocks[currentTile.id].state = 2;
         score += 25; // Update score when tile color is changed
     }
 
@@ -194,8 +194,8 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
 
     Discs[disc_id].show_state = false;
    
-    if (SquareBlocks[currentTile.id].blk_clr_state == 0) {
-        SquareBlocks[currentTile.id].blk_clr_state = 1;
+    if (SquareBlocks[currentTile.id].state == 0) {
+        SquareBlocks[currentTile.id].state = 2;
         score += 25; // Update score when tile color is changed
     }
 

@@ -10,7 +10,7 @@ public:
     int id;
     int x;
     int y;
-    int blk_clr_state;
+    int state;
     SquareBlock* up;
     SquareBlock* down;
     SquareBlock* right;
@@ -19,12 +19,12 @@ public:
     int centerY;
     // Default constructor
     SquareBlock()
-        : id(-1), x(-1), y(-1), blk_clr_state(-1), up(nullptr), down(nullptr), right(nullptr), left(nullptr), centerX(-1), centerY(-1) {
+        : id(-1), x(-1), y(-1), state(-1), up(nullptr), down(nullptr), right(nullptr), left(nullptr), centerX(-1), centerY(-1) {
     }
 
     // Parameterized constructor
     SquareBlock(int id, int x, int y, int blk_clr_state, SquareBlock* up, SquareBlock* down, SquareBlock* right, SquareBlock* left, int centerX, int centerY)
-        : id(id), x(x), y(y), blk_clr_state(blk_clr_state), up(up), down(down), right(right), left(left), centerX(centerX), centerY(centerY) {
+        : id(id), x(x), y(y), state(blk_clr_state), up(up), down(down), right(right), left(left), centerX(centerX), centerY(centerY) {
     }
 };
 
