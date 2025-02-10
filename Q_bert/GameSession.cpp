@@ -89,6 +89,7 @@ void GameSession::ShowGameOverScreen() {
     }
     counter++;
     if (counter == 90) {
+        ShowHighScoreScreen(score);
         Game::Resume();
         Game::Stop();
     }
@@ -115,6 +116,7 @@ void GameSession::ShowVictoryScreen() {
     }
     Victorycounter++;
     if (Victorycounter == 60) {
+        ShowHighScoreScreen(score);
         Victorycounter = 0;
         Game::Stop();
     }

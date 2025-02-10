@@ -1,9 +1,18 @@
 #ifndef INTRO_H
 #define INTRO_H
-
+#include <string>
+#include <vector>
+#include <fstream>
+#include <algorithm>
 #include "icb_gui.h"
 
 void DrawStartupAnimation();
 void DrawSideObjects();
+void ShowHighScoreScreen(int currentScore);
+
+struct HighScore {
+    char name[4];  // 3 karakter + null terminator
+    int score;
+};
 
 #endif // INTRO_H#pragma once
