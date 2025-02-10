@@ -1,9 +1,10 @@
 #pragma once
-
+#include "Maze.h"
 class Player {
 public:
-    int x, y, currentTile;
+    int x, y;
     int direction;
+	SquareBlock currentTile;
     bool willFall;
     bool mazeOrder;
     int lifes;

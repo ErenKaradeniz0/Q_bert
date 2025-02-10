@@ -33,7 +33,6 @@ bool paused = false;
 DWORD WINAPI InputThread(LPVOID lpParam) {
     while (Game::Run()) {
         if (keyPressedControl) {
-			//Sleep(200); // Prevent rapid re-press
             if (Game::GetState() == Running) { // Only move if the game is not paused
                 if (keypressed == 37) player.move('l');
                 else if (keypressed == 39) player.move('r');

@@ -141,14 +141,14 @@ void DrawLives() {
 }
 
 void DrawMap() {
-    // Blue Tile
     int temp = 0;
 
     for (int i = 0; i < 28; i++) {
-        switch (SquareBlocks[i].blk_clr_state)
+        switch (SquareBlocks[i].state)
         {
         case 0: Copy(Sprites3X, 2, 224 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
-        case 1: Copy(Sprites3X, 2, 192 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
+        case 1: Copy(Sprites3X, 2, 160 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
+        case 2: Copy(Sprites3X, 2, 192 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
         default:
             break;
         }
@@ -202,7 +202,7 @@ void DrawPlayer() {
         if (player.lostLifeCounter < 20) {
             player.lostLifeCounter++;
             Copy(Sprites3X, PlayerCoordinates.I(1, 9), PlayerCoordinates.I(2, 9), PlayerCoordinates.I(3, 9), PlayerCoordinates.I(4, 9), PlayerMatrix);
-            PasteNon0(PlayerMatrix, SquareBlocks[player.currentTile].centerX - 30, SquareBlocks[player.currentTile].centerY - 80, screenMatrix);
+            PasteNon0(PlayerMatrix, player.currentTile.centerX - 30, player.currentTile.centerY - 80, screenMatrix);
         }
         else {
             player.showLostLifeText = false;
