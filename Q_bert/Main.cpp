@@ -1,5 +1,4 @@
 ﻿#include "icb_gui.h"
-
 #include "Player.h"
 #include "Enemy.h"
 #include "Maze.h"
@@ -35,47 +34,7 @@ DWORD WINAPI InputThread(LPVOID lpParam) {
     return 0;
 }
 
-DWORD WINAPI playerSoundThread(LPVOID lpParam) {
-    while (Game::Run()) {
-        if (player.playJumpSound) {
-			player.playJumpSound = false;
-            PlayerJumpSound();
-        }
-		if (player.playFallingSound) {
-			player.playFallingSound = false;
-			PlayerFallSound();
-		}
-        if (player.playDiscSound) {
-            player.playDiscSound = false;
-            DiscSound();
-        }
-        if (player.playSpeechSound) {
-            player.playSpeechSound = false;
-            PlayerSpeechSound();
-        }
-    }
-    return 0;
-}
 
-DWORD WINAPI enemyBall1SoundThread(LPVOID lpParam) {
-    while (Game::Run()) {
-        if (enemyBall1.playRedBallJumpSound) {
-            enemyBall1.playRedBallJumpSound = false;
-            RedBallJumpSound();
-        }
-    }
-    return 0;
-}
-
-DWORD WINAPI enemyBall2SoundThread(LPVOID lpParam) {
-    while (Game::Run()) {
-        if (enemyBall2.playRedBallJumpSound) {
-            enemyBall2.playRedBallJumpSound = false;
-            RedBallJumpSound();
-        }
-    }
-    return 0;
-}
 
 DWORD WINAPI SnakeSoundThread(LPVOID lpParam) {
     while (Game::Run()) {
@@ -141,10 +100,47 @@ DWORD WINAPI EnemySnakeThread(LPVOID lpParam) {
     return 0;
 }
 
-//DWORD WINAPI SoundThread(LPVOID lpParam) {
-//    
-//    return 0;
-//}
+DWORD WINAPI playerSoundThread(LPVOID lpParam) {
+    while (Game::Run()) {
+        if (player.playJumpSound) {
+            player.playJumpSound = false;
+            PlayerJumpSound();
+        }
+        if (player.playFallingSound) {
+            player.playFallingSound = false;
+            PlayerFallSound();
+        }
+        if (player.playDiscSound) {
+            player.playDiscSound = false;
+            DiscSound();
+        }
+        if (player.playSpeechSound) {
+            player.playSpeechSound = false;
+            PlayerSpeechSound();
+        }
+    }
+    return 0;
+}
+
+DWORD WINAPI enemyBall1SoundThread(LPVOID lpParam) {
+    while (Game::Run()) {
+        if (enemyBall1.playRedBallJumpSound) {
+            enemyBall1.playRedBallJumpSound = false;
+            RedBallJumpSound();
+        }
+    }
+    return 0;
+}
+
+DWORD WINAPI enemyBall2SoundThread(LPVOID lpParam) {
+    while (Game::Run()) {
+        if (enemyBall2.playRedBallJumpSound) {
+            enemyBall2.playRedBallJumpSound = false;
+            RedBallJumpSound();
+        }
+    }
+    return 0;
+}
 
 DWORD WINAPI GameControllerMain(LPVOID lpParam)
 {

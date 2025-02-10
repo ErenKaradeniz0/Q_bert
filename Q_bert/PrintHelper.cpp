@@ -15,7 +15,7 @@ extern int score;
 extern Player player;
 extern Enemy enemyBall1, enemyBall2, enemySnake;
 extern bool showLostLifeText;
-ICBYTES CurrentTileMatrix, PlayerMatrix, Enemy1Matrix, Enemy2Matrix, DiscMatrix;
+ICBYTES CurrentTileMatrix, PlayerMatrix, Enemy1Matrix, Enemy2Matrix, DiscMatrix, miniQbert;
 
 std::map<char, int> CHAR_INDICES = {
     {'0', 1}, {'1', 2}, {'2', 3}, {'3', 4}, {'4', 5},
@@ -28,7 +28,7 @@ std::map<char, int> CHAR_INDICES = {
     {'Z', 36}, {'=', 37}
 };
 
-    ICBYTES letterSprite;
+ICBYTES letterSprite;
 void RenderChar(ICBYTES& screen, char c, int x, int y) {
 
     int index = 0;
@@ -122,7 +122,10 @@ void DrawScore() {
 }
 
 void DrawLives() {
-    static ICBYTES miniQbert;
+    if  ((enemyBall1.isAlive && player.currentTile.id == enemyBall1.currentTile.id) || (enemyBall2.isAlive && player.currentTile.id == enemyBall2.currentTile.id) || (enemySnake.isAlive && player.currentTile.id == enemySnake.currentTile.id))
+    {
+        player.lostLife(false);
+    }
     
     // Then draw mini Q*berts for each life
     Copy(Sprites3X,
@@ -201,16 +204,16 @@ void DrawPlayer() {
     if (player.showLostLifeText) {
 
 		Game::Pause(false);
-        if (player.lostLifeCounter < 20) {
+        if (player.lostLifeCounter < 15) {
             player.lostLifeCounter++;
             Copy(Sprites3X, PlayerCoordinates.I(1, 9), PlayerCoordinates.I(2, 9), PlayerCoordinates.I(3, 9), PlayerCoordinates.I(4, 9), PlayerMatrix);
             PasteNon0(PlayerMatrix, player.currentTile.centerX - 30, player.currentTile.centerY - 80, screenMatrix);
         }
         else {
             Game::Resume();
-
-            player.showLostLifeText = false;
             player.lostLifeCounter = 0; // Reset counter
+            player.showLostLifeText = false;
+
         }
     }
 }
