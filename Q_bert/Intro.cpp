@@ -3,6 +3,7 @@
 #include "Sound.h"
 #include "Main.h"
 #include "Game.h"
+#include "Intro.h"
 
 #include <vector>
 #include <string>
@@ -172,10 +173,10 @@ void ShowHighScoreScreen(int currentScore) {
             for (int i = 0; i < 3; i++) {
                 char letterStr[2] = { currentName[i], '\0' };
                 if (i == currentLetterIndex && frame % 30 < 15) {
-                    RenderString(screenMatrix, "_", 250 + i * 30, 450);
+                    RenderString(screenMatrix, "_", 300 + i * 30, 450);
                 }
                 else {
-                    RenderString(screenMatrix, letterStr, 250 + i * 30, 450);
+                    RenderString(screenMatrix, letterStr, 300 + i * 30, 450);
                 }
             }
 
@@ -222,8 +223,9 @@ void ShowHighScoreScreen(int currentScore) {
                 break;
             }
         }
-        Impress12x20(screenMatrix, 20, 650, "github:ErenKaradeniz0", 0x000000);
-        Impress12x20(screenMatrix, 20, 675, "github:svvlgr", 0x000000);
+        Impress12x20(screenMatrix, 20, 625, "github:ErenKaradeniz0", 0x000000);
+        Impress12x20(screenMatrix, 20, 650, "github:svvlgr", 0x000000);
+        Impress12x20(screenMatrix, 20, 675, "github:UlasDenizCakmazel", 0x000000);
 
         DisplayImage(FRM1, screenMatrix);
         Game::SleepI(33);

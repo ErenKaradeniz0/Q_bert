@@ -6,6 +6,7 @@ extern bool isGameOver;
 
 HANDLE Game::gameRunningEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 HANDLE Game::gameStoppingEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+HANDLE Game::gameStoppedEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
 HANDLE Game::gameMainThread = nullptr;
 int Game::wait = NULL;
 extern bool isVictory;
@@ -17,7 +18,7 @@ int Game::Start(void* param)
 		return COMMAND_FAILED;
 
 	gameMainThread = CreateThread(NULL, 0, GameControllerMain, param, 0, NULL);
-
+	ResetEvent(gameStoppedEvent);
 	SetEvent(gameRunningEvent);
 	ResetEvent(gameStoppingEvent);
 
@@ -30,14 +31,32 @@ int Game::Stop()
 	if (gameMainThread == nullptr || wait != NULL)
 		return COMMAND_FAILED;
 
+	// Reset the enemies
+	enemyBall1.isAlive = false;
+	enemyBall2.isAlive = false;
+	enemySnake.isAlive = false;
+	enemyBall1.currentTile.id = -1;
+	enemyBall2.currentTile.id = -1;
+	enemySnake.currentTile.id = -1;
+
 	ResetEvent(gameRunningEvent);
 	SetEvent(gameStoppingEvent);
 
-	gameMainThread = nullptr;
 
 	ResetSoundFlags();
+	gameMainThread = nullptr;
 
 	return COMMAND_SUCCESS;
+}
+
+void Game::CompleteStop()
+{
+	SetEvent(gameStoppedEvent);
+}
+
+bool Game::IsStopped()
+{
+	return WaitForSingleObject(gameStoppedEvent, 0) == WAIT_OBJECT_0;
 }
 
 void Game::SleepI(int ms)
@@ -83,7 +102,7 @@ bool Game::Run()
 	if (isVictory) {
 		return false;
 	}
-  	return WaitForSingleObject(gameRunningEvent, wait) == WAIT_OBJECT_0;
+	return WaitForSingleObject(gameRunningEvent, wait) == WAIT_OBJECT_0;
 }
 
 bool Game::RunMain()

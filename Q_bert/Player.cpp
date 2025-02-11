@@ -27,11 +27,12 @@ void CreatePlayer() {
 void Player::MoveAnimation(char key, int goal_x, int goal_y) {
     player.playJumpSound = true;
     direction++;
-
+    int halfSteps;
     int initial_diff_x = abs(goal_x - player.x);
     int initial_diff_y = abs(goal_y - player.y);
     int totalSteps = max(initial_diff_x, initial_diff_y) / 5;
-    int halfSteps = totalSteps / 2;
+	if (key == 'u' || key == 'l') halfSteps = totalSteps / 2;
+	else if (key == 'd' || key == 'r') halfSteps = (totalSteps / 2) + (totalSteps / 3);
     int stepCount = 0;
 
     player.y -= 40;
@@ -112,6 +113,7 @@ void Player::FallOffEdge(char key) {
         }
         Game::SleepI(15);
     }
+    Sleep(15);
     lostLife(true); // Decrease life on fall
 }
 
