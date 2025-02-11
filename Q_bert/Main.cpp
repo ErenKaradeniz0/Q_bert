@@ -6,6 +6,7 @@
 #include "Main.h"
 #include "Game.h"
 #include "GameSession.h"
+
 // Globals
 bool gamePaused = false;
 int keypressed;
@@ -19,7 +20,6 @@ void ICGUI_Create() {
     ICG_MWSize(740, 800);
 }
 
-bool paused = false;
 DWORD WINAPI InputThread(LPVOID lpParam) {
     while (Game::Run()) {
         if (keyPressedControl) {
@@ -61,7 +61,7 @@ DWORD WINAPI turnDiscThread(LPVOID lpParam) {
 }
 
 DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
-    while (!Game::Run()) {
+    while (Game::Run()) {
         Game::SleepI(200);
         if (enemyBall1.isAlive)
             enemyBall1.move();
@@ -74,7 +74,7 @@ DWORD WINAPI EnemyBall1Thread(LPVOID lpParam) {
 }
 
 DWORD WINAPI EnemyBall2Thread(LPVOID lpParam) {
-    while (!Game::Run()) {
+    while (Game::Run()) {
         Game::SleepI(200);
         if (enemyBall2.isAlive)
             enemyBall2.move();
@@ -141,8 +141,7 @@ DWORD WINAPI enemyBall2SoundThread(LPVOID lpParam) {
     return 0;
 }
 
-DWORD WINAPI GameControllerMain(LPVOID lpParam)
-{
+DWORD WINAPI GameControllerMain(LPVOID lpParam) {
     GameSession* gameptr = new GameSession((int*)lpParam, 700, 700);
 
     keyPressedControl = true;
@@ -155,9 +154,9 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam)
     screenMatrix = 0;
 
     // Reset the enemies
-	enemyBall1.isAlive = false;
-	enemyBall2.isAlive = false;
-	enemySnake.isAlive = false;
+    enemyBall1.isAlive = false;
+    enemyBall2.isAlive = false;
+    enemySnake.isAlive = false;
 
     // Create Pyramid
     PyramidMatrix();
@@ -167,41 +166,35 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam)
 
     CreatePlayer();
 
-    // Yeni thread'leri oluştur
-    
+    // Create threads
     CreateThread(NULL, 0, InputThread, NULL, 0, NULL);
     CreateThread(NULL, 0, turnDiscThread, NULL, 0, NULL);
     CreateThread(NULL, 0, EnemyBall1Thread, NULL, 0, NULL);
     CreateThread(NULL, 0, EnemyBall2Thread, NULL, 0, NULL);
     CreateThread(NULL, 0, EnemySnakeThread, NULL, 0, NULL);
 
-    //Sound Threads
+    // Sound Threads
     CreateThread(NULL, 0, playerSoundThread, NULL, 0, NULL);
     CreateThread(NULL, 0, enemyBall1SoundThread, NULL, 0, NULL);
     CreateThread(NULL, 0, enemyBall2SoundThread, NULL, 0, NULL);
     CreateThread(NULL, 0, SnakeSoundThread, NULL, 0, NULL);
 
-    //soundThreadHandle = CreateThread(NULL, 0, SoundThread, NULL, 0, NULL);
-
-    //Game::Run() freezes when Game::Pause() called
-	while (Game::RunMain()) 
-    {
+    while (Game::RunMain()) {
         gameptr->Refresh(); // Refresh the screen
-        if ((keypressed == 'P' || keypressed == 'p') && Game::GetState() == Running)
-		{
-			Game::Pause(true);
-		}
-		else if ((keypressed == 'R' || keypressed == 'r') && Game::GetState() == Paused)
-		{
-			Game::Resume();
-		}
+        if ((keypressed == 'P' || keypressed == 'p') && Game::GetState() == Running) {
+            Game::Pause(true);
+        }
+        else if ((keypressed == 'R' || keypressed == 'r') && Game::GetState() == Paused) {
+            Game::Resume();
+        }
     }
 
-    //Delete the game object
+    // Delete the game object
     delete gameptr;
 
     return 0;
 }
+
 void StartStopGame(void* FRM1_PTR) {
     SetFocus(ICG_GetMainWindow());
 
@@ -218,15 +211,16 @@ void WhenKeyPressed(int k) {
 }
 
 void WhenKeyReleased(int k) {
-	keypressed = 0;
+    keypressed = 0;
 }
+
 void ToggleIntroAnimationSpeed(int state) {
     isAnimationFaster = (state != 0); // If state is 1 (checked), set true; otherwise, set false
     SetFocus(ICG_GetMainWindow());
 }
 
 void ICGUI_main() {
-	prepareWave(); //Prepare the sound waves
+    prepareWave(); // Prepare the sound waves
     FRM1 = ICG_FrameMedium(5, 40, 1, 1);
     int* FRM1_PTR = new int(FRM1);
 
@@ -236,7 +230,7 @@ void ICGUI_main() {
     ICG_CheckBox(575, 0, 175, 20, "Faster Intro", ToggleIntroAnimationSpeed);
 
     ICG_SetOnKeyPressed(WhenKeyPressed);
-	ICG_SetOnKeyUp(WhenKeyReleased);
+    ICG_SetOnKeyUp(WhenKeyReleased);
     CreateImage(screenMatrix, 700, 700, ICB_UINT);
 
     ReadImage("Assests/sprites.bmp", Sprites);

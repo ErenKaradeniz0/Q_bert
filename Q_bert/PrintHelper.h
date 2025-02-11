@@ -13,4 +13,5 @@ void DrawDisc();
 void DrawPlayer();
 void DrawRedBalls();
 void DrawSnake();
+
 #endif // PRINTHELPER_H

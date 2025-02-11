@@ -1,9 +1,5 @@
 #ifndef INTRO_H
 #define INTRO_H
-#include <string>
-#include <vector>
-#include <fstream>
-#include <algorithm>
 #include "icb_gui.h"
 
 void DrawStartupAnimation();
