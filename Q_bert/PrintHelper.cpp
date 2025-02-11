@@ -14,7 +14,7 @@ extern int FRM1;
 extern int score;
 extern Player player;
 extern Enemy enemyBall1, enemyBall2, enemySnake;
-extern bool showLostLifeText;
+
 ICBYTES CurrentTileMatrix, PlayerMatrix, Enemy1Matrix, Enemy2Matrix, DiscMatrix, miniQbert;
 
 std::map<char, int> CHAR_INDICES = {
@@ -30,11 +30,9 @@ std::map<char, int> CHAR_INDICES = {
 
 ICBYTES letterSprite;
 void RenderChar(ICBYTES& screen, char c, int x, int y) {
-
-    int index = 0;
-    index = CHAR_INDICES[c];
-
+    int index = CHAR_INDICES[c];
     if (index == 0) return;
+
     Copy(Sprites3X,
         IntroCoordinates.I(1, index),
         IntroCoordinates.I(2, index),
@@ -47,12 +45,8 @@ void RenderChar(ICBYTES& screen, char c, int x, int y) {
 
 void RenderString(ICBYTES& screen, const char* text, int x, int y, int spacing) {
     int currentX = x;
-    while (true)
-    {
-		if (*text == '\0') break;
-
-        if (*text != ' ')
-        {
+    while (*text != '\0') {
+        if (*text != ' ') {
             RenderChar(screen, *text, currentX, y);
         }
         currentX += spacing;
@@ -61,46 +55,13 @@ void RenderString(ICBYTES& screen, const char* text, int x, int y, int spacing) 
 }
 
 void DrawScore() {
-    static ICBYTES letterSprite;
-    static bool initialized = false;
-
-    // One-time initialization
-    if (!initialized) {
-        CreateImage(letterSprite, 21, 21, ICB_UINT);
-        initialized = true;
-    }
-
-    auto DrawCharacter = [&](char c, int x, int y) {
-        int spriteIndex = 0;
-
-        if (c >= '0' && c <= '9') {
-            spriteIndex = (c - '0') + 1;  // Numbers start at index 1
-        }
-        else if (c >= 'A' && c <= 'Z') {
-            spriteIndex = (c - 'A') + 11;  // Letters start at index 11
-        }
-        else {
-            return;
-        }
-
-        Copy(Sprites3X,
-            IntroCoordinates.I(1, spriteIndex),
-            IntroCoordinates.I(2, spriteIndex),
-            IntroCoordinates.I(3, spriteIndex),
-            IntroCoordinates.I(4, spriteIndex),
-            letterSprite);
-
-        PasteNon0(letterSprite, x, y, screenMatrix);
-        };
-
     RenderString(screenMatrix, "SCORE", 10, 40, 25);
 
-    // Convert score to string and draw each digit
     int currentX = 150;  // Extra space between "SCORE" and number
 
     // Handle case when score is 0
     if (score == 0) {
-        DrawCharacter('0', currentX, 40);
+        RenderChar(screenMatrix, '0', currentX, 40);
         return;
     }
 
@@ -116,18 +77,18 @@ void DrawScore() {
 
     // Draw digits in reverse order (right way around)
     for (int i = digitCount - 1; i >= 0; i--) {
-        DrawCharacter(digits[i], currentX, 40);
+        RenderChar(screenMatrix, digits[i], currentX, 40);
         currentX += 25;
     }
 }
 
 void DrawLives() {
-    if  ((enemyBall1.isAlive && player.currentTile.id == enemyBall1.currentTile.id) || (enemyBall2.isAlive && player.currentTile.id == enemyBall2.currentTile.id) || (enemySnake.isAlive && player.currentTile.id == enemySnake.currentTile.id))
-    {
+    if ((enemyBall1.isAlive && player.currentTile.id == enemyBall1.currentTile.id) ||
+        (enemyBall2.isAlive && player.currentTile.id == enemyBall2.currentTile.id) ||
+        (enemySnake.isAlive && player.currentTile.id == enemySnake.currentTile.id)) {
         player.lostLife(false);
     }
-    
-    // Then draw mini Q*berts for each life
+
     Copy(Sprites3X,
         IntroCoordinates.I(1, 52),
         IntroCoordinates.I(2, 52),
@@ -144,34 +105,26 @@ void DrawLives() {
 }
 
 void DrawMap() {
-    int temp = 0;
-
     for (int i = 0; i < 28; i++) {
-        switch (SquareBlocks[i].state)
-        {
+        switch (SquareBlocks[i].state) {
         case 0: Copy(Sprites3X, 2, 224 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
         case 1: Copy(Sprites3X, 2, 160 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
         case 2: Copy(Sprites3X, 2, 192 * 3 + 1, 32 * 3, 32 * 3, CurrentTileMatrix); break;
-        default:
-            break;
+        default: break;
         }
-
         PasteNon0(CurrentTileMatrix, SquareBlocks[i].x, SquareBlocks[i].y, screenMatrix);
     }
 }
 
-
 void SelectEffectDisc(int k) {
-    switch (k)
-    {
-    case 0: { Copy(Sprites3X, 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break; }
-    case 1: { Copy(Sprites3X, 16 * 3 + 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break; }
-    case 2: { Copy(Sprites3X, 32 * 3 + 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break; }
-    case 3: { Copy(Sprites3X, 48 * 3 + 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break; }
-    default:
-        break;
+    switch (k) {
+    case 0: Copy(Sprites3X, 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break;
+    case 1: Copy(Sprites3X, 16 * 3 + 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break;
+    case 2: Copy(Sprites3X, 32 * 3 + 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break;
+    case 3: Copy(Sprites3X, 48 * 3 + 1, 356 * 3 + 1, 16 * 3, 10 * 3, DiscMatrix); break;
+    default: break;
     }
-};
+}
 
 void DrawDisc() {
     for (int i = 0; i < 2; i++) {
@@ -189,7 +142,7 @@ ICBYTES PlayerCoordinates{
     { 192, 6, 45, 42 },  // 5 (DOWN-1)
     { 240, 1, 45, 48 },  // 6 (DOWN-2)
     { 291, 6, 45, 42 },  // 7 (RIGHT-1)
-    { 339, 1, 45, 48 },   // 8 (RIGHT-2)
+    { 339, 1, 45, 48 },  // 8 (RIGHT-2)
     { 387, 249, 150, 78 }   //  Qbert text - idx 39
 };
 
@@ -202,8 +155,7 @@ void DrawPlayer() {
     PasteNon0(PlayerMatrix, player.x, player.y, screenMatrix);
 
     if (player.showLostLifeText) {
-
-		Game::Pause(false);
+        Game::Pause(false);
         if (player.lostLifeCounter < 15) {
             player.lostLifeCounter++;
             Copy(Sprites3X, PlayerCoordinates.I(1, 9), PlayerCoordinates.I(2, 9), PlayerCoordinates.I(3, 9), PlayerCoordinates.I(4, 9), PlayerMatrix);
@@ -213,7 +165,6 @@ void DrawPlayer() {
             Game::Resume();
             player.lostLifeCounter = 0; // Reset counter
             player.showLostLifeText = false;
-
         }
     }
 }
@@ -234,78 +185,50 @@ ICBYTES EnemyCoordinates{
 };
 
 void DrawRedBalls() {
-    if (enemyBall1.isAlive == true){
+    if (enemyBall1.isAlive) {
         int i = enemyBall1.state;
-
         Copy(Sprites3X, EnemyCoordinates.I(1, i), EnemyCoordinates.I(2, i),
             EnemyCoordinates.I(3, i), EnemyCoordinates.I(4, i),
             Enemy1Matrix);
-		int printx = enemyBall1.x;
-		int printy = enemyBall1.y;
+        int printx = enemyBall1.x;
+        int printy = enemyBall1.y;
 
-        switch (i)
-        {
-		case 1:
-
-		case 2:
+        if (i == 1 || i == 2) {
             printy += 20;
-        default:
-            break;
         }
         PasteNon0(Enemy1Matrix, printx, printy, screenMatrix);
     }
 
-    if(enemyBall2.isAlive == true){
+    if (enemyBall2.isAlive) {
         int i = enemyBall2.state;
-
         Copy(Sprites3X, EnemyCoordinates.I(1, i), EnemyCoordinates.I(2, i),
             EnemyCoordinates.I(3, i), EnemyCoordinates.I(4, i),
             Enemy2Matrix);
-
         int printx = enemyBall2.x;
         int printy = enemyBall2.y;
 
-        switch (i)
-        {
-        case 1:
-
-        case 2:
+        if (i == 1 || i == 2) {
             printy += 20;
-        default:
-            break;
-
         }
         PasteNon0(Enemy2Matrix, printx, printy, screenMatrix);
-
     }
 }
-void DrawSnake() {
-    if (enemySnake.isAlive == true) {
-        int i = enemySnake.state;
 
+void DrawSnake() {
+    if (enemySnake.isAlive) {
+        int i = enemySnake.state;
         Copy(Sprites3X, EnemyCoordinates.I(1, i), EnemyCoordinates.I(2, i),
             EnemyCoordinates.I(3, i), EnemyCoordinates.I(4, i),
             Enemy2Matrix);
-
         int printx = enemySnake.x;
         int printy = enemySnake.y;
 
-        switch (i) {
-        case 3:
-        case 4:
+        if (i == 3 || i == 4) {
             printy += 15;
-            break;
-        case 6:
-        case 8:
-        case 10:
-        case 12:
-            printy -= 45;
-            break;
-        default:
-            break;
         }
-
+        else if (i == 6 || i == 8 || i == 10 || i == 12) {
+            printy -= 45;
+        }
         PasteNon0(Enemy2Matrix, printx, printy, screenMatrix);
-
     }
 }

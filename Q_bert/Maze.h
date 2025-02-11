@@ -1,7 +1,5 @@
-#ifndef MAZE_H
-#define MAZE_H
-
-const int GRID_SIZE = 7; // Size of the Q*bert pyramid
+// Maze.h
+#pragma once
 
 class SquareBlock {
 public:
@@ -15,6 +13,7 @@ public:
     SquareBlock* left;
     int centerX;
     int centerY;
+
     // Default constructor
     SquareBlock()
         : id(-1), x(-1), y(-1), state(-1), up(nullptr), down(nullptr), right(nullptr), left(nullptr), centerX(-1), centerY(-1) {
@@ -30,7 +29,7 @@ class Disc {
 public:
     int x;
     int y;
-	int disc_id;
+    int disc_id;
     int block_id;
     bool show_state;
     bool move_state;
@@ -38,13 +37,7 @@ public:
     int center_y;
 };
 
-class Sound {
-public:
-    bool soundControl;
-    
-};
-
-// External declarations for global variables
+// Global variables
 extern Disc Discs[2];
 extern SquareBlock SquareBlocks[28];
 
@@ -52,4 +45,3 @@ extern SquareBlock SquareBlocks[28];
 void PyramidMatrix();
 void CreateDisc();
 
-#endif // MAZE_H

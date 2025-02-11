@@ -2,7 +2,7 @@
 #include "Maze.h"
 #include "Printhelper.h"
 #include "Sound.h"
-#include "icb_gui.h" 
+#include "icb_gui.h"
 #include <cmath>
 #include "Main.h"
 #include "Game.h"
@@ -13,7 +13,7 @@ extern Player player;
 extern int keypressed;
 extern bool keyPressedControl;
 
-Player::Player() : x(0), y(0), currentTile(SquareBlock()), direction(7), willFall(false), mazeOrder(false), lifes(3){}
+Player::Player() : x(0), y(0), currentTile(SquareBlock()), direction(7), willFall(false), mazeOrder(false), lifes(3) {}
 
 void CreatePlayer() {
     player.x = SquareBlocks[0].centerX;
@@ -21,7 +21,7 @@ void CreatePlayer() {
     player.currentTile = SquareBlocks[0];
     player.lifes = 3; // Reset lives
     score = 0; // Reset score
-	player.mazeOrder = false; // Reset the falling flag
+    player.mazeOrder = false; // Reset the falling flag
 }
 
 void Player::MoveAnimation(char key, int goal_x, int goal_y) {
@@ -71,7 +71,6 @@ void Player::MoveAnimation(char key, int goal_x, int goal_y) {
     }
 }
 
-
 void Player::lostLife(bool isFall) {
     enemyBall1.isAlive = false;
     enemyBall2.isAlive = false;
@@ -88,15 +87,14 @@ void Player::lostLife(bool isFall) {
         mazeOrder = false; // Reset the falling flag
     }
     else {
-		player.showLostLifeText = true;
+        player.showLostLifeText = true;
         player.playSpeechSound = true;
-
     }
 }
 
 void Player::FallOffEdge(char key) {
     willFall = false;
-	player.playFallingSound = true;
+    player.playFallingSound = true;
 
     // Calculate the total change in x
     int x_change = key == 'l' ? -5 : key == 'r' ? 5 : key == 'u' ? 5 : key == 'd' ? -5 : 0;
@@ -112,20 +110,18 @@ void Player::FallOffEdge(char key) {
                 mazeOrder = true; // Set the falling flag
             y += 5;
         }
-          Game::SleepI(15);
+        Game::SleepI(15);
     }
     lostLife(true); // Decrease life on fall
-
 }
 
 void Player::JumpDiscAnimation(int disc_id, int goal_x, int goal_y) {
-    
     if (!Discs[disc_id].show_state) {
         FallOffEdge(disc_id == 0 ? 'l' : 'u');
         return;
     }
 
-	player.currentTile.id = Discs[disc_id].disc_id;
+    player.currentTile.id = Discs[disc_id].disc_id;
     int br_x = 0, br_y = 0;
     direction++;
     player.y -= 40;
@@ -138,7 +134,7 @@ void Player::JumpDiscAnimation(int disc_id, int goal_x, int goal_y) {
         Game::SleepI(15);
 
         if (br_x < 0 ? player.x >= goal_x : player.x < goal_x) {
-            player.x +=  br_x;
+            player.x += br_x;
         }
         if (br_y < 0 ? player.y >= goal_y : player.y < goal_y) {
             player.y += br_y;
@@ -151,7 +147,6 @@ void Player::JumpDiscAnimation(int disc_id, int goal_x, int goal_y) {
 
     Discs[disc_id].move_state = true;
     DiskAndPlayerMovingAnimation(disc_id);
-
 }
 
 void Player::DiskAndPlayerMovingAnimation(int disc_id) {
@@ -160,8 +155,8 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
     int goal_y = SquareBlocks[0].y - 60;
     int precision = static_cast<int>(sqrt(pow(goal_x - Discs[disc_id].x, 2) + pow(goal_y - Discs[disc_id].y, 2)));
     precision /= 10;
-    br_x = (goal_x - Discs[disc_id].x) / (precision+5);
-    br_y = (goal_y - Discs[disc_id].y) / (precision+3);
+    br_x = (goal_x - Discs[disc_id].x) / (precision + 5);
+    br_y = (goal_y - Discs[disc_id].y) / (precision + 3);
 
     player.playDiscSound = true;
 
@@ -170,17 +165,15 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
             Discs[disc_id].x += br_x;
             player.x += br_x;
         }
-        if (Discs[disc_id].y > goal_y){
+        if (Discs[disc_id].y > goal_y) {
             Discs[disc_id].y += br_y;
             player.y += br_y;
         }
         Game::SleepI(40);
-        
     }
     direction = 7;
     Sleep(50);
     direction++;
-    
 
     while (player.y < SquareBlocks[0].centerY) {
         player.y += 5;
@@ -192,18 +185,16 @@ void Player::DiskAndPlayerMovingAnimation(int disc_id) {
     currentTile = SquareBlocks[0];
 
     Discs[disc_id].show_state = false;
-   
+
     if (SquareBlocks[currentTile.id].state == 0) {
         SquareBlocks[currentTile.id].state = 2;
         score += 25; // Update score when tile color is changed
     }
-
-
 }
 
 void Player::move(char key) {
     willFall = true;
-	//Check if the player is moving to a disk
+    // Check if the player is moving to a disk
     if (currentTile.id == 10 && key == 'l') {
         if (Discs[0].show_state) {
             keyPressedControl = false;
@@ -228,8 +219,7 @@ void Player::move(char key) {
             return;
         }
     }
-    switch (key)
-    {
+    switch (key) {
     case 'l':
         direction = 3;
         if (currentTile.left != nullptr) {
@@ -264,4 +254,3 @@ void Player::move(char key) {
         return;
     }
 }
-
