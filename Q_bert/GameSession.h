@@ -1,5 +1,3 @@
-// GameSession.h
-
 #ifndef GAMESESSION_H
 #define GAMESESSION_H
 
@@ -19,6 +17,7 @@ public:
     GameSession(int* screenHandle, int x, int y);
     void Refresh(int sleepTime = 30);
     void ShowGameOverScreen();
+    void ShowVictoryScreen();
     void DrawPaused();
     ~GameSession();
 };

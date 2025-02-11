@@ -145,6 +145,7 @@
     <ClCompile Include="Intro.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Maze.cpp" />
+    <ClCompile Include="OldSound.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PrintHelper.cpp" />
     <ClCompile Include="Sound.cpp" />
@@ -164,12 +165,17 @@
     <ClInclude Include="Sound.h" />
   </ItemGroup>
   <ItemGroup>
+    <Media Include="Sounds\DiscSound.wav" />
     <Media Include="Sounds\Hello.wav" />
+    <Media Include="Sounds\IntroBall.wav" />
     <Media Include="Sounds\Jump.wav" />
     <Media Include="Sounds\Jump2.wav" />
     <Media Include="Sounds\Lift.wav" />
     <Media Include="Sounds\PlayerFall.wav" />
+    <Media Include="Sounds\RedBallJump.wav" />
+    <Media Include="Sounds\SnakeEggJump.wav" />
     <Media Include="Sounds\SnakeFall.wav" />
+    <Media Include="Sounds\SnakeJump.wav" />
     <Media Include="Sounds\Speech.wav" />
     <Media Include="Sounds\Victory.wav" />
   </ItemGroup>

@@ -1,43 +1,34 @@
-#pragma once
+// Sound.h
+
+#ifndef SOUND_H
+#define SOUND_H
+
 #include <windows.h>
-#include <mmsystem.h>
-#pragma comment(lib, "winmm.lib")
-#include <string>
+#include <icb_gui.h>
 
-
+// Function declarations
+void ResetSoundFlags();
+void prepareWave();
 VOID* HelloSound();
-VOID* LiftSound();
+VOID* DiscSound();
 VOID* IntroBallSound();
-VOID* JumpSound();
-VOID* SpeechSound();
+VOID* PlayerJumpSound();
 VOID* PlayerFallSound();
+VOID* PlayerSpeechSound();
 VOID* RedBallJumpSound();
 VOID* SnakeEggJumpSound();
 VOID* SnakeJumpSound();
 VOID* SnakeFallSound();
+VOID* VictorySound();
 void PlayStartupSounds(int currentFrame);
 
-// Yeni ses çalma sistemi
-class SoundPlayer {
-private:
-    static int soundCounter;
-public:
-    static void PlaySound(const char* filename) {
-        std::string alias = "sound" + std::to_string(soundCounter++);
-        std::string openCommand = "open \"" + std::string(filename) + "\" type waveaudio alias " + alias;
-        std::string playCommand = "play " + alias;
+// Global variables
+extern bool helloPlayed;
+extern bool liftPlayed;
+extern bool introBallPlayed;
+extern bool speechPlayed;
+extern bool jumpSoundPlayed[4];
+extern ICBYTES waveHello, waveDisc, waveIntroBall, waveJumpSound, waveSpeechSound, waveFallingSound, waveDiscSound,
+waveSwearingSound, waveRedBallJumpSound, waveSnakeEggJumpSound, waveSnakeJumpSound, waveplaySnakeFallSound;
 
-        mciSendStringA(openCommand.c_str(), NULL, 0, NULL);
-        mciSendStringA(playCommand.c_str(), NULL, 0, NULL);
-
-    
-        CreateThread(NULL, 0, [](LPVOID param) -> DWORD {
-            std::string* aliasPtr = (std::string*)param;
-            Sleep(2000); 
-            std::string closeCommand = "close " + *aliasPtr;
-            mciSendStringA(closeCommand.c_str(), NULL, 0, NULL);
-            delete aliasPtr;
-            return 0;
-            }, new std::string(alias), 0, NULL);
-    }
-};
+#endif // SOUND_H

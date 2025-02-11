@@ -21,11 +21,10 @@ private:
 	static int wait;
 
 public:
-	static int Start();
 	static int Start(void* param);
 	static int Stop();
 	static void SleepI(int ms);
-	static int Pause();
+	static int Pause(bool isPaused);
 	static int Resume();
 
 	static GameState GetState();
@@ -35,5 +34,6 @@ public:
 
 	// This function is used to while loop the game main thread
 	static bool RunMain();
+
 };
 

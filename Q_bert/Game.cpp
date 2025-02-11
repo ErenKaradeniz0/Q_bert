@@ -8,6 +8,8 @@ HANDLE Game::gameRunningEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 HANDLE Game::gameStoppingEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 HANDLE Game::gameMainThread = nullptr;
 int Game::wait = NULL;
+extern bool isVictory;
+extern bool isPaused;
 
 int Game::Start(void* param)
 {
@@ -33,6 +35,8 @@ int Game::Stop()
 
 	gameMainThread = nullptr;
 
+	ResetSoundFlags();
+
 	return COMMAND_SUCCESS;
 }
 
@@ -42,14 +46,13 @@ void Game::SleepI(int ms)
 }
 
 
-int Game::Pause()
+int Game::Pause(bool Paused)
 {
 	if (gameMainThread == nullptr || wait != NULL)
 		return COMMAND_FAILED;
-
+	isPaused = Paused;
 	wait = INFINITE;
 	ResetEvent(gameRunningEvent); //true -> false
-
 	return COMMAND_SUCCESS;
 }
 
@@ -57,6 +60,7 @@ int Game::Resume()
 {
 	if (gameMainThread == nullptr || wait != INFINITE)
 		return COMMAND_FAILED;
+	isPaused = false;
 
 	SetEvent(gameRunningEvent);
 	wait = NULL;
@@ -76,6 +80,9 @@ GameState Game::GetState()
 
 bool Game::Run()
 {
+	if (isVictory) {
+		return false;
+	}
   	return WaitForSingleObject(gameRunningEvent, wait) == WAIT_OBJECT_0;
 }
 

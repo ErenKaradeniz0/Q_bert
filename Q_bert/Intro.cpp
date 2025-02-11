@@ -1,16 +1,23 @@
+#include "icb_gui.h"
 #include "PrintHelper.h"
 #include "Sound.h"
-#include "icb_gui.h"
-#include <xmemory>
 #include "Main.h"
 #include "Game.h"
+
+#include <vector>
+#include <string>
+#include <fstream>
+#include <algorithm>
+#include <cstring>
+
+using namespace std;
 
 extern ICBYTES Sprites3X;
 extern int FRM1;
 extern ICBYTES screenMatrix;
 ICBYTES QbertTitle, PinkC, QB, IntroletterSprite;
 ICBYTES normalBall, bouncedBall, QbertText, diskSprite;
-ICBYTES Qbert, Tile, LeftAr, RightAr, ChText, PlayerText, PlayerOne;
+ICBYTES Qbert, Tile, LeftAr, RightAr, ChText, PlayerText, PlayerOne, QbertHS1, QbertHS2;
 
 ICBYTES IntroCoordinates{
     // Numbers (0-9)
@@ -54,22 +61,22 @@ ICBYTES IntroCoordinates{
     { 987, 27, 21, 21},     //  Z - idx 36
 
     // Special Elements
-    { 846, 129, 15, 15},    //  = - idx 37
-    { 387, 99, 282, 45},    //  QBERT Logo - idx 38
-    { 387, 249, 150, 78},   //  Qbert text - idx 39
-    { 816, 121, 27, 24},    //  Pink c Logo - idx 40
-    { 6, 72, 45, 28},       //  Bounced Ball - idx 41
-    { 54, 66, 45, 32},      //  Normal Ball - idx 42
-    { 240, 3, 47, 45},      //  Qbert Character - idx 43
+    { 846, 129, 15, 15},     //  = - idx 37
+    { 387, 99, 282, 45},     //  QBERT Logo - idx 38
+    { 387, 249, 150, 78},    //  Qbert text - idx 39
+    { 816, 121, 27, 24},     //  Pink c Logo - idx 40
+    { 6, 72, 45, 28},        //  Bounced Ball - idx 41
+    { 54, 66, 45, 32},       //  Normal Ball - idx 42
+    { 240, 3, 47, 45},       //  Qbert Character - idx 43
     { 720, 438, 144, 18},    //  Change to Text - idx 44
-    { 795, 354, 21, 24},       //  -> Symbol - idx 45
-    { 819, 354, 21, 24},      //  <- Symbol - idx 46
-    { 195, 588, 45, 39},      //  Yellow Tile - idx 47
-    { 1, 1068, 48, 30},       //  Disk Frame 1 - idx 48
-    { 49, 1068, 48, 30},      //  Disk Frame 2 - idx 49
-    { 97, 1068, 48, 30},      //  Disk Frame 3 - idx 50
-    { 145, 1068, 48, 30},      //  Disk Frame 4 - idx 51
-    { 672, 96, 24, 30 },      //  Mini Qbert - idx 52
+    { 795, 354, 21, 24},     //  -> Symbol - idx 45
+    { 819, 354, 21, 24},     //  <- Symbol - idx 46
+    { 195, 588, 45, 39},     //  Yellow Tile - idx 47
+    { 1, 1068, 48, 30},      //  Disk Frame 1 - idx 48
+    { 49, 1068, 48, 30},     //  Disk Frame 2 - idx 49
+    { 97, 1068, 48, 30},     //  Disk Frame 3 - idx 50
+    { 145, 1068, 48, 30},    //  Disk Frame 4 - idx 51
+    { 672, 96, 24, 30 },     //  Mini Qbert - idx 52
 
     // Player Text
     { 552, 337, 153, 24},    //  Player Text 1 - idx 53
@@ -78,14 +85,155 @@ ICBYTES IntroCoordinates{
     { 552, 409, 153, 24},    //  Player Text 4 - idx 56
     { 552, 433, 153, 24},    //  Player Text 5 - idx 57
     { 552, 457, 153, 24},    //  Player Text 6 - idx 58
-    { 723, 355, 21, 30},      //  Player one  - idx 59
+    { 723, 355, 21, 30},     //  Player one  - idx 59
 
-    { 192, 6, 47, 45}      //  Bowing Qbert Character  - idx 60
+    { 192, 6, 47, 45},       //  Bowing Qbert Character  - idx 60
+    { 1152, 240, 81, 96},    //  HighScore Qbert Character 1 - idx 61
+    { 1236, 240, 81, 96}     //  HighScore Qbert Character 2 - idx 62
+
 };
+
+vector<pair<string, int>> highScores;
+char currentName[4] = "AAA";
+int currentLetterIndex = 0;
+
+void LoadHighScores() {
+    ifstream file("highscores.txt");
+    if (file.is_open()) {
+        string name;
+        int score;
+        while (file >> name >> score) {
+            if (name.length() > 3) name = name.substr(0, 3);
+            highScores.push_back({ name, score });
+        }
+        file.close();
+    }
+}
+
+void SaveHighScores() {
+    ofstream file("highscores.txt");
+    if (file.is_open()) {
+        for (const auto& score : highScores) {
+            file << score.first << " " << score.second << "\n";
+        }
+        file.close();
+    }
+}
+
+void ShowHighScoreScreen(int currentScore) {
+    highScores.clear();
+    LoadHighScores();
+
+    Copy(Sprites3X,
+        IntroCoordinates.I(1, 61),
+        IntroCoordinates.I(2, 61),
+        IntroCoordinates.I(3, 61),
+        IntroCoordinates.I(4, 61),
+        QbertHS1);
+
+    Copy(Sprites3X,
+        IntroCoordinates.I(1, 62),
+        IntroCoordinates.I(2, 62),
+        IntroCoordinates.I(3, 62),
+        IntroCoordinates.I(4, 62),
+        QbertHS2);
+
+    bool isEnteringName = false;
+    if (highScores.size() < 5 || currentScore > highScores.back().second) {
+        isEnteringName = true;
+        currentLetterIndex = 0;
+        strcpy_s(currentName, "AAA");
+    }
+
+    int frame = 0;
+
+    while (Game::GetState() != Stopped) {
+        screenMatrix = 0x1A0F5F;
+
+        PasteNon0(QbertHS1, 480, 50, screenMatrix);
+        PasteNon0(QbertHS2, 110, 50, screenMatrix);
+
+        RenderString(screenMatrix, "HIGH SCORES", 205, 100);
+
+        int startY = 150;
+        for (size_t i = 0; i < highScores.size(); i++) {
+            char buffer[50];
+
+            sprintf_s(buffer, sizeof(buffer), "%d. %s", (int)(i + 1), highScores[i].first.c_str());
+            RenderString(screenMatrix, buffer, 200, startY + i * 40);
+
+            sprintf_s(buffer, sizeof(buffer), "%d", highScores[i].second);
+            RenderString(screenMatrix, buffer, 400, startY + i * 40);
+        }
+
+        if (isEnteringName) {
+            RenderString(screenMatrix, "ENTER YOUR NAME:", 150, 400);
+
+            for (int i = 0; i < 3; i++) {
+                char letterStr[2] = { currentName[i], '\0' };
+                if (i == currentLetterIndex && frame % 30 < 15) {
+                    RenderString(screenMatrix, "_", 250 + i * 30, 450);
+                }
+                else {
+                    RenderString(screenMatrix, letterStr, 250 + i * 30, 450);
+                }
+            }
+
+            if (keypressed != 0) {
+                if (keypressed >= 'A' && keypressed <= 'Z') {
+                    currentName[currentLetterIndex] = keypressed;
+                    if (currentLetterIndex < 2) currentLetterIndex++;
+                }
+                else if (keypressed >= 'a' && keypressed <= 'z') {
+                    currentName[currentLetterIndex] = toupper(keypressed);
+                    if (currentLetterIndex < 2) currentLetterIndex++;
+                }
+                else if (keypressed == VK_LEFT && currentLetterIndex > 0) {
+                    currentLetterIndex--;
+                }
+                else if (keypressed == VK_RIGHT && currentLetterIndex < 2) {
+                    currentLetterIndex++;
+                }
+                else if (keypressed == VK_BACK && currentLetterIndex > 0) {
+                    currentLetterIndex--;
+                    currentName[currentLetterIndex] = 'A';
+                }
+                else if (keypressed == VK_RETURN) {
+                    string name(currentName, 3);
+                    highScores.push_back({ name, currentScore });
+                    sort(highScores.begin(), highScores.end(),
+                        [](const auto& a, const auto& b) { return a.second > b.second; });
+                    if (highScores.size() > 5) {
+                        highScores.resize(5);
+                    }
+                    SaveHighScores();
+                    isEnteringName = false;
+                }
+                keypressed = 0;
+            }
+        }
+        else {
+            if (frame % 60 < 30) {
+                RenderString(screenMatrix, "PRESS ENTER TO CONTINUE", 75, 500);
+            }
+
+            if (keypressed == VK_RETURN) {
+                Game::Stop();
+                break;
+            }
+        }
+        Impress12x20(screenMatrix, 20, 650, "github:ErenKaradeniz0", 0x000000);
+        Impress12x20(screenMatrix, 20, 675, "github:svvlgr", 0x000000);
+
+        DisplayImage(FRM1, screenMatrix);
+        Game::SleepI(33);
+        frame++;
+    }
+}
 
 void DrawSideObjects() {
     static int currentFrame = 0;
-    static int playerTextFrame = 53; // Start with the first player text frame
+    static int playerTextFrame = 53;
 
     // Copy sprites once
     Copy(Sprites3X,
@@ -123,11 +271,10 @@ void DrawSideObjects() {
         IntroCoordinates.I(4, 44),
         ChText);
 
-    // Update player text frame every 3 frames
     if (currentFrame % 3 == 0) {
         playerTextFrame++;
         if (playerTextFrame > 58) {
-            playerTextFrame = 53; // Loop back to the first player text frame
+            playerTextFrame = 53;
         }
     }
 
@@ -216,48 +363,6 @@ void DrawStartupAnimation() {
     for (auto& jump : jumps) {
         jump.vx = (jump.targetX - jump.startX) / timeToTarget;
     }
-
-    // Helper function to draw a single character
-    auto DrawCharacter = [&](char c, int x, int y) {
-        int spriteIndex = 0;
-
-        if (c >= '0' && c <= '9') {
-            spriteIndex = (c - '0') + 1;
-        }
-        else if (c >= 'A' && c <= 'Z') {
-            spriteIndex = (c - 'A') + 11;
-        }
-        else if (c == '=') {
-            spriteIndex = 37;
-        }
-        else {
-            return;
-        }
-
-        Copy(Sprites3X,
-            IntroCoordinates.I(1, spriteIndex),
-            IntroCoordinates.I(2, spriteIndex),
-            IntroCoordinates.I(3, spriteIndex),
-            IntroCoordinates.I(4, spriteIndex),
-            IntroletterSprite);
-
-        PasteNon0(IntroletterSprite, x, y, screenMatrix);
-        };
-
-    // Helper function to draw text string
-    auto DrawText = [&](const char* text, int x, int y, int spacing = 25) {
-        int currentX = x;
-        while (*text) {
-            if (*text != ' ') {
-                DrawCharacter(*text, currentX, y);
-            }
-            currentX += spacing;
-            text++;
-        }
-        };
-
-    // Message handling
-    MSG msg;
 
     // Combined animation loop - extended to 480 frames total
     for (int frame = 0; frame < 480; frame++) {
@@ -368,7 +473,7 @@ void DrawStartupAnimation() {
                     }
                 }
 
-                if (frame >= 390 && frame < 400) {  
+                if (frame >= 390 && frame < 400) {
                     Copy(Sprites3X,
                         IntroCoordinates.I(1, 60),  // Using Bowing Qbert
                         IntroCoordinates.I(2, 60),
@@ -440,9 +545,7 @@ void DrawStartupAnimation() {
                 }
             }
 
-            // Çarpma sonrasý bekleme ve sekme (390-420 frames)
             if (frame > 390 && frame <= 420) {
-                // Sadece 3 frame bounced ball göster (390-393 arasý)
                 if (frame <= 393) {
                     Copy(Sprites3X,
                         IntroCoordinates.I(1, 41),
@@ -453,7 +556,6 @@ void DrawStartupAnimation() {
                     PasteNon0(bouncedBall, 140, 540, screenMatrix);
                 }
                 else {
-                    // Geri kalan tüm frameler'de sekme animasyonu (393-420 arasý)
                     float t = (frame - 393) / 27.0f;
                     if (t > 1.0f) t = 1.0f;
 

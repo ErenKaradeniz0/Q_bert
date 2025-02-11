@@ -1,99 +1,132 @@
+#include <windows.h> 
+#include <icb_gui.h>
 #include "Sound.h"
 #include "Game.h"
-
-int SoundPlayer::soundCounter = 0;
-
-VOID* HelloSound() {
-    SoundPlayer::PlaySound("Sounds/Hello.wav");
-    return 0;
-}
-
-VOID* LiftSound() {
-    SoundPlayer::PlaySound("Sounds/DiscSound.wav");
-    return 0;
-}
-
-VOID* IntroBallSound() {
-    SoundPlayer::PlaySound("Sounds/IntroBall.wav");
-    return 0;
-}
-
-VOID* JumpSound() {
-    SoundPlayer::PlaySound("Sounds/Jump.wav");
-    return 0;
-}
-
-VOID* SpeechSound() {
-    SoundPlayer::PlaySound("Sounds/Speech.wav");
-    return 0;
-}
-
-VOID* PlayerFallSound() {
-    SoundPlayer::PlaySound("Sounds/PlayerFall.wav");
-    return 0;
-}
-
-VOID* RedBallJumpSound() {
-    SoundPlayer::PlaySound("Sounds/RedBallJump.wav");
-    return 0;
-}
-
-VOID* SnakeEggJumpSound() {
-    SoundPlayer::PlaySound("Sounds/SnakeEggJump.wav");
-    return 0;
-}
-
-VOID* SnakeJumpSound() {
-    SoundPlayer::PlaySound("Sounds/SnakeJump.wav");
-    return 0;
-}
-
-VOID* SnakeFallSound() {
-    SoundPlayer::PlaySound("Sounds/SnakeFall.wav");
-    return 0;
-}
 
 bool helloPlayed = false;
 bool liftPlayed = false;
 bool introBallPlayed = false;
 bool speechPlayed = false;
-bool jumpSoundPlayed[4] = { false, false, false, false }; // Her zýplama için bir flag
+bool jumpSoundPlayed[4] = { false, false, false, false };
+
+ICBYTES waveHello, waveDisc, waveIntroBall, waveJumpSound, waveSpeechSound, waveFallingSound, waveDiscSound,
+waveSwearingSound, waveRedBallJumpSound, waveSnakeEggJumpSound, waveSnakeJumpSound, waveplaySnakeFallSound, waveVictorySound;
+
+void ResetSoundFlags() {
+    helloPlayed = false;
+    liftPlayed = false;
+    introBallPlayed = false;
+    speechPlayed = false;
+    for (int i = 0; i < 4; i++) {
+        jumpSoundPlayed[i] = false;
+    }
+}
+
+void prepareWave() {
+    //Intro
+    ReadWave(waveHello, "Sounds/Hello.wav");
+    ReadWave(waveDisc, "Sounds/DiscSound.wav");
+    ReadWave(waveIntroBall, "Sounds/IntroBall.wav");
+    //Player
+    ReadWave(waveJumpSound, "Sounds/Jump.wav");
+    ReadWave(waveFallingSound, "Sounds/PlayerFall.wav");
+    ReadWave(waveSpeechSound, "Sounds/Speech.wav");
+    //Enemies
+    ReadWave(waveRedBallJumpSound, "Sounds/RedBallJump.wav");
+    ReadWave(waveSnakeEggJumpSound, "Sounds/SnakeEggJump.wav");
+    ReadWave(waveSnakeJumpSound, "Sounds/SnakeJump.wav");
+    ReadWave(waveplaySnakeFallSound, "Sounds/SnakeFall.wav");
+    
+    ReadWave(waveVictorySound, "Sounds/Victory.wav");
+
+}
+
+// Update the WaveOut calls with the correct number of arguments
+VOID* HelloSound() {
+    WaveOut(waveHello, 0);
+    return 0;
+}
+
+VOID* DiscSound() {
+    WaveOut(waveDisc, 0);
+    return 0;
+}
+
+VOID* IntroBallSound() {
+    WaveOut(waveIntroBall, 0);
+    return 0;
+}
+
+VOID* PlayerJumpSound() {
+    WaveOut(waveJumpSound, 0);
+    return 0;
+}
+
+VOID* PlayerFallSound() {
+    WaveOut(waveFallingSound, 0);
+    return 0;
+}
+
+VOID* PlayerSpeechSound() {
+    WaveOut(waveSpeechSound, 0);
+    return 0;
+}
+
+VOID* RedBallJumpSound() {
+    WaveOut(waveRedBallJumpSound, 0);
+    return 0;
+}
+
+VOID* SnakeEggJumpSound() {
+    WaveOut(waveSnakeEggJumpSound, 0);
+    return 0;
+}
+
+VOID* SnakeJumpSound() {
+    WaveOut(waveSnakeJumpSound, 0);
+    return 0;
+}
+
+VOID* SnakeFallSound() {
+    WaveOut(waveplaySnakeFallSound, 0);
+    return 0;
+}
+
+VOID* VictorySound() {
+    WaveOut(waveVictorySound, 0);
+    return 0;
+}
 
 void PlayStartupSounds(int currentFrame) {
-    // Hello sesi için kontrol (frame 30)
     if (currentFrame == 30 && !helloPlayed) {
         HelloSound();
         helloPlayed = true;
     }
 
-    // Lift sesi için kontrol (frame 90)
     if (currentFrame == 90 && !liftPlayed) {
-        LiftSound();
+        DiscSound();
         liftPlayed = true;
     }
 
-    // Zýplama sesleri için kontrol
-    // Her zýplama baþlangýcýnda ses çal
     if (currentFrame == 240 && !jumpSoundPlayed[0]) {
-        JumpSound();
+        PlayerJumpSound();
         jumpSoundPlayed[0] = true;
     }
     if (currentFrame == 290 && !jumpSoundPlayed[1]) {
-        JumpSound();
+        PlayerJumpSound();
         jumpSoundPlayed[1] = true;
     }
     if (currentFrame == 320 && !jumpSoundPlayed[2]) {
-        JumpSound();
+        PlayerJumpSound();
         jumpSoundPlayed[2] = true;
     }
     if (currentFrame == 350 && !jumpSoundPlayed[3]) {
-        JumpSound();
+        PlayerJumpSound();
         jumpSoundPlayed[3] = true;
     }
 
-    // QBert text için speech sesi
     if (currentFrame == 420 && !speechPlayed) {
-        SpeechSound();
+        PlayerSpeechSound();
         speechPlayed = true;
     }
 
