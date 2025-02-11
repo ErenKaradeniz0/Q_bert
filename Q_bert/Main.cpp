@@ -153,11 +153,6 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam) {
     // Reset the screen
     screenMatrix = 0;
 
-    // Reset the enemies
-    enemyBall1.isAlive = false;
-    enemyBall2.isAlive = false;
-    enemySnake.isAlive = false;
-
     // Create Pyramid
     PyramidMatrix();
 
@@ -166,18 +161,20 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam) {
 
     CreatePlayer();
 
-    // Create threads
-    CreateThread(NULL, 0, InputThread, NULL, 0, NULL);
-    CreateThread(NULL, 0, turnDiscThread, NULL, 0, NULL);
-    CreateThread(NULL, 0, EnemyBall1Thread, NULL, 0, NULL);
-    CreateThread(NULL, 0, EnemyBall2Thread, NULL, 0, NULL);
-    CreateThread(NULL, 0, EnemySnakeThread, NULL, 0, NULL);
+    HANDLE threads[9];
+    threads[0] = CreateThread(NULL, 0, InputThread, NULL, 0, NULL);
+    threads[1] = CreateThread(NULL, 0, turnDiscThread, NULL, 0, NULL);
+    threads[2] = CreateThread(NULL, 0, EnemyBall1Thread, NULL, 0, NULL);
+    threads[3] = CreateThread(NULL, 0, EnemyBall2Thread, NULL, 0, NULL);
+    threads[4] = CreateThread(NULL, 0, EnemySnakeThread, NULL, 0, NULL);
 
     // Sound Threads
-    CreateThread(NULL, 0, playerSoundThread, NULL, 0, NULL);
-    CreateThread(NULL, 0, enemyBall1SoundThread, NULL, 0, NULL);
-    CreateThread(NULL, 0, enemyBall2SoundThread, NULL, 0, NULL);
-    CreateThread(NULL, 0, SnakeSoundThread, NULL, 0, NULL);
+    threads[5] = CreateThread(NULL, 0, playerSoundThread, NULL, 0, NULL);
+    threads[6] = CreateThread(NULL, 0, enemyBall1SoundThread, NULL, 0, NULL);
+    threads[7] = CreateThread(NULL, 0, enemyBall2SoundThread, NULL, 0, NULL);
+    threads[8] = CreateThread(NULL, 0, SnakeSoundThread, NULL, 0, NULL);
+
+
 
     while (Game::RunMain()) {
         gameptr->Refresh(); // Refresh the screen
@@ -189,9 +186,11 @@ DWORD WINAPI GameControllerMain(LPVOID lpParam) {
         }
     }
 
+	WaitForMultipleObjects(9, threads, TRUE, INFINITE);
     // Delete the game object
     delete gameptr;
 
+	Game::CompleteStop();
     return 0;
 }
 
@@ -200,10 +199,14 @@ void StartStopGame(void* FRM1_PTR) {
 
     GameState state = Game::GetState();
 
-    if (state == Stopped)
+    if (state == Stopped && Game::IsStopped())
+    {
         Game::Start(FRM1_PTR);
-    else
+    }
+	else if (state == Running)
+    {
         Game::Stop();
+    }
 }
 
 void WhenKeyPressed(int k) {

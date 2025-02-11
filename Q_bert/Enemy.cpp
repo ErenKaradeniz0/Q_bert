@@ -29,7 +29,7 @@ void Enemy::Spawn(bool isHatch, int state, bool isAlive) {
     while (this->y < limit) {
         this->y += 5;
         Game::SleepI(30);
-        if (this->y == 130)
+        if (this->y == limit)
             this->currentTile = randomtile; // Set the current tile at %50 of animation
     }
     if (!isHatch) {
@@ -41,6 +41,7 @@ void Enemy::Spawn(bool isHatch, int state, bool isAlive) {
 }
 
 void Enemy::FallOffEdge(int move) {
+    currentTile.id = -1;
     if (!isHatch) {
         if (state == 2)
             state = 1;
@@ -65,8 +66,9 @@ void Enemy::FallOffEdge(int move) {
         }
         Game::SleepI(15);
     }
-    isAlive = false;
     willFall = false;
+    isAlive = false;
+
 }
 
 void Enemy::JumpToDiskAndFall(int disc_id) {
@@ -205,7 +207,7 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
     int initial_diff_x = abs(goal_x - x);
     int initial_diff_y = abs(goal_y - y);
     int totalSteps = max(initial_diff_x, initial_diff_y) / 5;
-    int halfSteps = totalSteps / 2;
+    int halfSteps = totalSteps / 2 + totalSteps / 3;
     int stepCount = 0;
 
     while (x != goal_x || y != goal_y) {
@@ -218,7 +220,7 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
 
         stepCount++;
 
-        if (stepCount == halfSteps) {
+        if (isAlive && stepCount == halfSteps) {
             currentTile = GoalBlock;
         }
 

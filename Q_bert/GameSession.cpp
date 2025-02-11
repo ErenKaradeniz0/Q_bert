@@ -48,8 +48,8 @@ void GameSession::Refresh(int sleepTime)
             DrawPlayer();
         }
         if (enemySnake.mazeOrder) {
-			// Draw Snake if falling
-			DrawSnake();
+            // Draw Snake if falling
+            DrawSnake();
         }
 
         // Draw map
@@ -67,7 +67,7 @@ void GameSession::Refresh(int sleepTime)
         // Draw lives
         DrawLives();
 
-		// Draw red balls
+        // Draw red balls
         DrawRedBalls();
 
         if (!player.mazeOrder) {
@@ -78,8 +78,8 @@ void GameSession::Refresh(int sleepTime)
             // Draw Snake if falling
             DrawSnake();
         }
-		if (isPaused)
-			DrawPaused();
+        if (isPaused)
+            DrawPaused();
         if (score == 700) {
             isVictory = true;
             ShowVictoryScreen();

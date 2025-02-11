@@ -179,6 +179,9 @@
     <Media Include="Sounds\Speech.wav" />
     <Media Include="Sounds\Victory.wav" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="highscores.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
