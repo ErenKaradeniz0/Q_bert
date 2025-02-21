@@ -17,13 +17,15 @@ class Game
 private:
 	static HANDLE gameRunningEvent;
 	static HANDLE gameStoppingEvent;
+	static HANDLE gameStoppedEvent;
 	static HANDLE gameMainThread;
 	static int wait;
 
 public:
-	static int Start();
 	static int Start(void* param);
-	static int Stop();
+	static int Stop(); 
+	static void CompleteStop();
+	static bool IsStopped();
 	static void SleepI(int ms);
 	static int Pause(bool isPaused);
 	static int Resume();

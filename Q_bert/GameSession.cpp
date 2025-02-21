@@ -7,10 +7,10 @@
 
 int FRM1;
 ICBYTES screenMatrix, Sprites, Sprites3X;
-Player player; // Global player
-Enemy enemyBall1; // Global enemy 1
-Enemy enemyBall2; // Global enemy 2
-Enemy enemySnake; // Global enemy 2
+Player player;
+Enemy enemyBall1;
+Enemy enemyBall2;
+Enemy enemySnake;
 
 int Victorycounter = 0;
 bool isGameOver = false;
@@ -47,6 +47,10 @@ void GameSession::Refresh(int sleepTime)
             // Draw player first if falling
             DrawPlayer();
         }
+        if (enemySnake.mazeOrder) {
+            // Draw Snake if falling
+            DrawSnake();
+        }
 
         // Draw map
         DrawMap();
@@ -63,15 +67,19 @@ void GameSession::Refresh(int sleepTime)
         // Draw lives
         DrawLives();
 
-        // Draw enemies
-        DrawEnemies();
+        // Draw red balls
+        DrawRedBalls();
 
         if (!player.mazeOrder) {
             // Draw player after map if not falling
             DrawPlayer();
         }
-		if (isPaused)
-			DrawPaused();
+        if (!enemySnake.mazeOrder) {
+            // Draw Snake if falling
+            DrawSnake();
+        }
+        if (isPaused)
+            DrawPaused();
         if (score == 700) {
             isVictory = true;
             ShowVictoryScreen();

@@ -14,79 +14,72 @@ extern Enemy enemyBall1;
 extern Enemy enemyBall2;
 extern Enemy enemySnake;
 
-Enemy::Enemy() : isHatch(false),currentTile(SquareBlock()), state(7), willFall(false), isAlive(false){}
+Enemy::Enemy() : isHatch(false), currentTile(SquareBlock()), state(7), willFall(false), isAlive(false) {}
 
 void Enemy::Spawn(bool isHatch, int state, bool isAlive) {
     srand(time(NULL));  // Seed the random number generator with the current time
     SquareBlock randomtile = SquareBlocks[rand() % 2 + 1];
+    this->mazeOrder = false;
     this->isHatch = isHatch;
     this->x = randomtile.centerX;
     this->y = 0;
     this->state = state;
     this->isAlive = isAlive;
-	int limit = 160;
-	if (state == 3)
-        limit = 150;
+    int limit = (state == 3) ? 150 : 160;
     while (this->y < limit) {
         this->y += 5;
         Game::SleepI(30);
-		if (this->y == 75)
-			this->currentTile = randomtile; // Set the current tile at %50 of animation
+        if (this->y == limit)
+            this->currentTile = randomtile; // Set the current tile at %50 of animation
     }
-    if(!isHatch)
+    if (!isHatch) {
         if (state == 1)
             state = 2;
         else if (state == 3)
             state = 4;
+    }
 }
 
 void Enemy::FallOffEdge(int move) {
-    if (!isHatch)
+    currentTile.id = -1;
+    if (!isHatch) {
         if (state == 2)
             state = 1;
         else if (state == 4)
             state = 3;
-    // Calculate the total change in x
+    }
 
     if (isHatch) {
         enemySnake.playSnakeFallSound = true;
     }
 
     int x_change = (move == 0) ? 5 : (move == 1) ? -5 : 0;
-	int y_change = 5;
-    // Falling animation
+    int y_change = 5;
     this->y -= 40;
     for (int i = 0; i < 40; ++i) {
         if (i < 10) {
             y += y_change;
             x += x_change;
-		}
-		else {
-			y += 5;
-		}
+        }
+        else {
+            y += 5;
+        }
         Game::SleepI(15);
     }
-    isAlive = false;
     willFall = false;
-}
-void Enemy::Hatch(Enemy enemy) {
-
+    isAlive = false;
 
 }
 
 void Enemy::JumpToDiskAndFall(int disc_id) {
+    mazeOrder = true;
     playSnakeJumpSound = true;
 
-    // Diskin konumunu al
     int target_x = Discs[disc_id].center_x;
     int target_y = Discs[disc_id].center_y;
 
-    // Diske zýplama
-    int original_x = x;
-    int original_y = y;
-    y -= 40; // Ýlk yükseliþ
+    y -= 40;
 
-    // Diske doðru hareket
     for (int i = 0; i < 20; i++) {
         if (x < target_x) x += 3;
         if (x > target_x) x -= 3;
@@ -95,17 +88,13 @@ void Enemy::JumpToDiskAndFall(int disc_id) {
         Game::SleepI(15);
     }
 
-    // Disk pozisyonuna ulaþtýktan sonra düþme
     playSnakeFallSound = true;
-    x = target_x; // x'i sabitle
+    x = target_x;
 
-    // Sadece aþaðý düþ
     for (int i = 0; i < 40; i++) {
         y += 12;
         Game::SleepI(15);
     }
-
-    // Yýlaný temizle
     isAlive = false;
     currentTile.id = -1;
 }
@@ -115,11 +104,9 @@ void Enemy::move() {
         isHatch = true;
         state = 4;
         Game::SleepI(1000);
-        Hatch(enemySnake);
     }
 
     if (!isHatch) {
-        // Ball enemies movement - unchanged
         Game::SleepI(50);
         if (state == 1)
             state = 2;
@@ -132,8 +119,6 @@ void Enemy::move() {
             if (currentTile.right != nullptr) {
                 MoveAnimation(*currentTile.right);
             }
-            else if (state == 4) {
-            }
             else {
                 willFall = true;
             }
@@ -141,8 +126,6 @@ void Enemy::move() {
         else {
             if (currentTile.down != nullptr) {
                 MoveAnimation(*currentTile.down);
-            }
-            else if (state == 4) {
             }
             else {
                 willFall = true;
@@ -153,17 +136,15 @@ void Enemy::move() {
         return;
     }
     else {
-        // Snake disc check with Q*bert position verification
         if ((currentTile.id == 10 && Discs[0].move_state && player.currentTile.id == Discs[0].disc_id) ||
             (currentTile.id == 14 && Discs[1].move_state && player.currentTile.id == Discs[1].disc_id)) {
             JumpToDiskAndFall(currentTile.id == 10 ? 0 : 1);
             return;
         }
 
-        // Normal snake movement - unchanged
         int deltaX = player.x - x;
         int deltaY = player.y - y;
-        SquareBlock destinationTile = SquareBlock();
+        SquareBlock destinationTile;
 
         if (deltaX > 0 && currentTile.right != nullptr) {
             state = 9;
@@ -203,29 +184,32 @@ void Enemy::move() {
 void Enemy::MoveAnimation(SquareBlock GoalBlock) {
     int goal_x = GoalBlock.centerX;
     int goal_y = GoalBlock.centerY;
-    int br_x = 0, br_y = 0;
+    int br_x = (x < goal_x) ? 5 : -5;
+    int br_y = (y < goal_y) ? 5 : -5;
     this->y -= 40;
     Game::SleepI(50);
 
     if (!isHatch) {
-        if (state == 1 || state == 2) {  // Red Ball
+        if (state == 1 || state == 2) {
             enemyBall1.playRedBallJumpSound = true;
         }
-        else if (state == 3 || state == 4) {  // Snake Egg
+        else if (state == 3 || state == 4) {
             enemyBall2.playSnakeEggJumpSound = true;
         }
     }
-    else {  // Snake
+    else {
         enemySnake.playSnakeJumpSound = true;
     }
 
-    if (state == 2)
-        state = 1;
-    else if (state == 4)
-        state = 3;
+    if (state == 2) state = 1;
+    else if (state == 4) state = 3;
 
-    x < goal_x ? br_x = 5 : br_x = -5;
-    y < goal_y ? br_y = 5 : br_y = -5;
+    int initial_diff_x = abs(goal_x - x);
+    int initial_diff_y = abs(goal_y - y);
+    int totalSteps = max(initial_diff_x, initial_diff_y) / 5;
+    int halfSteps = totalSteps / 2 + totalSteps / 3;
+    int stepCount = 0;
+
     while (x != goal_x || y != goal_y) {
         if (x != goal_x) {
             x += br_x;
@@ -233,24 +217,19 @@ void Enemy::MoveAnimation(SquareBlock GoalBlock) {
         if (y != goal_y) {
             y += br_y;
         }
+
+        stepCount++;
+
+        if (isAlive && stepCount == halfSteps) {
+            currentTile = GoalBlock;
+        }
+
         Game::SleepI(15);
     }
 
-    if (state == 1)
-        state = 2;
-    else if (state == 3)
-        state = 4;
+    if (state == 1) state = 2;
+    else if (state == 3) state = 4;
 
     x = goal_x;
     y = goal_y;
-    currentTile = GoalBlock;
-    if (player.currentTile.id == enemyBall1.currentTile.id || player.currentTile.id == enemyBall2.currentTile.id || player.currentTile.id == enemySnake.currentTile.id) {
-        player.lostLife(false);
-    }
-
-    /*const char* soundPath = "Sounds/Jump2.wav";
-    CreateSoundThread(soundPath);*/
-
-    //CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Jump2Sound, NULL, 0, NULL);
-
-}  
+}

@@ -1,8 +1,10 @@
+// Enemy.h
 #pragma once
 #include "Maze.h"
+
 class Enemy {
 public:
-	bool isHatch;
+    bool isHatch;
     int x;
     int y;
     int state;
@@ -12,13 +14,13 @@ public:
     bool playSnakeEggJumpSound;
     bool playSnakeJumpSound;
     bool playSnakeFallSound;
+    bool mazeOrder;
     SquareBlock currentTile;
 
     Enemy();
     void move();
-    void Hatch(Enemy enemy);
     void Spawn(bool isHatch, int state, bool isAlive = true);
-	void MoveAnimation(SquareBlock GoalBlock);
-	void FallOffEdge(int move);
+    void MoveAnimation(SquareBlock GoalBlock);
+    void FallOffEdge(int move);
     void JumpToDiskAndFall(int disc_id);
 };
