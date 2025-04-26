@@ -27,15 +27,16 @@ This is a C++ implementation of the classic Qbert game. The game is built using 
    - Visit [ICbytes official documentation](https://otoidrak.com/doc/I-See-Bytes%20A%20Simplified%20C++%20Library.pdf) for installation instructions.
    - Visit [ICbytes Main Page](https://otoidrak.com/Yazilim.html)
 
-3. Open the project in your favorite C++ IDE or compile it using the following:
-   ```bash
-   g++ -o qbert main.cpp
-   ```
+## Images
+![Image 1](images/1.png)
+![Image 2](images/2.png)
+![Image 3](images/3.png)
+![Image 4](images/4.png)
+![Image 5](images/5.png)
+![Image 6](images/6.png)
+![Image 7](images/7.png)
+![Image 8](images/8.png)
 
-4. Run the compiled binary:
-   ```bash
-   ./qbert
-   ```
 
 ## Gameplay
 
